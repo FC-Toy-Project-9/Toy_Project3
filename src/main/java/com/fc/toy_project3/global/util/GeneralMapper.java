@@ -1,6 +1,9 @@
 package com.fc.toy_project3.global.util;
 
 import java.util.List;
+import org.mapstruct.BeanMapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 public interface GeneralMapper<D, E> {
 
@@ -12,5 +15,6 @@ public interface GeneralMapper<D, E> {
 
     List<E> toEntityList(List<D> entityList);
 
-    void updateFromDto(D dto, E entity);
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateFromDto(D dto, @MappingTarget E entity);
 }
