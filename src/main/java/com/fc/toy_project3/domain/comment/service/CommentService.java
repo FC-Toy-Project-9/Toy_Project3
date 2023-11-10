@@ -4,6 +4,7 @@ import com.fc.toy_project3.domain.comment.dto.request.CommentRequestDTO;
 import com.fc.toy_project3.domain.comment.dto.response.CommentDeleteResponseDTO;
 import com.fc.toy_project3.domain.comment.dto.response.CommentResponseDTO;
 import com.fc.toy_project3.domain.comment.entity.Comment;
+import com.fc.toy_project3.domain.comment.exception.CommentNotFoundException;
 import com.fc.toy_project3.domain.comment.repository.CommentRepository;
 import com.fc.toy_project3.domain.member.entity.Member;
 import com.fc.toy_project3.domain.member.repository.MemberRepository;
@@ -26,6 +27,7 @@ public class CommentService {
 
     /**
      * 여행 댓글 등록
+     *
      * @param commentRequestDTO 댓글 정보 등록 요청 DTO
      * @return 댓글 정보 응답 DTO
      */
@@ -41,17 +43,16 @@ public class CommentService {
 
     /**
      * 여행 댓글 삭제
+     *
      * @param replyId 댓글 식별자
      * @return
      */
     public CommentDeleteResponseDTO patchComment(Long replyId) {
-        Comment comment = commentRepository.findById(replyId).get();
+        Comment comment = commentRepository.findById(replyId)
+            .orElseThrow(CommentNotFoundException::new);
         comment.delete(LocalDateTime.now());
         return CommentDeleteResponseDTO.builder().replyId(comment.getId()).build();
     }
-
-
-
 
 
 }
