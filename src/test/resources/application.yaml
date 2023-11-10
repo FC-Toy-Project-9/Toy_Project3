@@ -1,7 +1,0 @@
-spring:
-  profiles:
-    include: test
-  datasource:
-    driver-class-name: org.h2.Driver
-  config:
-    import: application-secret.yaml
