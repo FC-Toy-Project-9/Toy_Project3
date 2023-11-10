@@ -37,7 +37,7 @@ out/
 .vscode/
 
 ### Application.yaml ###
-**/*.yaml
+#**/*.yaml
 
 ### REST Docs Html ###
 **/*.html

@@ -41,8 +41,9 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.projectlombok:lombok:1.18.28'
 
-    // MariaDB
+    // DB
     runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+    testImplementation 'com.h2database:h2:2.2.220'
 
     // JSON
     implementation 'org.json:json:20230227'
