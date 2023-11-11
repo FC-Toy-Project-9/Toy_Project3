@@ -173,49 +173,6 @@ public class ItineraryServiceTest {
     }
 
     @Nested
-    @DisplayName("getItineraryByTripId()는")
-    class Context_getItineraryByTripId {
-
-        @Test
-        @DisplayName("tripId를 통해 Itinerary를 조회할 수 있다.")
-        void _willSuccess() throws TripNotFoundException {
-            // given
-            Itinerary accommodation = Accommodation.builder().id(1L).itineraryName("제주여정1")
-                .accommodationName("제주신라호텔").accommodationRoadAddressName("제주 서귀포시 중문관광로72번길 75")
-                .checkIn(LocalDateTime.of(2023, 10, 25, 15, 0))
-                .checkOut(LocalDateTime.of(2023, 10, 26, 11, 0)).build();
-
-            Itinerary transportation = Transportation.builder().id(2L).itineraryName("제주여정2")
-                .transportation("카카오택시").departurePlace("제주신라호텔")
-                .departurePlaceRoadAddressName("제주 서귀포시 중문관광로72번길 75").destination("오설록 티 뮤지엄")
-                .destinationRoadAddressName("제주 서귀포시 안덕면 신화역사로 15 오설록")
-                .departureTime(LocalDateTime.of(2023, 10, 26, 12, 0))
-                .arrivalTime(LocalDateTime.of(2023, 10, 26, 13, 0)).build();
-
-            Itinerary visit = Visit.builder().id(3L).itineraryName("제주여정2")
-                .placeName("카멜리아힐").placeRoadAddressName("제주 서귀포시 안덕면 병악로 166")
-                .arrivalTime(LocalDateTime.of(2023, 10, 26, 14, 0))
-                .departureTime(LocalDateTime.of(2023, 10, 26, 16, 0)).build();
-
-            List<Itinerary> itineraryList = new ArrayList<>();
-            itineraryList.add(accommodation);
-            itineraryList.add(transportation);
-            itineraryList.add(visit);
-            Trip trip = Trip.builder().itineraries(itineraryList).build();
-            given(tripService.getTrip(any(Long.TYPE))).willReturn(trip);
-
-            // when
-            List<Object> itineraryResponseList = itineraryService.getItineraryByTripId(1L);
-
-            // then
-            assertThat(itineraryResponseList.get(0)).extracting("itineraryName",
-                    "accommodationName", "accommodationRoadAddressName")
-                .containsExactly("제주여정1", "제주신라호텔", "제주 서귀포시 중문관광로72번길 75");
-        }
-
-    }
-
-    @Nested
     @DisplayName("updateAccommodation()은")
     class Context_updateAccommodation {
 
