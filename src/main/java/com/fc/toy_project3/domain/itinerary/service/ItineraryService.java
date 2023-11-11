@@ -173,53 +173,6 @@ public class ItineraryService {
     }
 
     /**
-     * tripId를 통해 여정정보를 조회하는 메서드
-     *
-     * @param tripId 여행 Id
-     * @return 여정의 DTYPE에 따라 숙박,이동,체류DTO가 담긴 List
-     */
-    public List getItineraryByTripId(Long tripId) {
-        List<Object> itineraryResponseList = new ArrayList<>();
-        List<Itinerary> itineraryList = tripService.getTrip(tripId).getItineraries();
-        for (Itinerary itinerary : itineraryList) {
-            if (itinerary instanceof Accommodation accommodation) {
-                itineraryResponseList.add(
-                    AccommodationResponseDTO.builder().itineraryId(accommodation.getId())
-                        .itineraryName(accommodation.getItineraryName())
-                        .accommodationName(accommodation.getAccommodationName())
-                        .accommodationRoadAddressName(accommodation.getAccommodationRoadAddressName())
-                        .checkIn(
-                            DateTypeFormatterUtil.localDateTimeToString(accommodation.getCheckIn()))
-                        .checkOut(
-                            DateTypeFormatterUtil.localDateTimeToString(accommodation.getCheckOut()))
-                        .build());
-            } else if (itinerary instanceof Transportation transportation) {
-                itineraryResponseList.add(
-                    TransportationResponseDTO.builder().itineraryId(transportation.getId())
-                        .itineraryName(transportation.getItineraryName())
-                        .transportation(transportation.getTransportation())
-                        .departurePlace(transportation.getDeparturePlace())
-                        .departurePlaceRoadAddressName(transportation.getDeparturePlaceRoadAddressName())
-                        .destination(transportation.getDestination())
-                        .destinationRoadAddressName(transportation.getDestinationRoadAddressName())
-                        .departureTime(DateTypeFormatterUtil.localDateTimeToString(
-                            transportation.getDepartureTime())).arrivalTime(
-                            DateTypeFormatterUtil.localDateTimeToString(transportation.getArrivalTime()))
-                        .build());
-            } else if (itinerary instanceof Visit visit) {
-                itineraryResponseList.add(VisitResponseDTO.builder().itineraryId(visit.getId())
-                    .itineraryName(visit.getItineraryName()).placeName(visit.getPlaceName())
-                    .placeRoadAddressName(visit.getPlaceRoadAddressName()).arrivalTime(
-                        DateTypeFormatterUtil.localDateTimeToString(visit.getArrivalTime()))
-                    .departureTime(
-                        DateTypeFormatterUtil.localDateTimeToString(visit.getDepartureTime()))
-                    .build());
-            }
-        }
-        return itineraryResponseList;
-    }
-
-    /**
      * 숙박과 관련된 여정을 수정합니다.
      *
      * @param accommodationUpdateRequestDTO 숙박 여정 수정 요청 DTO

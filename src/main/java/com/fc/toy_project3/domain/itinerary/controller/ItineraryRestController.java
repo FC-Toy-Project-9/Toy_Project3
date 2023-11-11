@@ -69,13 +69,6 @@ public class ItineraryRestController {
                 "체류 여정을 성공적으로 등록했습니다."));
     }
 
-    @GetMapping("/{tripId}")
-    public ResponseEntity<ResponseDTO<List>> getItineraryByTripId(@PathVariable long tripId) {
-        return ResponseEntity.status(HttpStatus.OK).body(
-            ResponseDTO.res(HttpStatus.OK, itineraryService.getItineraryByTripId(tripId),
-                "성공적으로 여정을 조회했습니다."));
-    }
-
     @PatchMapping("/accommodations")
     public ResponseEntity<ResponseDTO<AccommodationResponseDTO>> updateAccommodation(
         @Valid @RequestBody AccommodationUpdateRequestDTO accommodationUpdateRequestDTO) {
