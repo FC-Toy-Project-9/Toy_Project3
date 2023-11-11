@@ -1,6 +1,7 @@
 package com.fc.toy_project3.domain.comment.controller;
 
 import com.fc.toy_project3.domain.comment.dto.request.CommentRequestDTO;
+import com.fc.toy_project3.domain.comment.dto.request.CommentUpdateRequestDTO;
 import com.fc.toy_project3.domain.comment.dto.response.CommentDeleteResponseDTO;
 import com.fc.toy_project3.domain.comment.dto.response.CommentResponseDTO;
 import com.fc.toy_project3.domain.comment.service.CommentService;
@@ -31,10 +32,19 @@ public class CommentRestController {
                 "성공적으로 댓글을 등록했습니다."));
     }
 
-    @PatchMapping("/{replyId}")
-    public ResponseEntity<ResponseDTO<CommentDeleteResponseDTO>> patchComment(@PathVariable long replyId) {
+    @PatchMapping("/retry/{replyId}")
+    public ResponseEntity<ResponseDTO<CommentResponseDTO>> patchComment(@PathVariable long replyId,
+        @Valid @RequestBody CommentUpdateRequestDTO commentUpdateRequestDTO) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            ResponseDTO.res(HttpStatus.OK, commentService.patchComment(replyId),
+            ResponseDTO.res(HttpStatus.OK, commentService.patchComment(replyId,commentUpdateRequestDTO),
+                "댓글을 성공적으로 수정했습니다."));
+    }
+
+    @PatchMapping("/{replyId}")
+    public ResponseEntity<ResponseDTO<CommentDeleteResponseDTO>> softDeleteComment(
+        @PathVariable long replyId) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+            ResponseDTO.res(HttpStatus.OK, commentService.softDeleteComment(replyId),
                 "댓글을 성공적으로 삭제했습니다."));
     }
 }

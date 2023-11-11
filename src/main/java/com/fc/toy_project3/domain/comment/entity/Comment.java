@@ -1,9 +1,12 @@
 package com.fc.toy_project3.domain.comment.entity;
 
+import com.fc.toy_project3.domain.comment.dto.request.CommentUpdateRequestDTO;
 import com.fc.toy_project3.domain.comment.dto.response.CommentResponseDTO;
 import com.fc.toy_project3.domain.member.entity.Member;
+import com.fc.toy_project3.domain.trip.dto.request.UpdateTripRequestDTO;
 import com.fc.toy_project3.domain.trip.entity.Trip;
 import com.fc.toy_project3.global.common.BaseTimeEntity;
+import com.fc.toy_project3.global.util.DateTypeFormatterUtil;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -12,6 +15,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import java.lang.reflect.Field;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -48,5 +53,22 @@ public class Comment extends BaseTimeEntity {
     public CommentResponseDTO toCommentResponseDTO() {
         return CommentResponseDTO.builder().tripId(this.trip.getId()).memberId(this.member.getId())
             .content(this.content).build();
+    }
+
+    @Override
+    public void delete(LocalDateTime currentTime) {
+        try {
+            Field deletedAtField = BaseTimeEntity.class.getDeclaredField("deletedAt");
+            deletedAtField.setAccessible(true);
+            if (deletedAtField.get(this) == null) {
+                deletedAtField.set(this, currentTime);
+            }
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateComment(CommentUpdateRequestDTO commentUpdateRequestDTO) {
+            this.content = commentUpdateRequestDTO.getContent();
     }
 }
