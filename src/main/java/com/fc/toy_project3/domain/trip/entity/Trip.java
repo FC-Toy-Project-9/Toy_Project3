@@ -10,7 +10,6 @@ import com.fc.toy_project3.domain.itinerary.entity.Visit;
 import com.fc.toy_project3.domain.trip.dto.request.UpdateTripRequestDTO;
 import com.fc.toy_project3.domain.trip.dto.response.GetTripResponseDTO;
 import com.fc.toy_project3.domain.trip.dto.response.GetTripsResponseDTO;
-import com.fc.toy_project3.domain.trip.dto.response.ItineraryInfoDTO;
 import com.fc.toy_project3.domain.trip.dto.response.TripResponseDTO;
 import com.fc.toy_project3.global.common.BaseTimeEntity;
 import com.fc.toy_project3.global.util.DateTypeFormatterUtil;
@@ -96,7 +95,7 @@ public class Trip extends BaseTimeEntity {
         return GetTripsResponseDTO.builder().tripId(this.id).tripName(this.name)
             .startDate(DateTypeFormatterUtil.localDateToString(this.startDate))
             .endDate(DateTypeFormatterUtil.localDateToString(this.endDate))
-            .isDomestic(this.isDomestic).itineraries(getItineraryInfoDTO()).build();
+            .isDomestic(this.isDomestic).build();
     }
 
     /**
@@ -109,20 +108,6 @@ public class Trip extends BaseTimeEntity {
             .startDate(DateTypeFormatterUtil.localDateToString(this.startDate))
             .endDate(DateTypeFormatterUtil.localDateToString(this.endDate))
             .isDomestic(this.isDomestic).itineraries(getItineraryResponseDTO()).build();
-    }
-
-    /**
-     * Itinerary ID와 Name를 담은 ItineraryInfoDTO 추출
-     *
-     * @return ItineraryInfoDTO 리스트
-     */
-    public List<ItineraryInfoDTO> getItineraryInfoDTO() {
-        List<ItineraryInfoDTO> itineraries = new ArrayList<>();
-        for (Itinerary itinerary : this.itineraries) {
-            itineraries.add(ItineraryInfoDTO.builder().itineraryId(itinerary.getId())
-                .itineraryName(itinerary.getItineraryName()).build());
-        }
-        return itineraries;
     }
 
     public List<Object> getItineraryResponseDTO() {
