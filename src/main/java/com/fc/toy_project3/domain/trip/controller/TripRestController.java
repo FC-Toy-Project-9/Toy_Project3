@@ -60,8 +60,7 @@ public class TripRestController {
 
     @DeleteMapping("/{tripId}")
     public ResponseEntity<ResponseDTO<TripResponseDTO>> deleteTripById(@PathVariable long tripId){
-        tripService.deleteTripById(tripId);
         return ResponseEntity.status(HttpStatus.OK).body(
-            ResponseDTO.res(HttpStatus.OK, "성공적으로 여행 정보를 삭제했습니다."));
+            ResponseDTO.res(HttpStatus.OK, tripService.deleteTripById(tripId), "성공적으로 여행 정보를 삭제했습니다."));
     }
 }

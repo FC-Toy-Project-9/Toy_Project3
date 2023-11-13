@@ -17,6 +17,7 @@ import com.fc.toy_project3.domain.trip.exception.WrongTripStartDateException;
 import com.fc.toy_project3.domain.trip.repository.TripRepository;
 import com.fc.toy_project3.global.util.DateTypeFormatterUtil;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -84,9 +85,11 @@ public class TripService {
 
     public TripResponseDTO updateTrip(UpdateTripRequestDTO updateTripRequestDTO) {
         Trip trip = getTrip(updateTripRequestDTO.getTripId());
-        checkTripDate(trip,
-            DateTypeFormatterUtil.dateFormatter(updateTripRequestDTO.getStartDate()),
-            DateTypeFormatterUtil.dateFormatter(updateTripRequestDTO.getEndDate()));
+        LocalDate startDate = updateTripRequestDTO.getStartDate() == null ? trip.getStartDate()
+            : DateTypeFormatterUtil.dateFormatter(updateTripRequestDTO.getStartDate());
+        LocalDate endDate = updateTripRequestDTO.getEndDate() == null ? trip.getEndDate()
+            : DateTypeFormatterUtil.dateFormatter(updateTripRequestDTO.getEndDate());
+        checkTripDate(trip, startDate, endDate);
         trip.updateTrip(updateTripRequestDTO);
         return new TripResponseDTO(trip);
     }
@@ -174,8 +177,20 @@ public class TripService {
      *
      * @param tripId 삭제할 여행 ID
      */
-    public void deleteTripById(Long tripId) {
+    public TripResponseDTO deleteTripById(Long tripId) {
         Trip trip = getTrip(tripId);
-        tripRepository.delete(trip);
+        trip.delete(LocalDateTime.now());
+        return new TripResponseDTO(trip);
+    }
+
+    /**
+     * Trip의 좋아요 개수 증감
+     *
+     * @param tripId     좋아요 개수 증감 할 여행 ID
+     * @param isIncrease 좋아요 개수 증가 여부
+     */
+    public void like(long tripId, boolean isIncrease) {
+        Trip trip = getTrip(tripId);
+        trip.updateLikeCount(isIncrease);
     }
 }
