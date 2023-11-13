@@ -139,7 +139,8 @@ public class ItineraryRestControllerDocsTest extends RestDocsSupport {
                     fieldWithPath("data.accommodationRoadAddressName").type(JsonFieldType.STRING)
                         .description("숙소 도로명"),
                     fieldWithPath("data.checkIn").type(JsonFieldType.STRING).description("체크인 일시"),
-                    fieldWithPath("data.checkOut").type(JsonFieldType.STRING).description("체크아웃 일시")
+                    fieldWithPath("data.checkOut").type(JsonFieldType.STRING)
+                        .description("체크아웃 일시")
                 )
             ));
     }
@@ -316,7 +317,8 @@ public class ItineraryRestControllerDocsTest extends RestDocsSupport {
                     fieldWithPath("data.accommodationRoadAddressName").type(JsonFieldType.STRING)
                         .description("숙소 도로명"),
                     fieldWithPath("data.checkIn").type(JsonFieldType.STRING).description("체크인 일시"),
-                    fieldWithPath("data.checkOut").type(JsonFieldType.STRING).description("체크아웃 일시")
+                    fieldWithPath("data.checkOut").type(JsonFieldType.STRING)
+                        .description("체크아웃 일시")
                 )
             ));
     }

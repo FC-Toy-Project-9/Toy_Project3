@@ -2,6 +2,7 @@ package com.fc.toy_project3.domain.itinerary.unit.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -240,7 +241,8 @@ public class ItineraryServiceTest {
                         .endDate(LocalDate.of(2023, 10, 26))
                         .build())
                     .build());
-            given(itineraryRepository.findById(any(Long.TYPE))).willReturn(itinerary);
+            given(itineraryRepository.findByIdAndDeletedAt(any(Long.TYPE), eq(null))).willReturn(
+                itinerary);
 
             // when
             AccommodationResponseDTO result = itineraryService.updateAccommodation(
@@ -284,7 +286,8 @@ public class ItineraryServiceTest {
                         .endDate(LocalDate.of(2023, 10, 26))
                         .build())
                     .build());
-            given(itineraryRepository.findById(any(Long.TYPE))).willReturn(itinerary);
+            given(itineraryRepository.findByIdAndDeletedAt(any(Long.TYPE), eq(null))).willReturn(
+                itinerary);
 
             // when
             TransportationResponseDTO result = itineraryService.updateTransportation(
@@ -326,7 +329,8 @@ public class ItineraryServiceTest {
                         .endDate(LocalDate.of(2023, 10, 26))
                         .build())
                     .build());
-            given(itineraryRepository.findById(any(Long.TYPE))).willReturn(itinerary);
+            given(itineraryRepository.findByIdAndDeletedAt(any(Long.TYPE), eq(null))).willReturn(
+                itinerary);
 
             // when
             VisitResponseDTO result = itineraryService.updateVisit(visitUpdateRequestDTO);
@@ -360,15 +364,15 @@ public class ItineraryServiceTest {
                 .id(1L)
                 .trip(trip)
                 .build();
-            when(itineraryRepository.findById(itineraryId)).thenReturn(Optional.of(itinerary));
+            when(itineraryRepository.findByIdAndDeletedAt(any(Long.TYPE), eq(null))).thenReturn(
+                Optional.of(itinerary));
 
             // when
-            ItineraryDeleteResponseDTO itineraryGetResponseDTO = itineraryService.deleteItinerary(
+            ItineraryDeleteResponseDTO itineraryDeleteResponseDTO = itineraryService.deleteItinerary(
                 itineraryId);
 
             //then
-            verify(itineraryRepository, times(1)).delete(itinerary);
-
+            assertThat(itineraryDeleteResponseDTO.getItineraryId()).isEqualTo(1);
         }
     }
 }
