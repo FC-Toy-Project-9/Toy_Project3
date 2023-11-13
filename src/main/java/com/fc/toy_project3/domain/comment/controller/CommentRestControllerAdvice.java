@@ -2,7 +2,6 @@ package com.fc.toy_project3.domain.comment.controller;
 
 import com.fc.toy_project3.domain.comment.exception.CommentNotFoundException;
 import com.fc.toy_project3.global.common.ResponseDTO;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -14,6 +13,6 @@ public class CommentRestControllerAdvice {
     @ExceptionHandler
     public ResponseEntity<ResponseDTO<Void>> commentNotFoundException(CommentNotFoundException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(ResponseDTO.res(HttpStatus.BAD_REQUEST,e.getMessage()));
+            .body(ResponseDTO.res(HttpStatus.BAD_REQUEST, e.getMessage()));
     }
 }

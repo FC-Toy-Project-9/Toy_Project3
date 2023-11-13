@@ -3,10 +3,8 @@ package com.fc.toy_project3.domain.comment.entity;
 import com.fc.toy_project3.domain.comment.dto.request.CommentUpdateRequestDTO;
 import com.fc.toy_project3.domain.comment.dto.response.CommentResponseDTO;
 import com.fc.toy_project3.domain.member.entity.Member;
-import com.fc.toy_project3.domain.trip.dto.request.UpdateTripRequestDTO;
 import com.fc.toy_project3.domain.trip.entity.Trip;
 import com.fc.toy_project3.global.common.BaseTimeEntity;
-import com.fc.toy_project3.global.util.DateTypeFormatterUtil;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -69,6 +67,6 @@ public class Comment extends BaseTimeEntity {
     }
 
     public void updateComment(CommentUpdateRequestDTO commentUpdateRequestDTO) {
-            this.content = commentUpdateRequestDTO.getContent();
+        this.content = commentUpdateRequestDTO.getContent();
     }
 }

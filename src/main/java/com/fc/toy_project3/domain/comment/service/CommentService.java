@@ -12,7 +12,6 @@ import com.fc.toy_project3.domain.member.repository.MemberRepository;
 import com.fc.toy_project3.domain.trip.entity.Trip;
 import com.fc.toy_project3.domain.trip.service.TripService;
 import java.time.LocalDateTime;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,13 +44,13 @@ public class CommentService {
     /**
      * 여행 댓글 수정
      *
-     * @param replyId
+     * @param commentId
      * @param commentUpdateRequestDTO
      * @return 댓글 정보 응답 DTO
      */
-    public CommentResponseDTO patchComment(Long replyId,
+    public CommentResponseDTO patchComment(Long commentId,
         CommentUpdateRequestDTO commentUpdateRequestDTO) {
-        Comment comment = commentRepository.findById(replyId)
+        Comment comment = commentRepository.findById(commentId)
             .orElseThrow(CommentNotFoundException::new);
         comment.updateComment(commentUpdateRequestDTO);
         return comment.toCommentResponseDTO();
@@ -60,14 +59,14 @@ public class CommentService {
     /**
      * 여행 댓글 삭제
      *
-     * @param replyId 댓글 식별자
+     * @param commentId 댓글 식별자
      * @return 댓글 삭제 정보 응답 DTO
      */
-    public CommentDeleteResponseDTO softDeleteComment(Long replyId) {
-        Comment comment = commentRepository.findById(replyId)
+    public CommentDeleteResponseDTO softDeleteComment(Long commentId) {
+        Comment comment = commentRepository.findById(commentId)
             .orElseThrow(CommentNotFoundException::new);
         comment.delete(LocalDateTime.now());
-        return CommentDeleteResponseDTO.builder().replyId(comment.getId()).build();
+        return CommentDeleteResponseDTO.builder().commentId(comment.getId()).build();
     }
 
 

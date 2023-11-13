@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/replies")
+@RequestMapping("/api/comments")
 public class CommentRestController {
 
     private final CommentService commentService;
@@ -32,19 +33,21 @@ public class CommentRestController {
                 "성공적으로 댓글을 등록했습니다."));
     }
 
-    @PatchMapping("/retry/{replyId}")
-    public ResponseEntity<ResponseDTO<CommentResponseDTO>> patchComment(@PathVariable long replyId,
+    @PatchMapping("/{commentId}")
+    public ResponseEntity<ResponseDTO<CommentResponseDTO>> patchComment(
+        @PathVariable long commentId,
         @Valid @RequestBody CommentUpdateRequestDTO commentUpdateRequestDTO) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            ResponseDTO.res(HttpStatus.OK, commentService.patchComment(replyId,commentUpdateRequestDTO),
+            ResponseDTO.res(HttpStatus.OK,
+                commentService.patchComment(commentId, commentUpdateRequestDTO),
                 "댓글을 성공적으로 수정했습니다."));
     }
 
-    @PatchMapping("/{replyId}")
+    @DeleteMapping("/{commentId}")
     public ResponseEntity<ResponseDTO<CommentDeleteResponseDTO>> softDeleteComment(
-        @PathVariable long replyId) {
+        @PathVariable long commentId) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            ResponseDTO.res(HttpStatus.OK, commentService.softDeleteComment(replyId),
+            ResponseDTO.res(HttpStatus.OK, commentService.softDeleteComment(commentId),
                 "댓글을 성공적으로 삭제했습니다."));
     }
 }

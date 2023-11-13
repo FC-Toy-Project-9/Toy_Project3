@@ -7,5 +7,5 @@ import lombok.Getter;
 @Builder
 public class CommentDeleteResponseDTO {
 
-    private Long replyId;
+    private Long commentId;
 }
