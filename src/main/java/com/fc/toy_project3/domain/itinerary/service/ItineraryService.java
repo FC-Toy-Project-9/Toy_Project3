@@ -117,13 +117,15 @@ public class ItineraryService {
         LocalDateTime checkOut = DateTypeFormatterUtil.dateTimeFormatter(
             accommodationCreateRequestDTO.getCheckOut());
         checkAccommodationDateTime(trip, checkIn, checkOut);
-        return new AccommodationResponseDTO(accommodationRepository.save(
-            Accommodation.builder().trip(trip)
-                .name(accommodationCreateRequestDTO.getItineraryName())
-                .accommodationName(accommodationCreateRequestDTO.getAccommodationName())
-                .accommodationRoadAddressName(
-                    accommodationCreateRequestDTO.getAccommodationRoadAddressName())
-                .checkIn(checkIn).checkOut(checkOut).build()));
+        return new AccommodationResponseDTO(accommodationRepository.save(Accommodation.builder()
+            .trip(trip)
+            .name(accommodationCreateRequestDTO.getItineraryName())
+            .accommodationName(accommodationCreateRequestDTO.getAccommodationName())
+            .accommodationRoadAddressName(
+                accommodationCreateRequestDTO.getAccommodationRoadAddressName())
+            .checkIn(checkIn)
+            .checkOut(checkOut)
+            .build()));
     }
 
     /**
@@ -140,17 +142,19 @@ public class ItineraryService {
         LocalDateTime arrivalTime = DateTypeFormatterUtil.dateTimeFormatter(
             transportationCreateRequestDTO.getArrivalTime());
         checkTransportationDateTime(trip, departureTime, arrivalTime);
-        return new TransportationResponseDTO(transportationRepository.save(
-            Transportation.builder().trip(trip)
-                .itineraryName(transportationCreateRequestDTO.getItineraryName())
-                .transportation(transportationCreateRequestDTO.getTransportation())
-                .departurePlace(transportationCreateRequestDTO.getDeparturePlace())
-                .departurePlaceRoadAddressName(
-                    transportationCreateRequestDTO.getDeparturePlaceRoadAddressName())
-                .destination(transportationCreateRequestDTO.getDestination())
-                .destinationRoadAddressName(
-                    transportationCreateRequestDTO.getDestinationRoadAddressName())
-                .arrivalTime(arrivalTime).departureTime(departureTime).build()));
+        return new TransportationResponseDTO(transportationRepository.save(Transportation.builder()
+            .trip(trip)
+            .itineraryName(transportationCreateRequestDTO.getItineraryName())
+            .transportation(transportationCreateRequestDTO.getTransportation())
+            .departurePlace(transportationCreateRequestDTO.getDeparturePlace())
+            .departurePlaceRoadAddressName(
+                transportationCreateRequestDTO.getDeparturePlaceRoadAddressName())
+            .destination(transportationCreateRequestDTO.getDestination())
+            .destinationRoadAddressName(
+                transportationCreateRequestDTO.getDestinationRoadAddressName())
+            .arrivalTime(arrivalTime)
+            .departureTime(departureTime)
+            .build()));
     }
 
     /**
@@ -166,11 +170,14 @@ public class ItineraryService {
         LocalDateTime arrivalTime = DateTypeFormatterUtil.dateTimeFormatter(
             visitCreateRequestDTO.getArrivalTime());
         checkVisitDateTime(trip, departureTime, arrivalTime);
-        return new VisitResponseDTO(visitRepository.save(
-            Visit.builder().trip(trip).itineraryName(visitCreateRequestDTO.getItineraryName())
-                .placeName(visitCreateRequestDTO.getPlaceName())
-                .placeRoadAddressName(visitCreateRequestDTO.getPlaceRoadAddressName())
-                .arrivalTime(arrivalTime).departureTime(departureTime).build()));
+        return new VisitResponseDTO(visitRepository.save(Visit.builder()
+            .trip(trip)
+            .itineraryName(visitCreateRequestDTO.getItineraryName())
+            .placeName(visitCreateRequestDTO.getPlaceName())
+            .placeRoadAddressName(visitCreateRequestDTO.getPlaceRoadAddressName())
+            .arrivalTime(arrivalTime)
+            .departureTime(departureTime)
+            .build()));
     }
 
     /**
@@ -259,7 +266,8 @@ public class ItineraryService {
      * @param checkOut 숙박 종료일
      * @throws InvalidItineraryException 날짜 유효성 검사 실패 시 발생
      */
-    private void checkAccommodationDateTime(Trip trip, LocalDateTime checkIn, LocalDateTime checkOut) {
+    private void checkAccommodationDateTime(Trip trip, LocalDateTime checkIn,
+        LocalDateTime checkOut) {
         LocalDateTime tripStartDateTime = trip.getStartDate().atStartOfDay();
         LocalDateTime tripEndDateTime = trip.getEndDate().atTime(LocalTime.MAX);
         if (checkIn.isAfter(checkOut)) {
@@ -310,7 +318,8 @@ public class ItineraryService {
      * @param arrivalTime   도착 시간
      * @throws InvalidItineraryException 날짜 유효성 검사 실패 시 발생
      */
-    private void checkVisitDateTime(Trip trip, LocalDateTime departureTime, LocalDateTime arrivalTime) {
+    private void checkVisitDateTime(Trip trip, LocalDateTime departureTime,
+        LocalDateTime arrivalTime) {
         LocalDateTime tripStartDateTime = trip.getStartDate().atStartOfDay();
         LocalDateTime tripEndDateTime = trip.getEndDate().atTime(LocalTime.MAX);
         if (arrivalTime.isAfter(departureTime)) {
