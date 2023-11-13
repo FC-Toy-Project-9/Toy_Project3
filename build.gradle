@@ -53,6 +53,9 @@ dependencies {
 
     // Security
     testImplementation 'org.springframework.security:spring-security-test'
+
+    //jwt
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
 }
 
 test {
