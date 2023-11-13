@@ -1,6 +1,8 @@
 package com.fc.toy_project3.domain.itinerary.entity;
 
+import com.fc.toy_project3.domain.itinerary.dto.request.update.VisitUpdateRequestDTO;
 import com.fc.toy_project3.domain.trip.entity.Trip;
+import com.fc.toy_project3.global.util.DateTypeFormatterUtil;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import java.time.LocalDateTime;
@@ -34,12 +36,23 @@ public class Visit extends Itinerary {
         this.departureTime = departureTime;
     }
 
-    public void updateVisitInfo(String name, String placeName, String placeRoadAddressName,
-        LocalDateTime visitDepartureTime, LocalDateTime visitArrivalTime) {
-        this.name = name;
-        this.placeName = placeName;
-        this.placeRoadAddressName = placeRoadAddressName;
-        this.departureTime = visitDepartureTime;
-        this.arrivalTime = visitArrivalTime;
+    public void updateVisitInfo(VisitUpdateRequestDTO visitUpdateRequestDTO) {
+        if (name != null) {
+            this.name = visitUpdateRequestDTO.getItineraryName();
+        }
+        if (placeName != null) {
+            this.placeName = visitUpdateRequestDTO.getPlaceName();
+        }
+        if (placeRoadAddressName != null) {
+            this.placeRoadAddressName = visitUpdateRequestDTO.getPlaceRoadAddressName();
+        }
+        if (arrivalTime != null) {
+            this.arrivalTime = DateTypeFormatterUtil.dateTimeFormatter(
+                visitUpdateRequestDTO.getArrivalTime());
+        }
+        if (departureTime != null) {
+            this.departureTime = DateTypeFormatterUtil.dateTimeFormatter(
+                visitUpdateRequestDTO.getDepartureTime());
+        }
     }
 }
