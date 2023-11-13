@@ -1,16 +1,7 @@
 package com.fc.toy_project3.domain.trip.entity;
 
-import com.fc.toy_project3.domain.itinerary.dto.response.AccommodationResponseDTO;
-import com.fc.toy_project3.domain.itinerary.dto.response.TransportationResponseDTO;
-import com.fc.toy_project3.domain.itinerary.dto.response.VisitResponseDTO;
-import com.fc.toy_project3.domain.itinerary.entity.Accommodation;
 import com.fc.toy_project3.domain.itinerary.entity.Itinerary;
-import com.fc.toy_project3.domain.itinerary.entity.Transportation;
-import com.fc.toy_project3.domain.itinerary.entity.Visit;
 import com.fc.toy_project3.domain.trip.dto.request.UpdateTripRequestDTO;
-import com.fc.toy_project3.domain.trip.dto.response.GetTripResponseDTO;
-import com.fc.toy_project3.domain.trip.dto.response.GetTripsResponseDTO;
-import com.fc.toy_project3.domain.trip.dto.response.TripResponseDTO;
 import com.fc.toy_project3.global.common.BaseTimeEntity;
 import com.fc.toy_project3.global.util.DateTypeFormatterUtil;
 import jakarta.persistence.CascadeType;
@@ -21,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -51,24 +43,50 @@ public class Trip extends BaseTimeEntity {
     @Comment("국내 = 1, 국외 = 0")
     private Boolean isDomestic;
 
+    private Long likeCount;
+
     @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Itinerary> itineraries = new ArrayList<>();
 
     @Builder
     public Trip(Long id, String name, LocalDate startDate, LocalDate endDate, Boolean isDomestic,
-        List<Itinerary> itineraries) {
+        Long likeCount, List<Itinerary> itineraries) {
         this.id = id;
         this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;
         this.isDomestic = isDomestic;
+        this.likeCount = likeCount;
         this.itineraries = itineraries;
     }
 
     public void updateTrip(UpdateTripRequestDTO updateTripRequestDTO) {
-        this.name = updateTripRequestDTO.getTripName();
-        this.startDate = DateTypeFormatterUtil.dateFormatter(updateTripRequestDTO.getStartDate());
-        this.endDate = DateTypeFormatterUtil.dateFormatter(updateTripRequestDTO.getEndDate());
-        this.isDomestic = updateTripRequestDTO.getIsDomestic();
+        if (updateTripRequestDTO.getTripName() != null) {
+            this.name = updateTripRequestDTO.getTripName();
+        }
+        if (updateTripRequestDTO.getStartDate() != null) {
+            this.startDate = DateTypeFormatterUtil.dateFormatter(
+                updateTripRequestDTO.getStartDate());
+        }
+        if (updateTripRequestDTO.getEndDate() != null) {
+            this.endDate = DateTypeFormatterUtil.dateFormatter(
+                updateTripRequestDTO.getEndDate());
+        }
+        if (updateTripRequestDTO.getIsDomestic() != null) {
+            this.isDomestic = updateTripRequestDTO.getIsDomestic();
+        }
+    }
+
+    public void updateLikeCount(boolean isIncrease) {
+        if (isIncrease) {
+            this.likeCount++;
+        } else {
+            this.likeCount--;
+        }
+    }
+
+    @Override
+    public void delete(LocalDateTime currentTime) {
+        super.delete(currentTime);
     }
 }
