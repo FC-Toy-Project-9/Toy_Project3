@@ -55,7 +55,7 @@ public class TripService {
             .endDate(endDate)
             .isDomestic(postTripRequestDTO.getIsDomestic())
             .build();
-        return tripRepository.save(trip).toTripResponseDTO();
+        return new TripResponseDTO(tripRepository.save(trip));
     }
 
     /**
@@ -67,7 +67,7 @@ public class TripService {
         List<GetTripsResponseDTO> trips = new ArrayList<>();
         List<Trip> tripList = tripRepository.findAll(Sort.by(Direction.ASC, "id"));
         for (Trip trip : tripList) {
-            trips.add(trip.toGetTripsResponseDTO());
+            trips.add(new GetTripsResponseDTO(trip));
         }
         return trips;
     }
@@ -79,7 +79,7 @@ public class TripService {
      * @return 여행 정보 응답 DTO
      */
     public GetTripResponseDTO getTripById(Long id) {
-        return getTrip(id).toGetTripResponseDTO();
+        return new GetTripResponseDTO(getTrip(id));
     }
 
     public TripResponseDTO updateTrip(UpdateTripRequestDTO updateTripRequestDTO) {
@@ -88,7 +88,7 @@ public class TripService {
             DateTypeFormatterUtil.dateFormatter(updateTripRequestDTO.getStartDate()),
             DateTypeFormatterUtil.dateFormatter(updateTripRequestDTO.getEndDate()));
         trip.updateTrip(updateTripRequestDTO);
-        return trip.toTripResponseDTO();
+        return new TripResponseDTO(trip);
     }
 
     /**

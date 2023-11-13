@@ -54,15 +54,6 @@ public class Trip extends BaseTimeEntity {
     @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Itinerary> itineraries = new ArrayList<>();
 
-    /**
-     * Builder 패턴이 적용된 Trip Entity 생성자
-     *
-     * @param id          여행 ID
-     * @param name        여행 이름
-     * @param startDate   여행 시작일
-     * @param endDate     여행 종료일
-     * @param itineraries 해당 여행의 여정 리스트
-     */
     @Builder
     public Trip(Long id, String name, LocalDate startDate, LocalDate endDate, Boolean isDomestic,
         List<Itinerary> itineraries) {
@@ -74,84 +65,6 @@ public class Trip extends BaseTimeEntity {
         this.itineraries = itineraries;
     }
 
-    /**
-     * Trip Entity를 TripResponseDTO로 변환
-     *
-     * @return TripResponseDTO
-     */
-    public TripResponseDTO toTripResponseDTO() {
-        return TripResponseDTO.builder().tripId(this.id).tripName(this.name)
-            .startDate(DateTypeFormatterUtil.localDateToString(this.startDate))
-            .endDate(DateTypeFormatterUtil.localDateToString(this.endDate))
-            .isDomestic(this.isDomestic).build();
-    }
-
-    /**
-     * Trip Entity를 GetTripsResponseDTO로 변환
-     *
-     * @return GetTripsResponseDTO
-     */
-    public GetTripsResponseDTO toGetTripsResponseDTO() {
-        return GetTripsResponseDTO.builder().tripId(this.id).tripName(this.name)
-            .startDate(DateTypeFormatterUtil.localDateToString(this.startDate))
-            .endDate(DateTypeFormatterUtil.localDateToString(this.endDate))
-            .isDomestic(this.isDomestic).build();
-    }
-
-    /**
-     * Trip Entity를 GetTripsResponseDTO로 변환
-     *
-     * @return GetTripsResponseDTO
-     */
-    public GetTripResponseDTO toGetTripResponseDTO() {
-        return GetTripResponseDTO.builder().tripId(this.id).tripName(this.name)
-            .startDate(DateTypeFormatterUtil.localDateToString(this.startDate))
-            .endDate(DateTypeFormatterUtil.localDateToString(this.endDate))
-            .isDomestic(this.isDomestic).itineraries(getItineraryResponseDTO()).build();
-    }
-
-    public List<Object> getItineraryResponseDTO() {
-        List<Object> itineraryList = new ArrayList<>();
-        for (Itinerary itinerary : this.itineraries) {
-            if (itinerary instanceof Accommodation accommodation) {
-                itineraryList.add(AccommodationResponseDTO.builder().itineraryId(accommodation.getId())
-                    .itineraryName(accommodation.getName())
-                    .accommodationName(accommodation.getAccommodationName())
-                    .accommodationRoadAddressName(accommodation.getAccommodationRoadAddressName())
-                    .checkIn(DateTypeFormatterUtil.localDateTimeToString(accommodation.getCheckIn()))
-                    .checkOut(DateTypeFormatterUtil.localDateTimeToString(accommodation.getCheckOut()))
-                    .build());
-            } else if (itinerary instanceof Transportation transportation) {
-                itineraryList.add(TransportationResponseDTO.builder().itineraryId(transportation.getId())
-                    .itineraryName(transportation.getName())
-                    .transportation(transportation.getTransportation())
-                    .departurePlace(transportation.getDeparturePlace())
-                    .departurePlaceRoadAddressName(transportation.getDeparturePlaceRoadAddressName())
-                    .destination(transportation.getDestination())
-                    .destinationRoadAddressName(transportation.getDestinationRoadAddressName())
-                    .departureTime(
-                        DateTypeFormatterUtil.localDateTimeToString(transportation.getDepartureTime()))
-                    .arrivalTime(
-                        DateTypeFormatterUtil.localDateTimeToString(transportation.getArrivalTime()))
-                    .build());
-            } else if (itinerary instanceof Visit visit) {
-                itineraryList.add(VisitResponseDTO.builder().itineraryId(visit.getId())
-                    .itineraryName(visit.getName()).placeName(visit.getPlaceName())
-                    .placeRoadAddressName(visit.getPlaceRoadAddressName()).arrivalTime(
-                        DateTypeFormatterUtil.localDateTimeToString(visit.getArrivalTime()))
-                    .departureTime(
-                        DateTypeFormatterUtil.localDateTimeToString(visit.getDepartureTime()))
-                    .build());
-            }
-        }
-        return itineraryList;
-    }
-
-    /**
-     * 여행 정보를 수정
-     *
-     * @param updateTripRequestDTO 여행 정보 수정 요청 DTO
-     */
     public void updateTrip(UpdateTripRequestDTO updateTripRequestDTO) {
         this.name = updateTripRequestDTO.getTripName();
         this.startDate = DateTypeFormatterUtil.dateFormatter(updateTripRequestDTO.getStartDate());

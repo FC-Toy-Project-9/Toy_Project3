@@ -10,10 +10,8 @@ import lombok.NoArgsConstructor;
 /**
  * 여행 수정 요청 DTO
  */
-@Builder
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 public class UpdateTripRequestDTO {
 
     @NotNull(message = "수정할 여행 정보 ID를 입력하세요.")
@@ -26,4 +24,14 @@ public class UpdateTripRequestDTO {
     private String endDate;
     @NotNull(message = "국내여행 여부를 입력하세요.")
     private Boolean isDomestic;
+
+    @Builder
+    public UpdateTripRequestDTO(Long tripId, String tripName, String startDate, String endDate,
+        Boolean isDomestic) {
+        this.tripId = tripId;
+        this.tripName = tripName;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.isDomestic = isDomestic;
+    }
 }
