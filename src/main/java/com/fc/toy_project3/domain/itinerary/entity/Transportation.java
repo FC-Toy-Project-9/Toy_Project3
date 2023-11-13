@@ -1,6 +1,6 @@
 package com.fc.toy_project3.domain.itinerary.entity;
 
-import com.fc.toy_project3.domain.itinerary.dto.response.TransportationResponseDTO;
+import com.fc.toy_project3.domain.itinerary.dto.request.update.TransportationUpdateRequestDTO;
 import com.fc.toy_project3.domain.trip.entity.Trip;
 import com.fc.toy_project3.global.util.DateTypeFormatterUtil;
 import jakarta.persistence.Column;
@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @Entity
-public class Transportation extends Itinerary{
+public class Transportation extends Itinerary {
 
     @Column(length = 100)
     private String transportation;
@@ -33,12 +33,12 @@ public class Transportation extends Itinerary{
     private LocalDateTime departureTime;
 
     @Builder
-    public Transportation(Long id, Trip trip, String itineraryName, String transportation, String departurePlace,
-        String departurePlaceRoadAddressName, String destination, String destinationRoadAddressName,
-        LocalDateTime arrivalTime, LocalDateTime departureTime) {
+    public Transportation(Long id, Trip trip, String itineraryName, String transportation,
+        String departurePlace, String departurePlaceRoadAddressName, String destination,
+        String destinationRoadAddressName, LocalDateTime arrivalTime, LocalDateTime departureTime) {
         this.id = id;
         this.trip = trip;
-        this.itineraryName = itineraryName;
+        this.name = itineraryName;
         this.transportation = transportation;
         this.departurePlace = departurePlace;
         this.departurePlaceRoadAddressName = departurePlaceRoadAddressName;
@@ -48,27 +48,33 @@ public class Transportation extends Itinerary{
         this.departureTime = departureTime;
     }
 
-    public TransportationResponseDTO toTransportationResponseDTO() {
-        return TransportationResponseDTO.builder().itineraryId(super.getId())
-            .itineraryName(super.getItineraryName()).transportation(this.transportation)
-            .departurePlace(this.departurePlace)
-            .departurePlaceRoadAddressName(this.departurePlaceRoadAddressName)
-            .destination(this.destination)
-            .destinationRoadAddressName(this.destinationRoadAddressName)
-            .departureTime(DateTypeFormatterUtil.localDateTimeToString(this.departureTime))
-            .arrivalTime(DateTypeFormatterUtil.localDateTimeToString(this.arrivalTime)).build();
-    }
-
-    public void updateTransportationInfo(String itineraryName, String transportation,
-        String departurePlace, String departurePlaceRoadAddressName, String destination,
-        String destinationRoadAddressName, LocalDateTime departureTime, LocalDateTime arrivalTime) {
-        this.itineraryName = itineraryName;
-        this.transportation = transportation;
-        this.departurePlace = departurePlace;
-        this.departurePlaceRoadAddressName = departurePlaceRoadAddressName;
-        this.destination = destination;
-        this.destinationRoadAddressName = destinationRoadAddressName;
-        this.departureTime = departureTime;
-        this.arrivalTime = arrivalTime;
+    public void updateTransportationInfo(
+        TransportationUpdateRequestDTO transportationUpdateRequestDTO) {
+        if (transportationUpdateRequestDTO.getItineraryName() != null) {
+            this.name = transportationUpdateRequestDTO.getItineraryName();
+        }
+        if (transportationUpdateRequestDTO.getTransportation() != null) {
+            this.transportation = transportationUpdateRequestDTO.getTransportation();
+        }
+        if (transportationUpdateRequestDTO.getDeparturePlace() != null) {
+            this.departurePlace = transportationUpdateRequestDTO.getDeparturePlace();
+        }
+        if (transportationUpdateRequestDTO.getDeparturePlaceRoadAddressName() != null) {
+            this.departurePlaceRoadAddressName = transportationUpdateRequestDTO.getDeparturePlaceRoadAddressName();
+        }
+        if (transportationUpdateRequestDTO.getDestination() != null) {
+            this.destination = transportationUpdateRequestDTO.getDestination();
+        }
+        if (transportationUpdateRequestDTO.getDestinationRoadAddressName() != null) {
+            this.destinationRoadAddressName = transportationUpdateRequestDTO.getDestinationRoadAddressName();
+        }
+        if (transportationUpdateRequestDTO.getDepartureTime() != null) {
+            this.departureTime = DateTypeFormatterUtil.dateTimeFormatter(
+                transportationUpdateRequestDTO.getDepartureTime());
+        }
+        if (transportationUpdateRequestDTO.getArrivalTime() != null) {
+            this.arrivalTime = DateTypeFormatterUtil.dateTimeFormatter(
+                transportationUpdateRequestDTO.getArrivalTime());
+        }
     }
 }
