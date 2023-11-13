@@ -2,7 +2,6 @@ package com.fc.toy_project3.domain.comment.docs;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
@@ -18,7 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fc.toy_project3.docs.RestDocsSupport;
 import com.fc.toy_project3.domain.comment.controller.CommentRestController;
-import com.fc.toy_project3.domain.comment.dto.request.CommentRequestDTO;
+import com.fc.toy_project3.domain.comment.dto.request.CommentCreateRequestDTO;
 import com.fc.toy_project3.domain.comment.dto.request.CommentUpdateRequestDTO;
 import com.fc.toy_project3.domain.comment.dto.response.CommentDeleteResponseDTO;
 import com.fc.toy_project3.domain.comment.dto.response.CommentResponseDTO;
@@ -41,7 +40,7 @@ public class CommentRestControllerDocsTest extends RestDocsSupport {
     }
 
     private final ConstraintDescriptions createCommentConstraints = new ConstraintDescriptions(
-        CommentRequestDTO.class);
+        CommentCreateRequestDTO.class);
 
     private final ConstraintDescriptions updateCommentConstraints = new ConstraintDescriptions(
         CommentUpdateRequestDTO.class);
@@ -51,16 +50,16 @@ public class CommentRestControllerDocsTest extends RestDocsSupport {
     @DisplayName("postComment()는 여행 댓글 정보를 저장할 수 있다.")
     void postComment() throws Exception {
         //given
-        CommentRequestDTO commentRequestDTO = CommentRequestDTO.builder().tripId(1L).memberId(1L)
+        CommentCreateRequestDTO commentCreateRequestDTO = CommentCreateRequestDTO.builder().tripId(1L).memberId(1L)
             .content("여행 계획 정말 멋있다.").build();
         CommentResponseDTO commentResponseDTO = CommentResponseDTO.builder().tripId(1L).memberId(1L)
             .content("여행 계획 정말 멋있다.").build();
-        given(commentService.postComment(any(CommentRequestDTO.class))).willReturn(
+        given(commentService.postComment(any(CommentCreateRequestDTO.class))).willReturn(
             commentResponseDTO);
 
         //when, then
         mockMvc.perform(
-            post("/api/comments").content(objectMapper.writeValueAsString(commentRequestDTO))
+            post("/api/comments").content(objectMapper.writeValueAsString(commentCreateRequestDTO))
                 .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isCreated()).andDo(
             restDoc.document(requestFields(
                     fieldWithPath("tripId").type(JsonFieldType.NUMBER).description("여행 식별자")
@@ -78,7 +77,7 @@ public class CommentRestControllerDocsTest extends RestDocsSupport {
                     fieldWithPath("data.memberId").type(JsonFieldType.NUMBER).description("회원 식별자"),
                     fieldWithPath("data.content").type(JsonFieldType.STRING).description("댓글"))));
 
-        verify(commentService, times(1)).postComment((any(CommentRequestDTO.class)));
+        verify(commentService, times(1)).postComment((any(CommentCreateRequestDTO.class)));
     }
 
     @Test

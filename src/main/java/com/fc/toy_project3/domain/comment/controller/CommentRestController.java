@@ -1,6 +1,6 @@
 package com.fc.toy_project3.domain.comment.controller;
 
-import com.fc.toy_project3.domain.comment.dto.request.CommentRequestDTO;
+import com.fc.toy_project3.domain.comment.dto.request.CommentCreateRequestDTO;
 import com.fc.toy_project3.domain.comment.dto.request.CommentUpdateRequestDTO;
 import com.fc.toy_project3.domain.comment.dto.response.CommentDeleteResponseDTO;
 import com.fc.toy_project3.domain.comment.dto.response.CommentResponseDTO;
@@ -27,9 +27,10 @@ public class CommentRestController {
 
     @PostMapping
     public ResponseEntity<ResponseDTO<CommentResponseDTO>> postComment(
-        @Valid @RequestBody CommentRequestDTO commentRequestDTO) {
+        @Valid @RequestBody CommentCreateRequestDTO commentCreateRequestDTO) {
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(ResponseDTO.res(HttpStatus.CREATED, commentService.postComment(commentRequestDTO),
+            .body(ResponseDTO.res(HttpStatus.CREATED, commentService.postComment(
+                    commentCreateRequestDTO),
                 "성공적으로 댓글을 등록했습니다."));
     }
 

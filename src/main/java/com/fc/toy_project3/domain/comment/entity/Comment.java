@@ -1,7 +1,6 @@
 package com.fc.toy_project3.domain.comment.entity;
 
 import com.fc.toy_project3.domain.comment.dto.request.CommentUpdateRequestDTO;
-import com.fc.toy_project3.domain.comment.dto.response.CommentResponseDTO;
 import com.fc.toy_project3.domain.member.entity.Member;
 import com.fc.toy_project3.domain.trip.entity.Trip;
 import com.fc.toy_project3.global.common.BaseTimeEntity;
@@ -48,11 +47,6 @@ public class Comment extends BaseTimeEntity {
         this.content = content;
     }
 
-    public CommentResponseDTO toCommentResponseDTO() {
-        return CommentResponseDTO.builder().tripId(this.trip.getId()).memberId(this.member.getId())
-            .content(this.content).build();
-    }
-
     @Override
     public void delete(LocalDateTime currentTime) {
         try {
@@ -66,7 +60,7 @@ public class Comment extends BaseTimeEntity {
         }
     }
 
-    public void updateComment(CommentUpdateRequestDTO commentUpdateRequestDTO) {
+    public void update(CommentUpdateRequestDTO commentUpdateRequestDTO) {
         this.content = commentUpdateRequestDTO.getContent();
     }
 }

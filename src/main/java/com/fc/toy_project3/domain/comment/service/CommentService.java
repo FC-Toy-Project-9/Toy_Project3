@@ -1,6 +1,6 @@
 package com.fc.toy_project3.domain.comment.service;
 
-import com.fc.toy_project3.domain.comment.dto.request.CommentRequestDTO;
+import com.fc.toy_project3.domain.comment.dto.request.CommentCreateRequestDTO;
 import com.fc.toy_project3.domain.comment.dto.request.CommentUpdateRequestDTO;
 import com.fc.toy_project3.domain.comment.dto.response.CommentDeleteResponseDTO;
 import com.fc.toy_project3.domain.comment.dto.response.CommentResponseDTO;
@@ -29,17 +29,16 @@ public class CommentService {
     /**
      * 여행 댓글 등록
      *
-     * @param commentRequestDTO 댓글 정보 등록 요청 DTO
+     * @param commentCreateRequestDTO 댓글 정보 등록 요청 DTO
      * @return 댓글 정보 응답 DTO
      */
-
-    public CommentResponseDTO postComment(CommentRequestDTO commentRequestDTO) {
-        Trip trip = tripService.getTrip(commentRequestDTO.getTripId());
-        Member member = memberRepository.findById(commentRequestDTO.getMemberId()).get();
+    public CommentResponseDTO postComment(CommentCreateRequestDTO commentCreateRequestDTO) {
+        Trip trip = tripService.getTrip(commentCreateRequestDTO.getTripId());
+        Member member = memberRepository.findById(commentCreateRequestDTO.getMemberId()).get();
         Comment comment = Comment.builder().trip(trip).member(member)
-            .content(commentRequestDTO.getContent()).build();
-
-        return commentRepository.save(comment).toCommentResponseDTO();
+            .content(commentCreateRequestDTO.getContent()).build();
+        commentRepository.save(comment);
+        return new CommentResponseDTO(comment);
     }
 
     /**
@@ -53,11 +52,11 @@ public class CommentService {
         CommentUpdateRequestDTO commentUpdateRequestDTO) {
         Comment comment = commentRepository.findById(commentId)
             .orElseThrow(CommentNotFoundException::new);
-        if(comment.isDeleted()){
+        if (comment.isDeleted()) {
             throw new CommentDeletedException();
         }
-        comment.updateComment(commentUpdateRequestDTO);
-        return comment.toCommentResponseDTO();
+        comment.update(commentUpdateRequestDTO);
+        return new CommentResponseDTO(comment);
     }
 
     /**
@@ -69,12 +68,10 @@ public class CommentService {
     public CommentDeleteResponseDTO softDeleteComment(Long commentId) {
         Comment comment = commentRepository.findById(commentId)
             .orElseThrow(CommentNotFoundException::new);
-        if(comment.isDeleted()){
+        if (comment.isDeleted()) {
             throw new CommentDeletedException();
         }
         comment.delete(LocalDateTime.now());
-        return CommentDeleteResponseDTO.builder().commentId(comment.getId()).build();
+        return new CommentDeleteResponseDTO(comment);
     }
-
-
 }
