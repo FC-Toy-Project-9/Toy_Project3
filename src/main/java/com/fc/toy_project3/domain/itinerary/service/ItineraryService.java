@@ -119,7 +119,7 @@ public class ItineraryService {
         checkAccommodationDate(trip, checkIn, checkOut);
         return new AccommodationResponseDTO(accommodationRepository.save(
             Accommodation.builder().trip(trip)
-                .itineraryName(accommodationCreateRequestDTO.getItineraryName())
+                .name(accommodationCreateRequestDTO.getItineraryName())
                 .accommodationName(accommodationCreateRequestDTO.getAccommodationName())
                 .accommodationRoadAddressName(
                     accommodationCreateRequestDTO.getAccommodationRoadAddressName())
