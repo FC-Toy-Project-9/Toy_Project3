@@ -1,6 +1,5 @@
 package com.fc.toy_project3.domain.trip.dto.response;
 
-import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -13,5 +12,4 @@ public class GetTripsResponseDTO {
     private String startDate;
     private String endDate;
     private Boolean isDomestic;
-    private List<ItineraryInfoDTO> itineraries;
 }

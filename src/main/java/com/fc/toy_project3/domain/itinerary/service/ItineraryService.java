@@ -1,11 +1,11 @@
 package com.fc.toy_project3.domain.itinerary.service;
 
-import com.fc.toy_project3.domain.itinerary.dto.request.AccommodationCreateRequestDTO;
-import com.fc.toy_project3.domain.itinerary.dto.request.AccommodationUpdateRequestDTO;
-import com.fc.toy_project3.domain.itinerary.dto.request.TransportationCreateRequestDTO;
-import com.fc.toy_project3.domain.itinerary.dto.request.TransportationUpdateRequestDTO;
-import com.fc.toy_project3.domain.itinerary.dto.request.VisitCreateRequestDTO;
-import com.fc.toy_project3.domain.itinerary.dto.request.VisitUpdateRequestDTO;
+import com.fc.toy_project3.domain.itinerary.dto.request.create.AccommodationCreateRequestDTO;
+import com.fc.toy_project3.domain.itinerary.dto.request.create.TransportationCreateRequestDTO;
+import com.fc.toy_project3.domain.itinerary.dto.request.create.VisitCreateRequestDTO;
+import com.fc.toy_project3.domain.itinerary.dto.request.update.AccommodationUpdateRequestDTO;
+import com.fc.toy_project3.domain.itinerary.dto.request.update.TransportationUpdateRequestDTO;
+import com.fc.toy_project3.domain.itinerary.dto.request.update.VisitUpdateRequestDTO;
 import com.fc.toy_project3.domain.itinerary.dto.response.AccommodationResponseDTO;
 import com.fc.toy_project3.domain.itinerary.dto.response.ItineraryDeleteResponseDTO;
 import com.fc.toy_project3.domain.itinerary.dto.response.ItinerarySearchResponseDTO;
@@ -116,13 +116,16 @@ public class ItineraryService {
             accommodationCreateRequestDTO.getCheckIn());
         LocalDateTime checkOut = DateTypeFormatterUtil.dateTimeFormatter(
             accommodationCreateRequestDTO.getCheckOut());
-        checkAccommodationDate(trip, checkIn, checkOut);
-        return accommodationRepository.save(Accommodation.builder().trip(trip)
-            .itineraryName(accommodationCreateRequestDTO.getItineraryName())
+        checkAccommodationDateTime(trip, checkIn, checkOut);
+        return new AccommodationResponseDTO(accommodationRepository.save(Accommodation.builder()
+            .trip(trip)
+            .name(accommodationCreateRequestDTO.getItineraryName())
             .accommodationName(accommodationCreateRequestDTO.getAccommodationName())
             .accommodationRoadAddressName(
-                accommodationCreateRequestDTO.getAccommodationRoadAddressName()).checkIn(checkIn)
-            .checkOut(checkOut).build()).toAccommodationResponseDTO();
+                accommodationCreateRequestDTO.getAccommodationRoadAddressName())
+            .checkIn(checkIn)
+            .checkOut(checkOut)
+            .build()));
     }
 
     /**
@@ -138,18 +141,20 @@ public class ItineraryService {
             transportationCreateRequestDTO.getDepartureTime());
         LocalDateTime arrivalTime = DateTypeFormatterUtil.dateTimeFormatter(
             transportationCreateRequestDTO.getArrivalTime());
-        checkTransportationDate(trip, departureTime, arrivalTime);
-        return transportationRepository.save(Transportation.builder().trip(trip)
-                .itineraryName(transportationCreateRequestDTO.getItineraryName())
-                .transportation(transportationCreateRequestDTO.getTransportation())
-                .departurePlace(transportationCreateRequestDTO.getDeparturePlace())
-                .departurePlaceRoadAddressName(
-                    transportationCreateRequestDTO.getDeparturePlaceRoadAddressName())
-                .destination(transportationCreateRequestDTO.getDestination())
-                .destinationRoadAddressName(
-                    transportationCreateRequestDTO.getDestinationRoadAddressName())
-                .arrivalTime(arrivalTime).departureTime(departureTime).build())
-            .toTransportationResponseDTO();
+        checkTransportationDateTime(trip, departureTime, arrivalTime);
+        return new TransportationResponseDTO(transportationRepository.save(Transportation.builder()
+            .trip(trip)
+            .itineraryName(transportationCreateRequestDTO.getItineraryName())
+            .transportation(transportationCreateRequestDTO.getTransportation())
+            .departurePlace(transportationCreateRequestDTO.getDeparturePlace())
+            .departurePlaceRoadAddressName(
+                transportationCreateRequestDTO.getDeparturePlaceRoadAddressName())
+            .destination(transportationCreateRequestDTO.getDestination())
+            .destinationRoadAddressName(
+                transportationCreateRequestDTO.getDestinationRoadAddressName())
+            .arrivalTime(arrivalTime)
+            .departureTime(departureTime)
+            .build()));
     }
 
     /**
@@ -164,59 +169,15 @@ public class ItineraryService {
             visitCreateRequestDTO.getDepartureTime());
         LocalDateTime arrivalTime = DateTypeFormatterUtil.dateTimeFormatter(
             visitCreateRequestDTO.getArrivalTime());
-        checkVisitDate(trip, departureTime, arrivalTime);
-        return visitRepository.save(Visit.builder().trip(trip)
+        checkVisitDateTime(trip, departureTime, arrivalTime);
+        return new VisitResponseDTO(visitRepository.save(Visit.builder()
+            .trip(trip)
             .itineraryName(visitCreateRequestDTO.getItineraryName())
             .placeName(visitCreateRequestDTO.getPlaceName())
             .placeRoadAddressName(visitCreateRequestDTO.getPlaceRoadAddressName())
-            .arrivalTime(arrivalTime).departureTime(departureTime).build()).toVisitResponseDTO();
-    }
-
-    /**
-     * tripId를 통해 여정정보를 조회하는 메서드
-     *
-     * @param tripId 여행 Id
-     * @return 여정의 DTYPE에 따라 숙박,이동,체류DTO가 담긴 List
-     */
-    public List getItineraryByTripId(Long tripId) {
-        List<Object> itineraryResponseList = new ArrayList<>();
-        List<Itinerary> itineraryList = tripService.getTrip(tripId).getItineraries();
-        for (Itinerary itinerary : itineraryList) {
-            if (itinerary instanceof Accommodation accommodation) {
-                itineraryResponseList.add(
-                    AccommodationResponseDTO.builder().itineraryId(accommodation.getId())
-                        .itineraryName(accommodation.getItineraryName())
-                        .accommodationName(accommodation.getAccommodationName())
-                        .accommodationRoadAddressName(accommodation.getAccommodationRoadAddressName())
-                        .checkIn(
-                            DateTypeFormatterUtil.localDateTimeToString(accommodation.getCheckIn()))
-                        .checkOut(
-                            DateTypeFormatterUtil.localDateTimeToString(accommodation.getCheckOut()))
-                        .build());
-            } else if (itinerary instanceof Transportation transportation) {
-                itineraryResponseList.add(
-                    TransportationResponseDTO.builder().itineraryId(transportation.getId())
-                        .itineraryName(transportation.getItineraryName())
-                        .transportation(transportation.getTransportation())
-                        .departurePlace(transportation.getDeparturePlace())
-                        .departurePlaceRoadAddressName(transportation.getDeparturePlaceRoadAddressName())
-                        .destination(transportation.getDestination())
-                        .destinationRoadAddressName(transportation.getDestinationRoadAddressName())
-                        .departureTime(DateTypeFormatterUtil.localDateTimeToString(
-                            transportation.getDepartureTime())).arrivalTime(
-                            DateTypeFormatterUtil.localDateTimeToString(transportation.getArrivalTime()))
-                        .build());
-            } else if (itinerary instanceof Visit visit) {
-                itineraryResponseList.add(VisitResponseDTO.builder().itineraryId(visit.getId())
-                    .itineraryName(visit.getItineraryName()).placeName(visit.getPlaceName())
-                    .placeRoadAddressName(visit.getPlaceRoadAddressName()).arrivalTime(
-                        DateTypeFormatterUtil.localDateTimeToString(visit.getArrivalTime()))
-                    .departureTime(
-                        DateTypeFormatterUtil.localDateTimeToString(visit.getDepartureTime()))
-                    .build());
-            }
-        }
-        return itineraryResponseList;
+            .arrivalTime(arrivalTime)
+            .departureTime(departureTime)
+            .build()));
     }
 
     /**
@@ -227,16 +188,17 @@ public class ItineraryService {
      */
     public AccommodationResponseDTO updateAccommodation(
         AccommodationUpdateRequestDTO accommodationUpdateRequestDTO) {
-        Accommodation accommodation = (Accommodation) getItinerary(accommodationUpdateRequestDTO.getItineraryId());
-        LocalDateTime checkIn = DateTypeFormatterUtil.dateTimeFormatter(
-            accommodationUpdateRequestDTO.getCheckIn());
-        LocalDateTime checkOut = DateTypeFormatterUtil.dateTimeFormatter(
-            accommodationUpdateRequestDTO.getCheckOut());
-        checkAccommodationDate(accommodation.getTrip(), checkIn, checkOut);
-        accommodation.updateAccommodationInfo(accommodationUpdateRequestDTO.getItineraryName(),
-            accommodationUpdateRequestDTO.getAccommodationName(),
-            accommodationUpdateRequestDTO.getAccommodationRoadAddressName(), checkIn, checkOut);
-        return accommodation.toAccommodationResponseDTO();
+        Accommodation accommodation = (Accommodation) getItinerary(
+            accommodationUpdateRequestDTO.getItineraryId());
+        LocalDateTime checkIn = accommodationUpdateRequestDTO.getCheckIn() == null ?
+            accommodation.getCheckIn()
+            : DateTypeFormatterUtil.dateTimeFormatter(accommodationUpdateRequestDTO.getCheckIn());
+        LocalDateTime checkOut = accommodationUpdateRequestDTO.getCheckOut() == null ?
+            accommodation.getCheckOut()
+            : DateTypeFormatterUtil.dateTimeFormatter(accommodationUpdateRequestDTO.getCheckOut());
+        checkAccommodationDateTime(accommodation.getTrip(), checkIn, checkOut);
+        accommodation.updateAccommodationInfo(accommodationUpdateRequestDTO);
+        return new AccommodationResponseDTO(accommodation);
     }
 
     /**
@@ -247,20 +209,17 @@ public class ItineraryService {
      */
     public TransportationResponseDTO updateTransportation(
         TransportationUpdateRequestDTO transportationUpdateRequestDTO) {
-        Transportation transportation = (Transportation) getItinerary(transportationUpdateRequestDTO.getItineraryId());
-        LocalDateTime departureTime = DateTypeFormatterUtil.dateTimeFormatter(
+        Transportation transportation = (Transportation) getItinerary(
+            transportationUpdateRequestDTO.getItineraryId());
+        LocalDateTime departureTime = transportationUpdateRequestDTO.getDepartureTime() == null ?
+            transportation.getDepartureTime() : DateTypeFormatterUtil.dateTimeFormatter(
             transportationUpdateRequestDTO.getDepartureTime());
-        LocalDateTime arrivalTime = DateTypeFormatterUtil.dateTimeFormatter(
+        LocalDateTime arrivalTime = transportationUpdateRequestDTO.getArrivalTime() == null ?
+            transportation.getArrivalTime() : DateTypeFormatterUtil.dateTimeFormatter(
             transportationUpdateRequestDTO.getArrivalTime());
-        checkTransportationDate(transportation.getTrip(), departureTime, arrivalTime);
-        transportation.updateTransportationInfo(transportationUpdateRequestDTO.getItineraryName(),
-            transportationUpdateRequestDTO.getTransportation(),
-            transportationUpdateRequestDTO.getDeparturePlace(),
-            transportationUpdateRequestDTO.getDeparturePlaceRoadAddressName(),
-            transportationUpdateRequestDTO.getDestination(),
-            transportationUpdateRequestDTO.getDestinationRoadAddressName(), departureTime,
-            arrivalTime);
-        return transportation.toTransportationResponseDTO();
+        checkTransportationDateTime(transportation.getTrip(), departureTime, arrivalTime);
+        transportation.updateTransportationInfo(transportationUpdateRequestDTO);
+        return new TransportationResponseDTO(transportation);
     }
 
     /**
@@ -271,15 +230,15 @@ public class ItineraryService {
      */
     public VisitResponseDTO updateVisit(VisitUpdateRequestDTO visitUpdateRequestDTO) {
         Visit visit = (Visit) getItinerary(visitUpdateRequestDTO.getItineraryId());
-        LocalDateTime departureTime = DateTypeFormatterUtil.dateTimeFormatter(
-            visitUpdateRequestDTO.getDepartureTime());
-        LocalDateTime arrivalTime = DateTypeFormatterUtil.dateTimeFormatter(
-            visitUpdateRequestDTO.getArrivalTime());
-        checkVisitDate(visit.getTrip(), departureTime, arrivalTime);
-        visit.updateVisitInfo(visitUpdateRequestDTO.getItineraryName(),
-            visitUpdateRequestDTO.getPlaceName(), visitUpdateRequestDTO.getPlaceRoadAddressName(),
-            departureTime, arrivalTime);
-        return visit.toVisitResponseDTO();
+        LocalDateTime departureTime = visitUpdateRequestDTO.getDepartureTime() == null ?
+            visit.getDepartureTime()
+            : DateTypeFormatterUtil.dateTimeFormatter(visitUpdateRequestDTO.getDepartureTime());
+        LocalDateTime arrivalTime = visitUpdateRequestDTO.getArrivalTime() == null ?
+            visit.getArrivalTime()
+            : DateTypeFormatterUtil.dateTimeFormatter(visitUpdateRequestDTO.getArrivalTime());
+        checkVisitDateTime(visit.getTrip(), departureTime, arrivalTime);
+        visit.updateVisitInfo(visitUpdateRequestDTO);
+        return new VisitResponseDTO(visit);
     }
 
     /**
@@ -290,14 +249,13 @@ public class ItineraryService {
      */
     public ItineraryDeleteResponseDTO deleteItinerary(Long itineraryId) {
         Itinerary itinerary = getItinerary(itineraryId);
-        itineraryRepository.delete(itinerary);
-        ItineraryDeleteResponseDTO itineraryDeleteResponseDTO = ItineraryDeleteResponseDTO.builder()
+        itinerary.delete(LocalDateTime.now());
+        return ItineraryDeleteResponseDTO.builder()
             .itineraryId(itinerary.getId()).build();
-        return itineraryDeleteResponseDTO;
     }
 
     private Itinerary getItinerary(Long itineraryId) {
-        return itineraryRepository.findById(itineraryId)
+        return itineraryRepository.findByIdAndDeletedAt(itineraryId, null)
             .orElseThrow(ItineraryNotFoundException::new);
     }
 
@@ -309,7 +267,8 @@ public class ItineraryService {
      * @param checkOut 숙박 종료일
      * @throws InvalidItineraryException 날짜 유효성 검사 실패 시 발생
      */
-    private void checkAccommodationDate(Trip trip, LocalDateTime checkIn, LocalDateTime checkOut) {
+    private void checkAccommodationDateTime(Trip trip, LocalDateTime checkIn,
+        LocalDateTime checkOut) {
         LocalDateTime tripStartDateTime = trip.getStartDate().atStartOfDay();
         LocalDateTime tripEndDateTime = trip.getEndDate().atTime(LocalTime.MAX);
         if (checkIn.isAfter(checkOut)) {
@@ -334,7 +293,7 @@ public class ItineraryService {
      * @param arrivalTime   도착 시간
      * @throws InvalidItineraryException 날짜 유효성 검사 실패 시 발생
      */
-    private void checkTransportationDate(Trip trip, LocalDateTime departureTime,
+    private void checkTransportationDateTime(Trip trip, LocalDateTime departureTime,
         LocalDateTime arrivalTime) {
         LocalDateTime tripStartDateTime = trip.getStartDate().atStartOfDay();
         LocalDateTime tripEndDateTime = trip.getEndDate().atTime(LocalTime.MAX);
@@ -360,7 +319,8 @@ public class ItineraryService {
      * @param arrivalTime   도착 시간
      * @throws InvalidItineraryException 날짜 유효성 검사 실패 시 발생
      */
-    private void checkVisitDate(Trip trip, LocalDateTime departureTime, LocalDateTime arrivalTime) {
+    private void checkVisitDateTime(Trip trip, LocalDateTime departureTime,
+        LocalDateTime arrivalTime) {
         LocalDateTime tripStartDateTime = trip.getStartDate().atStartOfDay();
         LocalDateTime tripEndDateTime = trip.getEndDate().atTime(LocalTime.MAX);
         if (arrivalTime.isAfter(departureTime)) {

@@ -20,12 +20,14 @@ import com.fc.toy_project3.docs.RestDocsSupport;
 import com.fc.toy_project3.domain.itinerary.dto.response.AccommodationResponseDTO;
 import com.fc.toy_project3.domain.itinerary.dto.response.TransportationResponseDTO;
 import com.fc.toy_project3.domain.itinerary.dto.response.VisitResponseDTO;
+import com.fc.toy_project3.domain.itinerary.dto.response.get.GetAccommodationResponseDTO;
+import com.fc.toy_project3.domain.itinerary.dto.response.get.GetTransportationResponseDTO;
+import com.fc.toy_project3.domain.itinerary.dto.response.get.GetVisitResponseDTO;
 import com.fc.toy_project3.domain.trip.controller.TripRestController;
 import com.fc.toy_project3.domain.trip.dto.request.PostTripRequestDTO;
 import com.fc.toy_project3.domain.trip.dto.request.UpdateTripRequestDTO;
 import com.fc.toy_project3.domain.trip.dto.response.GetTripResponseDTO;
 import com.fc.toy_project3.domain.trip.dto.response.GetTripsResponseDTO;
-import com.fc.toy_project3.domain.trip.dto.response.ItineraryInfoDTO;
 import com.fc.toy_project3.domain.trip.dto.response.TripResponseDTO;
 import com.fc.toy_project3.domain.trip.service.TripService;
 import java.util.ArrayList;
@@ -100,37 +102,16 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
     @DisplayName("getTrips()은 여행 정보 목록을 조회할 수 있다.")
     void getTrips() throws Exception {
         // given
-        List<ItineraryInfoDTO> itineraries1 = new ArrayList<>();
-        itineraries1.add(
-            ItineraryInfoDTO.builder().itineraryId(1L).itineraryName("제주 신라 호텔에서 숙박!").build());
-        itineraries1.add(
-            ItineraryInfoDTO.builder().itineraryId(2L).itineraryName("카카오 택시타고 이동!").build());
-        itineraries1.add(
-            ItineraryInfoDTO.builder().itineraryId(3L).itineraryName("카멜리아힐 구경!").build());
-        List<ItineraryInfoDTO> itineraries2 = new ArrayList<>();
-        itineraries2.add(
-            ItineraryInfoDTO.builder().itineraryId(1L).itineraryName("속초 호텔에서 숙면!").build());
-        itineraries2.add(
-            ItineraryInfoDTO.builder().itineraryId(2L).itineraryName("버스타고 이동!").build());
-        itineraries2.add(
-            ItineraryInfoDTO.builder().itineraryId(3L).itineraryName("속초 해수욕장에서 놀기!").build());
-        List<ItineraryInfoDTO> itineraries3 = new ArrayList<>();
-        itineraries3.add(
-            ItineraryInfoDTO.builder().itineraryId(1L).itineraryName("뉴욕 호텔에서 꿀잠!").build());
-        itineraries3.add(
-            ItineraryInfoDTO.builder().itineraryId(2L).itineraryName("지하철타고 이동").build());
-        itineraries3.add(
-            ItineraryInfoDTO.builder().itineraryId(3L).itineraryName("뉴욕 유명 거리 걷기").build());
         List<GetTripsResponseDTO> trips = new ArrayList<>();
         trips.add(
             GetTripsResponseDTO.builder().tripId(1L).tripName("제주도 여행").startDate("2023-10-23")
-                .endDate("2023-10-27").isDomestic(true).itineraries(itineraries1).build());
+                .endDate("2023-10-27").isDomestic(true).build());
         trips.add(
             GetTripsResponseDTO.builder().tripId(2L).tripName("속초 겨울바다 여행").startDate("2023-11-27")
-                .endDate("2023-11-29").isDomestic(true).itineraries(itineraries2).build());
+                .endDate("2023-11-29").isDomestic(true).build());
         trips.add(
             GetTripsResponseDTO.builder().tripId(3L).tripName("크리스마스 미국 여행").startDate("2023-12-24")
-                .endDate("2023-12-26").isDomestic(false).itineraries(itineraries3).build());
+                .endDate("2023-12-26").isDomestic(false).build());
         given(tripService.getTrips()).willReturn(trips);
 
         // when, then
@@ -144,11 +125,7 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
                 fieldWithPath("data[].isDomestic").type(JsonFieldType.BOOLEAN)
                     .description("국내 여행 여부"),
                 fieldWithPath("data[].itineraries").optional().type(JsonFieldType.ARRAY)
-                    .description("여정 리스트"),
-                fieldWithPath("data[].itineraries[].itineraryId").optional()
-                    .type(JsonFieldType.NUMBER).description("여정 식별자"),
-                fieldWithPath("data[].itineraries[].itineraryName").optional()
-                    .type(JsonFieldType.STRING).description("여정 이름"))));
+                    .description("여정 리스트"))));
     }
 
     @Test
@@ -157,19 +134,21 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
         // given
         List<Object> itineraries = new ArrayList<>();
         itineraries.add(
-            AccommodationResponseDTO.builder().itineraryId(1L).itineraryName("제주 신라 호텔에서 숙박!")
+            GetAccommodationResponseDTO.builder().itineraryId(1L).itineraryName("제주 신라 호텔에서 숙박!")
                 .accommodationName("제주신라호텔").accommodationRoadAddressName("제주 서귀포시 중문관광로72번길 75")
-                .checkIn("2023-10-25 15:00").checkOut("2023-10-26 11:00").build());
+                .checkIn("2023-10-25 15:00").checkOut("2023-10-26 11:00")
+                .createdAt("2023-10-01 10:00").build());
         itineraries.add(
-            TransportationResponseDTO.builder().itineraryId(2L).itineraryName("카카오 택시타고 이동!")
+            GetTransportationResponseDTO.builder().itineraryId(2L).itineraryName("카카오 택시타고 이동!")
                 .transportation("카카오택시").departurePlace("제주신라호텔")
                 .departurePlaceRoadAddressName("제주 서귀포시 중문관광로72번길 75").destination("오설록 티 뮤지엄")
                 .destinationRoadAddressName("제주 서귀포시 안덕면 신화역사로 15 오설록")
-                .departureTime("2023-10-26 12:00").arrivalTime("2023-10-26 13:00").build());
+                .departureTime("2023-10-26 12:00").arrivalTime("2023-10-26 13:00")
+                .createdAt("2023-10-01 10:00").build());
         itineraries.add(
-            VisitResponseDTO.builder().itineraryId(3L).itineraryName("카멜리아힐 구경!").placeName("카멜리아힐")
+            GetVisitResponseDTO.builder().itineraryId(3L).itineraryName("카멜리아힐 구경!").placeName("카멜리아힐")
                 .placeRoadAddressName("제주 서귀포시 안덕면 병악로 166").arrivalTime("2023-10-26 14:00")
-                .departureTime("2023-10-26 16:00").build());
+                .departureTime("2023-10-26 16:00").createdAt("2023-10-01 10:00").build());
         GetTripResponseDTO trip = GetTripResponseDTO.builder().tripId(1L).tripName("제주도 여행")
             .startDate("2023-10-23").endDate("2023-10-27").isDomestic(true).itineraries(itineraries)
             .build();
@@ -223,7 +202,11 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
                         fieldWithPath("data.itineraries[].departureTime").type(JsonFieldType.STRING)
                             .optional().description("도착 일시"),
                         fieldWithPath("data.itineraries[].arrivalTime").type(JsonFieldType.STRING)
-                            .optional().description("출발 일시"))));
+                            .optional().description("출발 일시"),
+                        fieldWithPath("data.itineraries[].createdAt").type(JsonFieldType.STRING)
+                            .optional().description("생성 일시"),
+                        fieldWithPath("data.itineraries[].updatedAt").type(JsonFieldType.STRING)
+                            .optional().description("수정 일시"))));
     }
 
     @Test

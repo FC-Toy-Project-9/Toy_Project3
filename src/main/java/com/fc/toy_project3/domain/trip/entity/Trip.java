@@ -10,7 +10,6 @@ import com.fc.toy_project3.domain.itinerary.entity.Visit;
 import com.fc.toy_project3.domain.trip.dto.request.UpdateTripRequestDTO;
 import com.fc.toy_project3.domain.trip.dto.response.GetTripResponseDTO;
 import com.fc.toy_project3.domain.trip.dto.response.GetTripsResponseDTO;
-import com.fc.toy_project3.domain.trip.dto.response.ItineraryInfoDTO;
 import com.fc.toy_project3.domain.trip.dto.response.TripResponseDTO;
 import com.fc.toy_project3.global.common.BaseTimeEntity;
 import com.fc.toy_project3.global.util.DateTypeFormatterUtil;
@@ -96,7 +95,7 @@ public class Trip extends BaseTimeEntity {
         return GetTripsResponseDTO.builder().tripId(this.id).tripName(this.name)
             .startDate(DateTypeFormatterUtil.localDateToString(this.startDate))
             .endDate(DateTypeFormatterUtil.localDateToString(this.endDate))
-            .isDomestic(this.isDomestic).itineraries(getItineraryInfoDTO()).build();
+            .isDomestic(this.isDomestic).build();
     }
 
     /**
@@ -111,26 +110,12 @@ public class Trip extends BaseTimeEntity {
             .isDomestic(this.isDomestic).itineraries(getItineraryResponseDTO()).build();
     }
 
-    /**
-     * Itinerary ID와 Name를 담은 ItineraryInfoDTO 추출
-     *
-     * @return ItineraryInfoDTO 리스트
-     */
-    public List<ItineraryInfoDTO> getItineraryInfoDTO() {
-        List<ItineraryInfoDTO> itineraries = new ArrayList<>();
-        for (Itinerary itinerary : this.itineraries) {
-            itineraries.add(ItineraryInfoDTO.builder().itineraryId(itinerary.getId())
-                .itineraryName(itinerary.getItineraryName()).build());
-        }
-        return itineraries;
-    }
-
     public List<Object> getItineraryResponseDTO() {
         List<Object> itineraryList = new ArrayList<>();
         for (Itinerary itinerary : this.itineraries) {
             if (itinerary instanceof Accommodation accommodation) {
                 itineraryList.add(AccommodationResponseDTO.builder().itineraryId(accommodation.getId())
-                    .itineraryName(accommodation.getItineraryName())
+                    .itineraryName(accommodation.getName())
                     .accommodationName(accommodation.getAccommodationName())
                     .accommodationRoadAddressName(accommodation.getAccommodationRoadAddressName())
                     .checkIn(DateTypeFormatterUtil.localDateTimeToString(accommodation.getCheckIn()))
@@ -138,7 +123,7 @@ public class Trip extends BaseTimeEntity {
                     .build());
             } else if (itinerary instanceof Transportation transportation) {
                 itineraryList.add(TransportationResponseDTO.builder().itineraryId(transportation.getId())
-                    .itineraryName(transportation.getItineraryName())
+                    .itineraryName(transportation.getName())
                     .transportation(transportation.getTransportation())
                     .departurePlace(transportation.getDeparturePlace())
                     .departurePlaceRoadAddressName(transportation.getDeparturePlaceRoadAddressName())
@@ -151,7 +136,7 @@ public class Trip extends BaseTimeEntity {
                     .build());
             } else if (itinerary instanceof Visit visit) {
                 itineraryList.add(VisitResponseDTO.builder().itineraryId(visit.getId())
-                    .itineraryName(visit.getItineraryName()).placeName(visit.getPlaceName())
+                    .itineraryName(visit.getName()).placeName(visit.getPlaceName())
                     .placeRoadAddressName(visit.getPlaceRoadAddressName()).arrivalTime(
                         DateTypeFormatterUtil.localDateTimeToString(visit.getArrivalTime()))
                     .departureTime(

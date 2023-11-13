@@ -1,0 +1,122 @@
+= Itinerary REST API Docs
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+[[Itinerary-Keyword-Search]]
+== 장소 키워드 조회
+
+장소를 키워드로 조회하는 API 입니다.
+
+=== HttpRequest
+include::{snippets}/itinerary-rest-controller-docs-test/get-place-by-keyword/http-request.adoc[]
+include::{snippets}/itinerary-rest-controller-docs-test/get-place-by-keyword/path-parameters.adoc[]
+
+
+=== HttpResponse
+include::{snippets}/itinerary-rest-controller-docs-test/get-place-by-keyword/http-response.adoc[]
+include::{snippets}/itinerary-rest-controller-docs-test/get-place-by-keyword/response-fields.adoc[]
+
+[[Itinerary-Accommodation-Create]]
+== 숙박 여정 등록
+
+숙박 여정을 등록하는 API 입니다.
+
+=== HttpRequest
+include::{snippets}/itinerary-rest-controller-docs-test/create-accommodation/http-request.adoc[]
+include::{snippets}/itinerary-rest-controller-docs-test/create-accommodation/request-fields.adoc[]
+
+
+=== HttpResponse
+include::{snippets}/itinerary-rest-controller-docs-test/create-accommodation/http-response.adoc[]
+include::{snippets}/itinerary-rest-controller-docs-test/create-accommodation/response-fields.adoc[]
+
+[[Itinerary-Transportation-Create]]
+== 이동 여정 등록
+
+이동 여정을 등록하는 API 입니다.
+
+=== HttpRequest
+include::{snippets}/itinerary-rest-controller-docs-test/create-transportation/http-request.adoc[]
+include::{snippets}/itinerary-rest-controller-docs-test/create-transportation/request-fields.adoc[]
+
+
+=== HttpResponse
+include::{snippets}/itinerary-rest-controller-docs-test/create-transportation/http-response.adoc[]
+include::{snippets}/itinerary-rest-controller-docs-test/create-transportation/response-fields.adoc[]
+
+[[Itinerary-Visit-Create]]
+== 체류 여정 등록
+
+체류 여정을 등록하는 API 입니다.
+
+=== HttpRequest
+include::{snippets}/itinerary-rest-controller-docs-test/create-visit/http-request.adoc[]
+include::{snippets}/itinerary-rest-controller-docs-test/create-visit/request-fields.adoc[]
+
+
+=== HttpResponse
+include::{snippets}/itinerary-rest-controller-docs-test/create-visit/http-response.adoc[]
+include::{snippets}/itinerary-rest-controller-docs-test/create-visit/response-fields.adoc[]
+
+[[Itinerary-Accommodation-Update]]
+== 숙박 여정 수정
+
+숙박 여정을 수정하는 API 입니다.
+
+=== HttpRequest
+include::{snippets}/itinerary-rest-controller-docs-test/update-accommodation/http-request.adoc[]
+include::{snippets}/itinerary-rest-controller-docs-test/update-accommodation/request-fields.adoc[]
+
+
+=== HttpResponse
+include::{snippets}/itinerary-rest-controller-docs-test/update-accommodation/http-response.adoc[]
+include::{snippets}/itinerary-rest-controller-docs-test/update-accommodation/response-fields.adoc[]
+
+[[Itinerary-Transportation-Update]]
+== 이동 여정 수정
+
+이동 여정을 수정하는 API 입니다.
+
+=== HttpRequest
+include::{snippets}/itinerary-rest-controller-docs-test/update-transportation/http-request.adoc[]
+include::{snippets}/itinerary-rest-controller-docs-test/update-transportation/request-fields.adoc[]
+
+
+=== HttpResponse
+include::{snippets}/itinerary-rest-controller-docs-test/update-transportation/http-response.adoc[]
+include::{snippets}/itinerary-rest-controller-docs-test/update-transportation/response-fields.adoc[]
+
+[[Itinerary-Visit-Update]]
+== 체류 여정 수정
+
+체류 여정을 수정하는 API 입니다.
+
+=== HttpRequest
+include::{snippets}/itinerary-rest-controller-docs-test/update-visit/http-request.adoc[]
+include::{snippets}/itinerary-rest-controller-docs-test/update-visit/request-fields.adoc[]
+
+
+=== HttpResponse
+include::{snippets}/itinerary-rest-controller-docs-test/update-visit/http-response.adoc[]
+include::{snippets}/itinerary-rest-controller-docs-test/update-visit/response-fields.adoc[]
+
+
+[[Itinerary-Delete]]
+== 여정 삭제
+
+여정 정보를 삭제하는 API 입니다.
+
+=== HttpRequest
+include::{snippets}/itinerary-rest-controller-docs-test/delete-itinerary/http-request.adoc[]
+include::{snippets}/itinerary-rest-controller-docs-test/delete-itinerary/path-parameters.adoc[]
+
+
+=== HttpResponse
+include::{snippets}/itinerary-rest-controller-docs-test/delete-itinerary/http-response.adoc[]
+include::{snippets}/itinerary-rest-controller-docs-test/delete-itinerary/response-fields.adoc[]
+
+
+

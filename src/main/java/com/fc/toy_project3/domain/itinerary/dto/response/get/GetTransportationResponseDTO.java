@@ -1,4 +1,4 @@
-package com.fc.toy_project3.domain.itinerary.dto.response;
+package com.fc.toy_project3.domain.itinerary.dto.response.get;
 
 import com.fc.toy_project3.domain.itinerary.entity.Transportation;
 import com.fc.toy_project3.global.util.DateTypeFormatterUtil;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class TransportationResponseDTO {
+public class GetTransportationResponseDTO {
 
     protected long itineraryId;
     protected String itineraryName;
@@ -20,11 +20,15 @@ public class TransportationResponseDTO {
     private String destinationRoadAddressName;
     private String departureTime;
     private String arrivalTime;
+    private String createdAt;
+    private String updatedAt;
 
     @Builder
-    public TransportationResponseDTO(long itineraryId, String itineraryName, String transportation,
+    public GetTransportationResponseDTO(long itineraryId, String itineraryName, String transportation,
         String departurePlace, String departurePlaceRoadAddressName, String destination,
-        String destinationRoadAddressName, String departureTime, String arrivalTime) {
+        String destinationRoadAddressName, String departureTime, String arrivalTime,
+        String createdAt,
+        String updatedAt) {
         this.itineraryId = itineraryId;
         this.itineraryName = itineraryName;
         this.transportation = transportation;
@@ -34,9 +38,11 @@ public class TransportationResponseDTO {
         this.destinationRoadAddressName = destinationRoadAddressName;
         this.departureTime = departureTime;
         this.arrivalTime = arrivalTime;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
-    public TransportationResponseDTO(Transportation transportation) {
+    public GetTransportationResponseDTO(Transportation transportation) {
         this.itineraryId = transportation.getId();
         this.itineraryName = transportation.getName();
         this.transportation = transportation.getTransportation();
@@ -48,5 +54,8 @@ public class TransportationResponseDTO {
             transportation.getDepartureTime());
         this.arrivalTime = DateTypeFormatterUtil.localDateTimeToString(
             transportation.getArrivalTime());
+        this.createdAt = DateTypeFormatterUtil.localDateTimeToString(transportation.getCreatedAt());
+        this.updatedAt = transportation.getUpdatedAt() == null ? null
+            : DateTypeFormatterUtil.localDateTimeToString(transportation.getUpdatedAt());
     }
 }
