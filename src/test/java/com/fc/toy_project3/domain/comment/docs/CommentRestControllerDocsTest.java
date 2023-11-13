@@ -13,20 +13,21 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fc.toy_project3.docs.RestDocsSupport;
 import com.fc.toy_project3.domain.comment.controller.CommentRestController;
 import com.fc.toy_project3.domain.comment.dto.request.CommentRequestDTO;
 import com.fc.toy_project3.domain.comment.dto.request.CommentUpdateRequestDTO;
+import com.fc.toy_project3.domain.comment.dto.response.CommentDeleteResponseDTO;
 import com.fc.toy_project3.domain.comment.dto.response.CommentResponseDTO;
 import com.fc.toy_project3.domain.comment.service.CommentService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.restdocs.constraints.ConstraintDescriptions;
 import org.springframework.restdocs.payload.JsonFieldType;
 
 public class CommentRestControllerDocsTest extends RestDocsSupport {
@@ -38,6 +39,13 @@ public class CommentRestControllerDocsTest extends RestDocsSupport {
     public Object initController() {
         return new CommentRestController(commentService);
     }
+
+    private final ConstraintDescriptions createCommentConstraints = new ConstraintDescriptions(
+        CommentRequestDTO.class);
+
+    private final ConstraintDescriptions updateCommentConstraints = new ConstraintDescriptions(
+        CommentUpdateRequestDTO.class);
+
 
     @Test
     @DisplayName("postComment()는 여행 댓글 정보를 저장할 수 있다.")
@@ -51,14 +59,20 @@ public class CommentRestControllerDocsTest extends RestDocsSupport {
             commentResponseDTO);
 
         //when, then
-        mockMvc.perform(post("/api/comments")
-            .content(new ObjectMapper().writeValueAsString(commentRequestDTO))
-            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isCreated()).andDo(
+        mockMvc.perform(
+            post("/api/comments").content(objectMapper.writeValueAsString(commentRequestDTO))
+                .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isCreated()).andDo(
             restDoc.document(requestFields(
-                    fieldWithPath("tripId").type(JsonFieldType.NUMBER).description("여행 식별자"),
-                    fieldWithPath("memberId").type(JsonFieldType.NUMBER).description("회원 식별자"),
-                    fieldWithPath("content").type(JsonFieldType.STRING).description("댓글")),
-                responseFields(
+                    fieldWithPath("tripId").type(JsonFieldType.NUMBER).description("여행 식별자")
+                        .attributes(key("constraints")
+                            .value(createCommentConstraints.descriptionsForProperty("tripId"))),
+                    fieldWithPath("memberId").type(JsonFieldType.NUMBER).description("회원 식별자")
+                        .attributes(key("constraints")
+                            .value(createCommentConstraints.descriptionsForProperty("memberId"))),
+                    fieldWithPath("content").type(JsonFieldType.STRING).description("댓글")
+                        .attributes(key("constraints")
+                            .value(createCommentConstraints.descriptionsForProperty("content")))),
+                responseFields(responseCommon()).and(
                     fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터"),
                     fieldWithPath("data.tripId").type(JsonFieldType.NUMBER).description("여행 식별자"),
                     fieldWithPath("data.memberId").type(JsonFieldType.NUMBER).description("회원 식별자"),
@@ -81,11 +95,14 @@ public class CommentRestControllerDocsTest extends RestDocsSupport {
             commentResponseDTO);
 
         //when, then
-        mockMvc.perform(patch("/api/comments/{commentId}", 1L)
-            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andDo(
-            restDoc.document(requestFields(
-                    fieldWithPath("commentId").description("댓글 식별자"),
-                    fieldWithPath("content").description("댓글")),
+        mockMvc.perform(
+            patch("/api/comments/{commentId}", 1L).content(
+                    objectMapper.writeValueAsString(commentUpdateRequestDTO))
+                .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andDo(
+            restDoc.document(pathParameters(parameterWithName("commentId").description("댓글 식별자")),
+                requestFields(
+                    fieldWithPath("content").description("댓글").attributes(key("constraints")
+                        .value(updateCommentConstraints.descriptionsForProperty("content")))),
                 responseFields(responseCommon()).and(
                     fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터"),
                     fieldWithPath("data.tripId").type(JsonFieldType.NUMBER).description("여행 식별자"),
@@ -102,14 +119,17 @@ public class CommentRestControllerDocsTest extends RestDocsSupport {
     @DisplayName("softDeleteComment()는 여행 댓글 정보를 삭제할 수 있다.")
     void softDeleteComment() throws Exception {
         //given
-        doNothing().when(commentService).softDeleteComment(any(Long.TYPE));
+        CommentDeleteResponseDTO commentDeleteResponseDTO = CommentDeleteResponseDTO.builder()
+            .commentId(1L).build();
+        given(commentService.softDeleteComment(any(Long.TYPE))).willReturn(commentDeleteResponseDTO);
 
         //when, then
-        mockMvc.perform(delete("api/comments/{commentId}",1L)).andExpect(status().isOk()).andDo(
+        mockMvc.perform(delete("/api/comments/{commentId}", 1L)).andExpect(status().isOk()).andDo(
             restDoc.document(pathParameters(parameterWithName("commentId").description("댓글 식별자")),
                 responseFields(responseCommon()).and(
                     fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터"),
-                    fieldWithPath("data.replyId").type(JsonFieldType.NUMBER).description("댓글 식별자"))));
+                    fieldWithPath("data.commentId").type(JsonFieldType.NUMBER)
+                        .description("댓글 식별자"))));
 
     }
 }
