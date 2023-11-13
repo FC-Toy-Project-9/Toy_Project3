@@ -190,14 +190,12 @@ public class ItineraryService {
         AccommodationUpdateRequestDTO accommodationUpdateRequestDTO) {
         Accommodation accommodation = (Accommodation) getItinerary(
             accommodationUpdateRequestDTO.getItineraryId());
-        LocalDateTime checkIn =
-            accommodationUpdateRequestDTO.getCheckIn() == null ? accommodation.getCheckIn()
-                : DateTypeFormatterUtil.dateTimeFormatter(
-                    accommodationUpdateRequestDTO.getCheckIn());
-        LocalDateTime checkOut =
-            accommodationUpdateRequestDTO.getCheckOut() == null ? accommodation.getCheckOut()
-                : DateTypeFormatterUtil.dateTimeFormatter(
-                    accommodationUpdateRequestDTO.getCheckOut());
+        LocalDateTime checkIn = accommodationUpdateRequestDTO.getCheckIn() == null ?
+            accommodation.getCheckIn()
+            : DateTypeFormatterUtil.dateTimeFormatter(accommodationUpdateRequestDTO.getCheckIn());
+        LocalDateTime checkOut = accommodationUpdateRequestDTO.getCheckOut() == null ?
+            accommodation.getCheckOut()
+            : DateTypeFormatterUtil.dateTimeFormatter(accommodationUpdateRequestDTO.getCheckOut());
         checkAccommodationDateTime(accommodation.getTrip(), checkIn, checkOut);
         accommodation.updateAccommodationInfo(accommodationUpdateRequestDTO);
         return new AccommodationResponseDTO(accommodation);
@@ -213,9 +211,11 @@ public class ItineraryService {
         TransportationUpdateRequestDTO transportationUpdateRequestDTO) {
         Transportation transportation = (Transportation) getItinerary(
             transportationUpdateRequestDTO.getItineraryId());
-        LocalDateTime departureTime = DateTypeFormatterUtil.dateTimeFormatter(
+        LocalDateTime departureTime = transportationUpdateRequestDTO.getDepartureTime() == null ?
+            transportation.getDepartureTime() : DateTypeFormatterUtil.dateTimeFormatter(
             transportationUpdateRequestDTO.getDepartureTime());
-        LocalDateTime arrivalTime = DateTypeFormatterUtil.dateTimeFormatter(
+        LocalDateTime arrivalTime = transportationUpdateRequestDTO.getArrivalTime() == null ?
+            transportation.getArrivalTime() : DateTypeFormatterUtil.dateTimeFormatter(
             transportationUpdateRequestDTO.getArrivalTime());
         checkTransportationDateTime(transportation.getTrip(), departureTime, arrivalTime);
         transportation.updateTransportationInfo(transportationUpdateRequestDTO);
@@ -230,10 +230,12 @@ public class ItineraryService {
      */
     public VisitResponseDTO updateVisit(VisitUpdateRequestDTO visitUpdateRequestDTO) {
         Visit visit = (Visit) getItinerary(visitUpdateRequestDTO.getItineraryId());
-        LocalDateTime departureTime = DateTypeFormatterUtil.dateTimeFormatter(
-            visitUpdateRequestDTO.getDepartureTime());
-        LocalDateTime arrivalTime = DateTypeFormatterUtil.dateTimeFormatter(
-            visitUpdateRequestDTO.getArrivalTime());
+        LocalDateTime departureTime = visitUpdateRequestDTO.getDepartureTime() == null ?
+            visit.getDepartureTime()
+            : DateTypeFormatterUtil.dateTimeFormatter(visitUpdateRequestDTO.getDepartureTime());
+        LocalDateTime arrivalTime = visitUpdateRequestDTO.getArrivalTime() == null ?
+            visit.getArrivalTime()
+            : DateTypeFormatterUtil.dateTimeFormatter(visitUpdateRequestDTO.getArrivalTime());
         checkVisitDateTime(visit.getTrip(), departureTime, arrivalTime);
         visit.updateVisitInfo(visitUpdateRequestDTO);
         return new VisitResponseDTO(visit);
