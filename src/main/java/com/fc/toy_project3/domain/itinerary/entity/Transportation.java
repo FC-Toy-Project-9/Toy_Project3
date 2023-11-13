@@ -50,29 +50,29 @@ public class Transportation extends Itinerary {
 
     public void updateTransportationInfo(
         TransportationUpdateRequestDTO transportationUpdateRequestDTO) {
-        if (name != null) {
+        if (transportationUpdateRequestDTO.getItineraryName() != null) {
             this.name = transportationUpdateRequestDTO.getItineraryName();
         }
-        if (transportation != null) {
+        if (transportationUpdateRequestDTO.getTransportation() != null) {
             this.transportation = transportationUpdateRequestDTO.getTransportation();
         }
-        if (departurePlace != null) {
+        if (transportationUpdateRequestDTO.getDeparturePlace() != null) {
             this.departurePlace = transportationUpdateRequestDTO.getDeparturePlace();
         }
-        if (departurePlaceRoadAddressName != null) {
+        if (transportationUpdateRequestDTO.getDeparturePlaceRoadAddressName() != null) {
             this.departurePlaceRoadAddressName = transportationUpdateRequestDTO.getDeparturePlaceRoadAddressName();
         }
-        if (destination != null) {
+        if (transportationUpdateRequestDTO.getDestination() != null) {
             this.destination = transportationUpdateRequestDTO.getDestination();
         }
-        if (destinationRoadAddressName != null) {
+        if (transportationUpdateRequestDTO.getDestinationRoadAddressName() != null) {
             this.destinationRoadAddressName = transportationUpdateRequestDTO.getDestinationRoadAddressName();
         }
-        if (departureTime != null) {
+        if (transportationUpdateRequestDTO.getDepartureTime() != null) {
             this.departureTime = DateTypeFormatterUtil.dateTimeFormatter(
                 transportationUpdateRequestDTO.getDepartureTime());
         }
-        if (arrivalTime != null) {
+        if (transportationUpdateRequestDTO.getArrivalTime() != null) {
             this.arrivalTime = DateTypeFormatterUtil.dateTimeFormatter(
                 transportationUpdateRequestDTO.getArrivalTime());
         }

@@ -38,20 +38,20 @@ public class Accommodation extends Itinerary {
 
     public void updateAccommodationInfo(
         AccommodationUpdateRequestDTO accommodationUpdateRequestDTO) {
-        if (name != null) {
+        if (accommodationUpdateRequestDTO.getItineraryName() != null) {
             this.name = accommodationUpdateRequestDTO.getItineraryName();
         }
-        if (accommodationName != null) {
+        if (accommodationUpdateRequestDTO.getAccommodationName() != null) {
             this.accommodationName = accommodationUpdateRequestDTO.getAccommodationName();
         }
-        if (accommodationRoadAddressName != null) {
+        if (accommodationUpdateRequestDTO.getAccommodationRoadAddressName() != null) {
             this.accommodationRoadAddressName = accommodationUpdateRequestDTO.getAccommodationRoadAddressName();
         }
-        if (checkIn != null) {
+        if (accommodationUpdateRequestDTO.getCheckIn() != null) {
             this.checkIn = DateTypeFormatterUtil.dateTimeFormatter(
                 accommodationUpdateRequestDTO.getCheckIn());
         }
-        if (checkOut != null) {
+        if (accommodationUpdateRequestDTO.getCheckOut() != null) {
             this.checkOut = DateTypeFormatterUtil.dateTimeFormatter(
                 accommodationUpdateRequestDTO.getCheckOut());
         }

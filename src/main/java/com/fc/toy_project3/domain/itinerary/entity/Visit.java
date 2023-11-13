@@ -37,20 +37,20 @@ public class Visit extends Itinerary {
     }
 
     public void updateVisitInfo(VisitUpdateRequestDTO visitUpdateRequestDTO) {
-        if (name != null) {
+        if (visitUpdateRequestDTO.getItineraryName() != null) {
             this.name = visitUpdateRequestDTO.getItineraryName();
         }
-        if (placeName != null) {
+        if (visitUpdateRequestDTO.getPlaceName() != null) {
             this.placeName = visitUpdateRequestDTO.getPlaceName();
         }
-        if (placeRoadAddressName != null) {
+        if (visitUpdateRequestDTO.getPlaceRoadAddressName() != null) {
             this.placeRoadAddressName = visitUpdateRequestDTO.getPlaceRoadAddressName();
         }
-        if (arrivalTime != null) {
+        if (visitUpdateRequestDTO.getArrivalTime() != null) {
             this.arrivalTime = DateTypeFormatterUtil.dateTimeFormatter(
                 visitUpdateRequestDTO.getArrivalTime());
         }
-        if (departureTime != null) {
+        if (visitUpdateRequestDTO.getDepartureTime() != null) {
             this.departureTime = DateTypeFormatterUtil.dateTimeFormatter(
                 visitUpdateRequestDTO.getDepartureTime());
         }
