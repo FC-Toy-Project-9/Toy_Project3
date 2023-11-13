@@ -33,5 +33,5 @@ public abstract class Itinerary extends BaseTimeEntity {
     protected Trip trip;
 
     @Column(length = 100)
-    protected String itineraryName;
+    protected String name;
 }

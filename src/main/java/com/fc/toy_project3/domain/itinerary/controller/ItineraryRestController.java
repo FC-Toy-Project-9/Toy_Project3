@@ -1,11 +1,11 @@
 package com.fc.toy_project3.domain.itinerary.controller;
 
-import com.fc.toy_project3.domain.itinerary.dto.request.AccommodationCreateRequestDTO;
-import com.fc.toy_project3.domain.itinerary.dto.request.AccommodationUpdateRequestDTO;
-import com.fc.toy_project3.domain.itinerary.dto.request.TransportationCreateRequestDTO;
-import com.fc.toy_project3.domain.itinerary.dto.request.TransportationUpdateRequestDTO;
-import com.fc.toy_project3.domain.itinerary.dto.request.VisitCreateRequestDTO;
-import com.fc.toy_project3.domain.itinerary.dto.request.VisitUpdateRequestDTO;
+import com.fc.toy_project3.domain.itinerary.dto.request.create.AccommodationCreateRequestDTO;
+import com.fc.toy_project3.domain.itinerary.dto.request.create.TransportationCreateRequestDTO;
+import com.fc.toy_project3.domain.itinerary.dto.request.create.VisitCreateRequestDTO;
+import com.fc.toy_project3.domain.itinerary.dto.request.update.AccommodationUpdateRequestDTO;
+import com.fc.toy_project3.domain.itinerary.dto.request.update.TransportationUpdateRequestDTO;
+import com.fc.toy_project3.domain.itinerary.dto.request.update.VisitUpdateRequestDTO;
 import com.fc.toy_project3.domain.itinerary.dto.response.AccommodationResponseDTO;
 import com.fc.toy_project3.domain.itinerary.dto.response.ItineraryDeleteResponseDTO;
 import com.fc.toy_project3.domain.itinerary.dto.response.ItinerarySearchResponseDTO;
@@ -87,9 +87,9 @@ public class ItineraryRestController {
 
     @PatchMapping("/visits")
     public ResponseEntity<ResponseDTO<VisitResponseDTO>> updateVisit(
-        @Valid @RequestBody VisitUpdateRequestDTO visitCreateRequestDTO) {
+        @Valid @RequestBody VisitUpdateRequestDTO visitUpdateRequestDTO) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            ResponseDTO.res(HttpStatus.OK, itineraryService.updateVisit(visitCreateRequestDTO),
+            ResponseDTO.res(HttpStatus.OK, itineraryService.updateVisit(visitUpdateRequestDTO),
                 "체류 여정을 성공적으로 수정했습니다."));
     }
 

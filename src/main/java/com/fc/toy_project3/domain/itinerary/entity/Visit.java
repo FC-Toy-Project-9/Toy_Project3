@@ -1,8 +1,6 @@
 package com.fc.toy_project3.domain.itinerary.entity;
 
-import com.fc.toy_project3.domain.itinerary.dto.response.VisitResponseDTO;
 import com.fc.toy_project3.domain.trip.entity.Trip;
-import com.fc.toy_project3.global.util.DateTypeFormatterUtil;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import java.time.LocalDateTime;
@@ -29,24 +27,16 @@ public class Visit extends Itinerary {
         String placeRoadAddressName, LocalDateTime arrivalTime, LocalDateTime departureTime) {
         this.id = id;
         this.trip = trip;
-        this.itineraryName = itineraryName;
+        this.name = itineraryName;
         this.placeName = placeName;
         this.placeRoadAddressName = placeRoadAddressName;
         this.arrivalTime = arrivalTime;
         this.departureTime = departureTime;
     }
 
-    public VisitResponseDTO toVisitResponseDTO() {
-        return VisitResponseDTO.builder().itineraryId(super.getId())
-            .itineraryName(super.getItineraryName()).placeName(this.placeName)
-            .placeRoadAddressName(this.placeRoadAddressName)
-            .departureTime(DateTypeFormatterUtil.localDateTimeToString(this.departureTime))
-            .arrivalTime(DateTypeFormatterUtil.localDateTimeToString(this.arrivalTime)).build();
-    }
-
-    public void updateVisitInfo(String itineraryName, String placeName, String placeRoadAddressName,
+    public void updateVisitInfo(String name, String placeName, String placeRoadAddressName,
         LocalDateTime visitDepartureTime, LocalDateTime visitArrivalTime) {
-        this.itineraryName = itineraryName;
+        this.name = name;
         this.placeName = placeName;
         this.placeRoadAddressName = placeRoadAddressName;
         this.departureTime = visitDepartureTime;

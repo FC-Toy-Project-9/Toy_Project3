@@ -7,12 +7,12 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.fc.toy_project3.domain.itinerary.dto.request.AccommodationCreateRequestDTO;
-import com.fc.toy_project3.domain.itinerary.dto.request.AccommodationUpdateRequestDTO;
-import com.fc.toy_project3.domain.itinerary.dto.request.TransportationCreateRequestDTO;
-import com.fc.toy_project3.domain.itinerary.dto.request.TransportationUpdateRequestDTO;
-import com.fc.toy_project3.domain.itinerary.dto.request.VisitCreateRequestDTO;
-import com.fc.toy_project3.domain.itinerary.dto.request.VisitUpdateRequestDTO;
+import com.fc.toy_project3.domain.itinerary.dto.request.create.AccommodationCreateRequestDTO;
+import com.fc.toy_project3.domain.itinerary.dto.request.create.TransportationCreateRequestDTO;
+import com.fc.toy_project3.domain.itinerary.dto.request.create.VisitCreateRequestDTO;
+import com.fc.toy_project3.domain.itinerary.dto.request.update.AccommodationUpdateRequestDTO;
+import com.fc.toy_project3.domain.itinerary.dto.request.update.TransportationUpdateRequestDTO;
+import com.fc.toy_project3.domain.itinerary.dto.request.update.VisitUpdateRequestDTO;
 import com.fc.toy_project3.domain.itinerary.dto.response.AccommodationResponseDTO;
 import com.fc.toy_project3.domain.itinerary.dto.response.ItineraryDeleteResponseDTO;
 import com.fc.toy_project3.domain.itinerary.dto.response.TransportationResponseDTO;
@@ -28,12 +28,10 @@ import com.fc.toy_project3.domain.itinerary.repository.TransportationRepository;
 import com.fc.toy_project3.domain.itinerary.repository.VisitRepository;
 import com.fc.toy_project3.domain.itinerary.service.ItineraryService;
 import com.fc.toy_project3.domain.trip.entity.Trip;
-import com.fc.toy_project3.domain.trip.exception.TripNotFoundException;
 import com.fc.toy_project3.domain.trip.service.TripService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -83,7 +81,7 @@ public class ItineraryServiceTest {
                     .endDate(LocalDate.of(2023, 10, 26)).isDomestic(true)
                     .itineraries(new ArrayList<>()).build());
             given(accommodationRepository.save(any(Accommodation.class))).willReturn(
-                Accommodation.builder().id(1L).itineraryName("제주여정1").accommodationName("제주신라호텔")
+                Accommodation.builder().id(1L).name("제주여정1").accommodationName("제주신라호텔")
                     .accommodationRoadAddressName("제주 서귀포시 중문관광로72번길 75")
                     .checkIn(LocalDateTime.of(2023, 10, 25, 15, 0))
                     .checkOut(LocalDateTime.of(2023, 10, 26, 11, 0)).build());
@@ -185,7 +183,7 @@ public class ItineraryServiceTest {
                 .accommodationRoadAddressName("제주 서귀포시 중문관광로72번길 75").checkIn("2023-10-25 15:00")
                 .checkOut("2023-10-26 10:00").build();
             Optional<Itinerary> itinerary = Optional.of(
-                Accommodation.builder().id(1L).itineraryName("제주여정1").accommodationName("제주신라호텔")
+                Accommodation.builder().id(1L).name("제주여정1").accommodationName("제주신라호텔")
                     .accommodationRoadAddressName("제주 서귀포시 중문관광로72번길 75")
                     .checkIn(LocalDateTime.of(2023, 10, 25, 15, 0))
                     .checkOut(LocalDateTime.of(2023, 10, 26, 11, 0)).trip(

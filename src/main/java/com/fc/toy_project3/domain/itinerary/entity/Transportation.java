@@ -1,8 +1,6 @@
 package com.fc.toy_project3.domain.itinerary.entity;
 
-import com.fc.toy_project3.domain.itinerary.dto.response.TransportationResponseDTO;
 import com.fc.toy_project3.domain.trip.entity.Trip;
-import com.fc.toy_project3.global.util.DateTypeFormatterUtil;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import java.time.LocalDateTime;
@@ -38,7 +36,7 @@ public class Transportation extends Itinerary{
         LocalDateTime arrivalTime, LocalDateTime departureTime) {
         this.id = id;
         this.trip = trip;
-        this.itineraryName = itineraryName;
+        this.name = itineraryName;
         this.transportation = transportation;
         this.departurePlace = departurePlace;
         this.departurePlaceRoadAddressName = departurePlaceRoadAddressName;
@@ -48,21 +46,10 @@ public class Transportation extends Itinerary{
         this.departureTime = departureTime;
     }
 
-    public TransportationResponseDTO toTransportationResponseDTO() {
-        return TransportationResponseDTO.builder().itineraryId(super.getId())
-            .itineraryName(super.getItineraryName()).transportation(this.transportation)
-            .departurePlace(this.departurePlace)
-            .departurePlaceRoadAddressName(this.departurePlaceRoadAddressName)
-            .destination(this.destination)
-            .destinationRoadAddressName(this.destinationRoadAddressName)
-            .departureTime(DateTypeFormatterUtil.localDateTimeToString(this.departureTime))
-            .arrivalTime(DateTypeFormatterUtil.localDateTimeToString(this.arrivalTime)).build();
-    }
-
-    public void updateTransportationInfo(String itineraryName, String transportation,
+    public void updateTransportationInfo(String name, String transportation,
         String departurePlace, String departurePlaceRoadAddressName, String destination,
         String destinationRoadAddressName, LocalDateTime departureTime, LocalDateTime arrivalTime) {
-        this.itineraryName = itineraryName;
+        this.name = name;
         this.transportation = transportation;
         this.departurePlace = departurePlace;
         this.departurePlaceRoadAddressName = departurePlaceRoadAddressName;

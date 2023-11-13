@@ -115,7 +115,7 @@ public class Trip extends BaseTimeEntity {
         for (Itinerary itinerary : this.itineraries) {
             if (itinerary instanceof Accommodation accommodation) {
                 itineraryList.add(AccommodationResponseDTO.builder().itineraryId(accommodation.getId())
-                    .itineraryName(accommodation.getItineraryName())
+                    .itineraryName(accommodation.getName())
                     .accommodationName(accommodation.getAccommodationName())
                     .accommodationRoadAddressName(accommodation.getAccommodationRoadAddressName())
                     .checkIn(DateTypeFormatterUtil.localDateTimeToString(accommodation.getCheckIn()))
@@ -123,7 +123,7 @@ public class Trip extends BaseTimeEntity {
                     .build());
             } else if (itinerary instanceof Transportation transportation) {
                 itineraryList.add(TransportationResponseDTO.builder().itineraryId(transportation.getId())
-                    .itineraryName(transportation.getItineraryName())
+                    .itineraryName(transportation.getName())
                     .transportation(transportation.getTransportation())
                     .departurePlace(transportation.getDeparturePlace())
                     .departurePlaceRoadAddressName(transportation.getDeparturePlaceRoadAddressName())
@@ -136,7 +136,7 @@ public class Trip extends BaseTimeEntity {
                     .build());
             } else if (itinerary instanceof Visit visit) {
                 itineraryList.add(VisitResponseDTO.builder().itineraryId(visit.getId())
-                    .itineraryName(visit.getItineraryName()).placeName(visit.getPlaceName())
+                    .itineraryName(visit.getName()).placeName(visit.getPlaceName())
                     .placeRoadAddressName(visit.getPlaceRoadAddressName()).arrivalTime(
                         DateTypeFormatterUtil.localDateTimeToString(visit.getArrivalTime()))
                     .departureTime(

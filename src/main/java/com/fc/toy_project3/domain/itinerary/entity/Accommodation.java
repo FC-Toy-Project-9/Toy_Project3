@@ -1,8 +1,6 @@
 package com.fc.toy_project3.domain.itinerary.entity;
 
-import com.fc.toy_project3.domain.itinerary.dto.response.AccommodationResponseDTO;
 import com.fc.toy_project3.domain.trip.entity.Trip;
-import com.fc.toy_project3.global.util.DateTypeFormatterUtil;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import java.time.LocalDateTime;
@@ -25,29 +23,21 @@ public class Accommodation extends Itinerary {
     private LocalDateTime checkOut;
 
     @Builder
-    public Accommodation(Long id, Trip trip, String itineraryName, String accommodationName,
+    public Accommodation(Long id, Trip trip, String name, String accommodationName,
         String accommodationRoadAddressName,
         LocalDateTime checkIn, LocalDateTime checkOut) {
         this.id = id;
         this.trip = trip;
-        this.itineraryName = itineraryName;
+        this.name = name;
         this.accommodationName = accommodationName;
         this.accommodationRoadAddressName = accommodationRoadAddressName;
         this.checkIn = checkIn;
         this.checkOut = checkOut;
     }
 
-    public AccommodationResponseDTO toAccommodationResponseDTO() {
-        return AccommodationResponseDTO.builder().itineraryId(super.getId())
-            .itineraryName(super.getItineraryName()).accommodationName(this.accommodationName)
-            .accommodationRoadAddressName(this.accommodationRoadAddressName)
-            .checkIn(DateTypeFormatterUtil.localDateTimeToString(this.checkIn))
-            .checkOut(DateTypeFormatterUtil.localDateTimeToString(this.checkOut)).build();
-    }
-
-    public void updateAccommodationInfo(String itineraryName, String accommodationName,
+    public void updateAccommodationInfo(String name, String accommodationName,
         String accommodationRoadAddressName, LocalDateTime checkIn, LocalDateTime checkOut) {
-        this.itineraryName = itineraryName;
+        this.name = name;
         this.accommodationName = accommodationName;
         this.accommodationRoadAddressName = accommodationRoadAddressName;
         this.checkIn = checkIn;
