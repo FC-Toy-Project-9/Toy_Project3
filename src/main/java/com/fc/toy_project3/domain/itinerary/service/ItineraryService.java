@@ -249,14 +249,13 @@ public class ItineraryService {
      */
     public ItineraryDeleteResponseDTO deleteItinerary(Long itineraryId) {
         Itinerary itinerary = getItinerary(itineraryId);
-        itineraryRepository.delete(itinerary);
-        ItineraryDeleteResponseDTO itineraryDeleteResponseDTO = ItineraryDeleteResponseDTO.builder()
+        itinerary.delete(LocalDateTime.now());
+        return ItineraryDeleteResponseDTO.builder()
             .itineraryId(itinerary.getId()).build();
-        return itineraryDeleteResponseDTO;
     }
 
     private Itinerary getItinerary(Long itineraryId) {
-        return itineraryRepository.findById(itineraryId)
+        return itineraryRepository.findByIdAndDeletedAt(itineraryId, null)
             .orElseThrow(ItineraryNotFoundException::new);
     }
 
