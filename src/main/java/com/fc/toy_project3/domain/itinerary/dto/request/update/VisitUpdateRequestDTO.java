@@ -1,6 +1,5 @@
 package com.fc.toy_project3.domain.itinerary.dto.request.update;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;

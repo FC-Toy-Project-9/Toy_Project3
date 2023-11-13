@@ -36,7 +36,7 @@ public class TransportationResponseDTO {
         this.arrivalTime = arrivalTime;
     }
 
-    public TransportationResponseDTO(Transportation transportation){
+    public TransportationResponseDTO(Transportation transportation) {
         this.itineraryId = transportation.getId();
         this.itineraryName = transportation.getName();
         this.transportation = transportation.getTransportation();
@@ -44,7 +44,9 @@ public class TransportationResponseDTO {
         this.departurePlaceRoadAddressName = transportation.getDeparturePlaceRoadAddressName();
         this.destination = transportation.getDestination();
         this.destinationRoadAddressName = transportation.getDestinationRoadAddressName();
-        this.departureTime = DateTypeFormatterUtil.localDateTimeToString(transportation.getDepartureTime());
-        this.arrivalTime = DateTypeFormatterUtil.localDateTimeToString(transportation.getArrivalTime());
+        this.departureTime = DateTypeFormatterUtil.localDateTimeToString(
+            transportation.getDepartureTime());
+        this.arrivalTime = DateTypeFormatterUtil.localDateTimeToString(
+            transportation.getArrivalTime());
     }
 }

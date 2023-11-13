@@ -1,6 +1,5 @@
 package com.fc.toy_project3.domain.itinerary.dto.request.update;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,9 +22,9 @@ public class TransportationUpdateRequestDTO {
 
     @Builder
     public TransportationUpdateRequestDTO(Long itineraryId, String itineraryName,
-        String transportation,
-        String departurePlace, String departurePlaceRoadAddressName, String destination,
-        String destinationRoadAddressName, String departureTime, String arrivalTime) {
+        String transportation, String departurePlace, String departurePlaceRoadAddressName,
+        String destination, String destinationRoadAddressName, String departureTime,
+        String arrivalTime) {
         this.itineraryId = itineraryId;
         this.itineraryName = itineraryName;
         this.transportation = transportation;

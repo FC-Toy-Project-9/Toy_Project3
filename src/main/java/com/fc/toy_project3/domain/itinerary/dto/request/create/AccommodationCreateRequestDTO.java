@@ -25,8 +25,8 @@ public class AccommodationCreateRequestDTO {
 
     @Builder
     public AccommodationCreateRequestDTO(Long tripId, String itineraryName,
-        String accommodationName,
-        String accommodationRoadAddressName, String checkIn, String checkOut) {
+        String accommodationName, String accommodationRoadAddressName, String checkIn,
+        String checkOut) {
         this.tripId = tripId;
         this.itineraryName = itineraryName;
         this.accommodationName = accommodationName;

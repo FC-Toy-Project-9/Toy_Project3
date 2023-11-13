@@ -29,7 +29,7 @@ public class VisitResponseDTO {
         this.departureTime = departureTime;
     }
 
-    public VisitResponseDTO(Visit visit){
+    public VisitResponseDTO(Visit visit) {
         this.itineraryId = visit.getId();
         this.itineraryName = visit.getName();
         this.placeName = visit.getPlaceName();
