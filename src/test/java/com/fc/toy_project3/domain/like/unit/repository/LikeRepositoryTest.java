@@ -33,7 +33,6 @@ import org.springframework.context.annotation.Import;
 @Import({TestJpaConfig.class})
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 public class LikeRepositoryTest {
-
     @Autowired
     private LikeRepository likeRepository;
 
@@ -76,10 +75,19 @@ public class LikeRepositoryTest {
         @DisplayName("좋아요 정보를 저장할 수 있다.")
         void _willSuccess() {
             //given
-            Member member = Member.builder().id(1L).email("fc123@naver.com").nickname("닉1").password("1234").build();
-            Trip trip = Trip.builder().id(1L).name("제주도 여행").startDate(LocalDate.of(2023, 10, 25))
+            Long memberId = 1L, tripId = 1L;
+            Member member = Member.builder().id(memberId).email("fc123@naver.com").nickname("닉1").password("1234").build();
+            Trip trip = Trip.builder().id(tripId).name("제주도 여행").startDate(LocalDate.of(2023, 10, 25))
                 .endDate(LocalDate.of(2023, 10, 26)).isDomestic(true).itineraries(new ArrayList<>())
                 .build();
+
+            if(!memberRepository.existsById(memberId)){
+                memberRepository.save(member);
+            }
+            if(!tripRepository.existsById(tripId)){
+                tripRepository.save(trip);
+            }
+
             Like like = Like.builder().id(1L).trip(trip).member(member).build();
 
             //when
@@ -92,6 +100,7 @@ public class LikeRepositoryTest {
             verify(likeRepository, times(1)).save(any(Like.class));
         }
     }
+
     @Nested
     @DisplayName("findByMemberIdAndTripId()는")
     class Context_findByMemberIdAndTripId {
@@ -101,8 +110,8 @@ public class LikeRepositoryTest {
         void _willSuccess() {
             //given
             Long memberId = 1L, tripId = 1L;
-            Member member = Member.builder().id(1L).email("fc123@naver.com").nickname("닉1").password("1234").build();
-            Trip trip = Trip.builder().id(1L).name("제주도 여행").startDate(LocalDate.of(2023, 10, 25))
+            Member member = Member.builder().id(memberId).email("fc123@naver.com").nickname("닉1").password("1234").build();
+            Trip trip = Trip.builder().id(tripId).name("제주도 여행").startDate(LocalDate.of(2023, 10, 25))
                 .endDate(LocalDate.of(2023, 10, 26)).isDomestic(true).itineraries(new ArrayList<>())
                 .build();
             Like like = Like.builder().id(1L).trip(trip).member(member).build();
@@ -121,7 +130,8 @@ public class LikeRepositoryTest {
 
             //then
             assertNotNull(result.getId());
-            assertThat(result).extracting("id", "tripId", "memberId").containsExactly(1L, 1L, 1L);
+            assertEquals(memberId, result.getMember().getId());
+            assertEquals(tripId, result.getTrip().getId());
         }
     }
 

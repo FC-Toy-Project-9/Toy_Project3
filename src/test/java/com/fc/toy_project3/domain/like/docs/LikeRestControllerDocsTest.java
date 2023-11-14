@@ -44,7 +44,7 @@ public class LikeRestControllerDocsTest extends RestDocsSupport {
         Long memberId = 1L;
         LikeResponseDTO likeResponseDTO = LikeResponseDTO.builder().likeId(1L).memberId(memberId).tripId(1L).build();
 
-        given(likeService.createLike(memberId, likeRequestDTO)).willReturn(likeResponseDTO);
+        given(likeService.createLike(any(Long.TYPE), any(LikeRequestDTO.class))).willReturn(likeResponseDTO);
 
         // when, then
         mockMvc.perform(RestDocumentationRequestBuilders.post("/api/likes")
