@@ -1,6 +1,6 @@
 package com.fc.toy_project3.domain.member.entity;
 
-import com.fc.toy_project3.domain.member.dto.MemberResponseDTO;
+import com.fc.toy_project3.domain.member.dto.SignUpResponseDTO;
 import com.fc.toy_project3.global.common.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,7 +21,7 @@ public class Member extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 30)
+    @Column(unique = true, length = 30)
     private String email;
 
     @Column()
@@ -30,7 +30,7 @@ public class Member extends BaseTimeEntity {
     @Column(length = 30)
     private String name;
 
-    @Column(length = 30)
+    @Column(unique = true, length = 30)
     private String nickname;
 
     @Builder
@@ -41,8 +41,8 @@ public class Member extends BaseTimeEntity {
         this.nickname = nickname;
         this.password = password;
     }
-    public MemberResponseDTO toMemberResponseDTO() {
-        return MemberResponseDTO.builder()
+    public SignUpResponseDTO toMemberResponseDTO() {
+        return SignUpResponseDTO.builder()
                 .memberId(this.id)
                 .email(this.email)
                 .name(this.name)
