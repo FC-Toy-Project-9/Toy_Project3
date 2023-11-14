@@ -34,7 +34,7 @@ public class LikeRestControllerDocsTest extends RestDocsSupport {
         return new LikeRestController(likeService);
     }
 
-    private final ConstraintDescriptions postDescriptions = new ConstraintDescriptions(LikeRequestDTO.class);
+    private final ConstraintDescriptions descriptions = new ConstraintDescriptions(LikeRequestDTO.class);
 
     @Test
     @DisplayName("createLike()은 좋아요 정보를 저장할 수 있다.")
@@ -52,7 +52,7 @@ public class LikeRestControllerDocsTest extends RestDocsSupport {
             .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isCreated()).andDo(
             restDoc.document(requestFields(
                     fieldWithPath("tripId").type(JsonFieldType.NUMBER).description("여행 식별자")
-                        .attributes(key("constraints").value(postDescriptions.descriptionsForProperty("tripId")))),
+                        .attributes(key("constraints").value(descriptions.descriptionsForProperty("tripId")))),
                 responseFields(responseCommon()).and(
                     fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터"),
                     fieldWithPath("data.likeId").type(JsonFieldType.NUMBER).description("좋아요 식별자"),
@@ -63,7 +63,7 @@ public class LikeRestControllerDocsTest extends RestDocsSupport {
 
     @Test
     @DisplayName("getLikeByMemberIdAndTripId()는 특정 회원 id와 특정 여행 id를 가진 좋아요 정보를 조회할 수 있다.")
-    void getTripById() throws Exception {
+    void getLikeByMemberIdAndTripId() throws Exception {
         // given
         Long memberId = 1L, tripId = 1L;
         LikeResponseDTO likeResponseDTO = LikeResponseDTO.builder().likeId(1L).memberId(memberId).tripId(tripId).build();
@@ -84,7 +84,7 @@ public class LikeRestControllerDocsTest extends RestDocsSupport {
 
     @Test
     @DisplayName("deleteLikeById()은 특정 id를 가진 좋아요 정보를 삭제할 수 있다.")
-    void deleteTripById() throws Exception {
+    void deleteLikeById() throws Exception {
         //given
         Long likeId = 1L;
         LikeResponseDTO likeResponseDTO = LikeResponseDTO.builder().likeId(likeId).memberId(1L).tripId(1L).build();
