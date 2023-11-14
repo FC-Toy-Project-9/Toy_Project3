@@ -48,8 +48,7 @@ public class TripRestController {
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10") int pageSize,
         @RequestParam(defaultValue = "createdAt") String orderBy,
-        @RequestParam(defaultValue = "ASC") String sort
-    ) {
+        @RequestParam(defaultValue = "DESC") String sort) {
         return ResponseEntity.status(HttpStatus.OK).body(
             ResponseDTO.res(HttpStatus.OK, tripService.getTrips(
                 GetTripsRequestDTO.builder()
