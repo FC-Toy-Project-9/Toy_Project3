@@ -72,7 +72,10 @@ public class CommentRestControllerDocsTest extends RestDocsSupport {
                     fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터"),
                     fieldWithPath("data.tripId").type(JsonFieldType.NUMBER).description("여행 식별자"),
                     fieldWithPath("data.memberId").type(JsonFieldType.NUMBER).description("회원 식별자"),
-                    fieldWithPath("data.content").type(JsonFieldType.STRING).description("댓글"))));
+                    fieldWithPath("data.nickname").type(JsonFieldType.STRING).description("회원 닉네임"),
+                    fieldWithPath("data.content").type(JsonFieldType.STRING).description("댓글"),
+                    fieldWithPath("data.createdAt").type(JsonFieldType.STRING).description("댓글 생성일"),
+                    fieldWithPath("data.updatedAt").type(JsonFieldType.STRING).description("댓글 수정일"))));
 
         verify(commentService, times(1)).postComment((any(Long.TYPE)),any(CommentCreateRequestDTO.class));
     }
@@ -103,7 +106,10 @@ public class CommentRestControllerDocsTest extends RestDocsSupport {
                     fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터"),
                     fieldWithPath("data.tripId").type(JsonFieldType.NUMBER).description("여행 식별자"),
                     fieldWithPath("data.memberId").type(JsonFieldType.NUMBER).description("회원 식별자"),
-                    fieldWithPath("data.content").type(JsonFieldType.STRING).description("댓글"))));
+                    fieldWithPath("data.nickname").type(JsonFieldType.STRING).description("회원 닉네임"),
+                    fieldWithPath("data.content").type(JsonFieldType.STRING).description("댓글"),
+                    fieldWithPath("data.createdAt").type(JsonFieldType.STRING).description("댓글 생성일"),
+                    fieldWithPath("data.updatedAt").type(JsonFieldType.STRING).description("댓글 수정일"))));
 
         verify(commentService, times(1)).patchComment(any(Long.TYPE),any(Long.TYPE),
             any(CommentUpdateRequestDTO.class));
