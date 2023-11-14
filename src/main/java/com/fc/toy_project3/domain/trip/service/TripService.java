@@ -4,9 +4,13 @@ import com.fc.toy_project3.domain.itinerary.entity.Accommodation;
 import com.fc.toy_project3.domain.itinerary.entity.Itinerary;
 import com.fc.toy_project3.domain.itinerary.entity.Transportation;
 import com.fc.toy_project3.domain.itinerary.entity.Visit;
+import com.fc.toy_project3.domain.member.entity.Member;
+import com.fc.toy_project3.domain.member.repository.MemberRepository;
+import com.fc.toy_project3.domain.trip.dto.request.GetTripsRequestDTO;
 import com.fc.toy_project3.domain.trip.dto.request.PostTripRequestDTO;
 import com.fc.toy_project3.domain.trip.dto.request.UpdateTripRequestDTO;
 import com.fc.toy_project3.domain.trip.dto.response.GetTripResponseDTO;
+import com.fc.toy_project3.domain.trip.dto.response.TripsResponseDTO;
 import com.fc.toy_project3.domain.trip.dto.response.GetTripsResponseDTO;
 import com.fc.toy_project3.domain.trip.dto.response.TripResponseDTO;
 import com.fc.toy_project3.domain.trip.entity.Trip;
@@ -21,8 +25,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class TripService {
 
     private final TripRepository tripRepository;
+    private final MemberRepository memberRepository;
 
     /**
      * 여행 정보 등록
@@ -42,21 +47,22 @@ public class TripService {
      * @param postTripRequestDTO 여행 정보 등록 요청 DTO
      * @return 여행 정보 응답 DTO
      */
-    public TripResponseDTO postTrip(PostTripRequestDTO postTripRequestDTO) {
-
+    public TripResponseDTO postTrip(PostTripRequestDTO postTripRequestDTO, long memberId) {
         LocalDate startDate = DateTypeFormatterUtil.dateFormatter(
             postTripRequestDTO.getStartDate());
         LocalDate endDate = DateTypeFormatterUtil.dateFormatter(postTripRequestDTO.getEndDate());
         if (startDate.isAfter(endDate)) {
             throw new InvalidTripDateRangeException();
         }
-        Trip trip = Trip.builder()
+        // TODO memberService 사용하도록 수정할 것
+        Member member = memberRepository.findById(memberId).get();
+        return new TripResponseDTO(tripRepository.save(Trip.builder()
+            .member(member)
             .name(postTripRequestDTO.getTripName())
             .startDate(startDate)
             .endDate(endDate)
             .isDomestic(postTripRequestDTO.getIsDomestic())
-            .build();
-        return new TripResponseDTO(tripRepository.save(trip));
+            .build()));
     }
 
     /**
@@ -64,13 +70,17 @@ public class TripService {
      *
      * @return 여행 정보 응답 DTO 리스트
      */
-    public List<GetTripsResponseDTO> getTrips() {
-        List<GetTripsResponseDTO> trips = new ArrayList<>();
-        List<Trip> tripList = tripRepository.findAll(Sort.by(Direction.ASC, "id"));
-        for (Trip trip : tripList) {
-            trips.add(new GetTripsResponseDTO(trip));
-        }
-        return trips;
+    public GetTripsResponseDTO getTrips(GetTripsRequestDTO getTripsRequestDTO,
+        Pageable pageable) {
+        List<TripsResponseDTO> trips = new ArrayList<>();
+        Page<Trip> tripList = tripRepository.findAllBySearchCondition(getTripsRequestDTO, pageable);
+        tripList.forEach(trip -> trips.add(new TripsResponseDTO(trip)));
+        return GetTripsResponseDTO.builder()
+            .totalPages(tripList.getTotalPages())
+            .isLastPage(tripList.isLast())
+            .totalTrips(tripList.getTotalElements())
+            .trips(trips)
+            .build();
     }
 
     /**
