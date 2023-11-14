@@ -42,7 +42,7 @@ public class LikeRestControllerDocsTest extends RestDocsSupport {
         // given
         LikeRequestDTO likeRequestDTO = LikeRequestDTO.builder().tripId(1L).build();
         Long memberId = 1L;
-        LikeResponseDTO likeResponseDTO = LikeResponseDTO.builder().likeId(1L).memberId(memberId).tripId(likeRequestDTO.getTripId()).build();
+        LikeResponseDTO likeResponseDTO = LikeResponseDTO.builder().likeId(1L).memberId(memberId).tripId(1L).build();
 
         given(likeService.createLike(memberId, likeRequestDTO)).willReturn(likeResponseDTO);
 

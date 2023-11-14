@@ -53,11 +53,11 @@ public class LikeRepositoryTest {
         likeRepository.deleteAll();
         memberRepository.deleteAll();
         tripRepository.deleteAll();
-        entityManager.createNativeQuery("TRUNCATE TABLE like").executeUpdate();
+        entityManager.createNativeQuery("TRUNCATE TABLE likes").executeUpdate();
         entityManager.createNativeQuery("TRUNCATE TABLE member").executeUpdate();
         entityManager.createNativeQuery("TRUNCATE TABLE trip").executeUpdate();
         entityManager
-            .createNativeQuery("ALTER TABLE like ALTER COLUMN `id` RESTART WITH 1")
+            .createNativeQuery("ALTER TABLE likes ALTER COLUMN `id` RESTART WITH 1")
             .executeUpdate();
         entityManager
             .createNativeQuery("ALTER TABLE member ALTER COLUMN `id` RESTART WITH 1")
