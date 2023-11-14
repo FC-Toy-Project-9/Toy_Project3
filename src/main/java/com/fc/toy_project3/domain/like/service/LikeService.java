@@ -33,10 +33,11 @@ public class LikeService {
      */
     public LikeResponseDTO createLike(Long memberId, LikeRequestDTO likeRequestDTO) {
         //getMember(), MemberNotFoundException 으로 변경 예정
+        Long tripId = likeRequestDTO.getTripId();
         Like like = Like.builder().member(memberRepository.findById(memberId).orElseThrow(LikeNotFoundException::new))
-            .trip(tripService.getTrip(likeRequestDTO.getTripId()))
+            .trip(tripService.getTrip(tripId))
             .build();
-        //여행 entity like_count 증가 로직 추가 예정
+        tripService.like(tripId, true);
         return new LikeResponseDTO(likeRepository.save(like));
     }
 
@@ -78,7 +79,7 @@ public class LikeService {
             throw new LikeUnauthorizedException();
         }
         likeRepository.deleteById(likeId);
-        //여행 entity like_count 감소 로직 추가 예정
+        tripService.like(like.getTrip().getId(), false);
         return new LikeResponseDTO(like);
     }
 }
