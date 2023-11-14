@@ -1,6 +1,7 @@
 package com.fc.toy_project3.domain.trip.entity;
 
 import com.fc.toy_project3.domain.itinerary.entity.Itinerary;
+import com.fc.toy_project3.domain.member.entity.Member;
 import com.fc.toy_project3.domain.trip.dto.request.UpdateTripRequestDTO;
 import com.fc.toy_project3.global.common.BaseTimeEntity;
 import com.fc.toy_project3.global.util.DateTypeFormatterUtil;
@@ -10,6 +11,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -33,6 +36,10 @@ public class Trip extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JoinColumn(name = "member_Id")
+    @ManyToOne
+    private Member member;
+
     @Column(length = 100)
     private String name;
 
@@ -49,9 +56,10 @@ public class Trip extends BaseTimeEntity {
     private List<Itinerary> itineraries = new ArrayList<>();
 
     @Builder
-    public Trip(Long id, String name, LocalDate startDate, LocalDate endDate, Boolean isDomestic,
+    public Trip(Long id, Member member, String name, LocalDate startDate, LocalDate endDate, Boolean isDomestic,
         Long likeCount, List<Itinerary> itineraries) {
         this.id = id;
+        this.member = member;
         this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;
