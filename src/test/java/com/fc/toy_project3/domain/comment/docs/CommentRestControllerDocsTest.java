@@ -50,11 +50,11 @@ public class CommentRestControllerDocsTest extends RestDocsSupport {
     @DisplayName("postComment()는 여행 댓글 정보를 저장할 수 있다.")
     void postComment() throws Exception {
         //given
-        CommentCreateRequestDTO commentCreateRequestDTO = CommentCreateRequestDTO.builder().tripId(1L).memberId(1L)
+        CommentCreateRequestDTO commentCreateRequestDTO = CommentCreateRequestDTO.builder().tripId(1L)
             .content("여행 계획 정말 멋있다.").build();
         CommentResponseDTO commentResponseDTO = CommentResponseDTO.builder().tripId(1L).memberId(1L)
             .content("여행 계획 정말 멋있다.").build();
-        given(commentService.postComment(any(CommentCreateRequestDTO.class))).willReturn(
+        given(commentService.postComment(any(Long.TYPE),any(CommentCreateRequestDTO.class))).willReturn(
             commentResponseDTO);
 
         //when, then
@@ -65,9 +65,6 @@ public class CommentRestControllerDocsTest extends RestDocsSupport {
                     fieldWithPath("tripId").type(JsonFieldType.NUMBER).description("여행 식별자")
                         .attributes(key("constraints")
                             .value(createCommentConstraints.descriptionsForProperty("tripId"))),
-                    fieldWithPath("memberId").type(JsonFieldType.NUMBER).description("회원 식별자")
-                        .attributes(key("constraints")
-                            .value(createCommentConstraints.descriptionsForProperty("memberId"))),
                     fieldWithPath("content").type(JsonFieldType.STRING).description("댓글")
                         .attributes(key("constraints")
                             .value(createCommentConstraints.descriptionsForProperty("content")))),
@@ -77,7 +74,7 @@ public class CommentRestControllerDocsTest extends RestDocsSupport {
                     fieldWithPath("data.memberId").type(JsonFieldType.NUMBER).description("회원 식별자"),
                     fieldWithPath("data.content").type(JsonFieldType.STRING).description("댓글"))));
 
-        verify(commentService, times(1)).postComment((any(CommentCreateRequestDTO.class)));
+        verify(commentService, times(1)).postComment((any(Long.TYPE)),any(CommentCreateRequestDTO.class));
     }
 
     @Test
@@ -89,7 +86,7 @@ public class CommentRestControllerDocsTest extends RestDocsSupport {
         CommentResponseDTO commentResponseDTO = CommentResponseDTO.builder().tripId(1L).memberId(1L)
             .content("여행 잘 다녀와.").build();
         given(
-            commentService.patchComment(any(Long.TYPE),
+            commentService.patchComment(any(Long.TYPE),any(Long.TYPE),
                 any(CommentUpdateRequestDTO.class))).willReturn(
             commentResponseDTO);
 
@@ -108,7 +105,7 @@ public class CommentRestControllerDocsTest extends RestDocsSupport {
                     fieldWithPath("data.memberId").type(JsonFieldType.NUMBER).description("회원 식별자"),
                     fieldWithPath("data.content").type(JsonFieldType.STRING).description("댓글"))));
 
-        verify(commentService, times(1)).patchComment((any(Long.TYPE)),
+        verify(commentService, times(1)).patchComment(any(Long.TYPE),any(Long.TYPE),
             any(CommentUpdateRequestDTO.class));
 
 
@@ -120,7 +117,7 @@ public class CommentRestControllerDocsTest extends RestDocsSupport {
         //given
         CommentDeleteResponseDTO commentDeleteResponseDTO = CommentDeleteResponseDTO.builder()
             .commentId(1L).build();
-        given(commentService.softDeleteComment(any(Long.TYPE))).willReturn(commentDeleteResponseDTO);
+        given(commentService.softDeleteComment(any(Long.TYPE),any(Long.TYPE))).willReturn(commentDeleteResponseDTO);
 
         //when, then
         mockMvc.perform(delete("/api/comments/{commentId}", 1L)).andExpect(status().isOk()).andDo(

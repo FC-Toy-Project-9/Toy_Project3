@@ -21,8 +21,8 @@ public class CommentRestControllerAdvice {
     @ExceptionHandler
     public ResponseEntity<ResponseDTO<Void>> commentMemberNotFoundException(
         CommentMemberNotFoundException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(ResponseDTO.res(HttpStatus.BAD_REQUEST, e.getMessage()));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            .body(ResponseDTO.res(HttpStatus.UNAUTHORIZED, e.getMessage()));
     }
 
     @ExceptionHandler

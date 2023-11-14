@@ -83,10 +83,9 @@ public class CommentRepositoryTest {
         commentRepository.save(comment2);
 
         //when
-        Comment findComment1 = commentRepository.findById(comment1.getId()).orElseThrow(
-            CommentNotFoundException::new);
-        Comment findComment2 = commentRepository.findById(comment2.getId()).orElseThrow(
-            CommentNotFoundException::new);
+        Comment findComment1 = commentRepository.findById(comment1.getId()).orElseThrow(CommentNotFoundException::new);
+
+        Comment findComment2 = commentRepository.findById(comment2.getId()).orElseThrow(CommentNotFoundException::new);
 
         //then
         assertThat(commentRepository.count()).isEqualTo(2);

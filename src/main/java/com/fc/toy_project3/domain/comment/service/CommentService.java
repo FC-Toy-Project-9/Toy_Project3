@@ -33,7 +33,8 @@ public class CommentService {
      * @param commentCreateRequestDTO 댓글 정보 등록 요청 DTO
      * @return 댓글 정보 응답 DTO
      */
-    public CommentResponseDTO postComment(Long memberId, CommentCreateRequestDTO commentCreateRequestDTO) {
+    public CommentResponseDTO postComment(Long memberId,
+        CommentCreateRequestDTO commentCreateRequestDTO) {
         Trip trip = tripService.getTrip(commentCreateRequestDTO.getTripId());
         Member member = memberRepository.findById(memberId).get();
         Comment comment = Comment.builder().trip(trip).member(member)
@@ -51,8 +52,9 @@ public class CommentService {
      */
     public CommentResponseDTO patchComment(Long memberId, Long commentId,
         CommentUpdateRequestDTO commentUpdateRequestDTO) {
-        Comment comment = commentRepository.findByMemberIdAndCommentId(memberId,commentId);
-        if (comment == null) {
+        Comment comment = commentRepository.findById(commentId)
+            .orElseThrow(CommentNotFoundException::new);
+        if (comment.getMember().getId() != memberId) {
             throw new CommentMemberNotFoundException();
         }
         if (comment.isDeleted()) {
@@ -69,8 +71,9 @@ public class CommentService {
      * @return 댓글 삭제 정보 응답 DTO
      */
     public CommentDeleteResponseDTO softDeleteComment(Long memberId, Long commentId) {
-        Comment comment = commentRepository.findByMemberIdAndCommentId(memberId,commentId);
-        if (comment == null) {
+        Comment comment = commentRepository.findById(commentId)
+            .orElseThrow(CommentNotFoundException::new);
+        if (comment.getMember().getId() != memberId) {
             throw new CommentMemberNotFoundException();
         }
         if (comment.isDeleted()) {

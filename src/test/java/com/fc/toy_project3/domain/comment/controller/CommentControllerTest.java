@@ -11,6 +11,7 @@ import com.fc.toy_project3.domain.comment.dto.request.CommentUpdateRequestDTO;
 import com.fc.toy_project3.domain.comment.dto.response.CommentDeleteResponseDTO;
 import com.fc.toy_project3.domain.comment.dto.response.CommentResponseDTO;
 import com.fc.toy_project3.domain.comment.service.CommentService;
+import com.fc.toy_project3.domain.member.entity.Member;
 import com.fc.toy_project3.global.common.ResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -39,21 +40,22 @@ public class CommentControllerTest {
     @DisplayName("postComment()는 여행 댓글을 저장할 수 있다.")
     public void saveComment() throws Exception {
         //given
+        Long mebmerId = 1L;
         CommentCreateRequestDTO commentCreateRequestDTO = CommentCreateRequestDTO.builder()
-            .tripId(1L).memberId(1L)
+            .tripId(1L)
             .content("여행 계획 정말 멋있다.").build();
         CommentResponseDTO commentResponseDTO = CommentResponseDTO.builder().tripId(1L).memberId(1L)
             .content("여행 계획 정말 멋있다.").build();
-        given(commentService.postComment(any(CommentCreateRequestDTO.class))).willReturn(
+        given(commentService.postComment(any(Long.TYPE), any(CommentCreateRequestDTO.class))).willReturn(
             commentResponseDTO);
 
         //when
-        ResponseEntity<ResponseDTO<CommentResponseDTO>> responseEntity = commentRestController.postComment(
+        ResponseEntity<ResponseDTO<CommentResponseDTO>> responseEntity = commentRestController.postComment(1L,
             commentCreateRequestDTO);
 
         //then
         assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
-        verify(commentService, times(1)).postComment((any(CommentCreateRequestDTO.class)));
+        verify(commentService, times(1)).postComment((any(Long.TYPE)),any(CommentCreateRequestDTO.class));
 
     }
 
