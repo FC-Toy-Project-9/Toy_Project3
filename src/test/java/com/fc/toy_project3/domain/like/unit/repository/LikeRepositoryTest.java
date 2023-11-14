@@ -1,12 +1,8 @@
 package com.fc.toy_project3.domain.like.unit.repository;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import com.fc.toy_project3.config.TestJpaConfig;
 import com.fc.toy_project3.domain.like.entity.Like;
 import com.fc.toy_project3.domain.like.repository.LikeRepository;
@@ -97,7 +93,6 @@ public class LikeRepositoryTest {
             assertEquals(like.getId(), result.getId());
             assertEquals(member.getId(), result.getMember().getId());
             assertEquals(trip.getId(), result.getTrip().getId());
-            verify(likeRepository, times(1)).save(any(Like.class));
         }
     }
 
