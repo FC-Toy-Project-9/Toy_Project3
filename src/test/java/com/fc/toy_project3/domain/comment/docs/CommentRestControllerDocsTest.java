@@ -49,7 +49,7 @@ public class CommentRestControllerDocsTest extends RestDocsSupport {
     @Test
     @DisplayName("postComment()는 여행 댓글 정보를 저장할 수 있다.")
     void postComment() throws Exception {
-        //given
+        // given
         CommentCreateRequestDTO commentCreateRequestDTO = CommentCreateRequestDTO.builder().tripId(1L)
             .content("여행 계획 정말 멋있다.").build();
         CommentResponseDTO commentResponseDTO = CommentResponseDTO.builder().tripId(1L).memberId(1L)
@@ -57,7 +57,7 @@ public class CommentRestControllerDocsTest extends RestDocsSupport {
         given(commentService.postComment(any(Long.TYPE),any(CommentCreateRequestDTO.class))).willReturn(
             commentResponseDTO);
 
-        //when, then
+        // when, then
         mockMvc.perform(
             post("/api/comments").content(objectMapper.writeValueAsString(commentCreateRequestDTO))
                 .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isCreated()).andDo(
@@ -80,7 +80,7 @@ public class CommentRestControllerDocsTest extends RestDocsSupport {
     @Test
     @DisplayName("patchComment()는 여행 댓글 정보를 수정할 수 있다.")
     void patchComment() throws Exception {
-        //given
+        // given
         CommentUpdateRequestDTO commentUpdateRequestDTO = CommentUpdateRequestDTO.builder()
             .content("여행 잘 다녀와.").build();
         CommentResponseDTO commentResponseDTO = CommentResponseDTO.builder().tripId(1L).memberId(1L)
@@ -90,7 +90,7 @@ public class CommentRestControllerDocsTest extends RestDocsSupport {
                 any(CommentUpdateRequestDTO.class))).willReturn(
             commentResponseDTO);
 
-        //when, then
+        // when, then
         mockMvc.perform(
             patch("/api/comments/{commentId}", 1L).content(
                     objectMapper.writeValueAsString(commentUpdateRequestDTO))
@@ -114,12 +114,12 @@ public class CommentRestControllerDocsTest extends RestDocsSupport {
     @Test
     @DisplayName("softDeleteComment()는 여행 댓글 정보를 삭제할 수 있다.")
     void softDeleteComment() throws Exception {
-        //given
+        // given
         CommentDeleteResponseDTO commentDeleteResponseDTO = CommentDeleteResponseDTO.builder()
             .commentId(1L).build();
         given(commentService.softDeleteComment(any(Long.TYPE),any(Long.TYPE))).willReturn(commentDeleteResponseDTO);
 
-        //when, then
+        // when, then
         mockMvc.perform(delete("/api/comments/{commentId}", 1L)).andExpect(status().isOk()).andDo(
             restDoc.document(pathParameters(parameterWithName("commentId").description("댓글 식별자")),
                 responseFields(responseCommon()).and(

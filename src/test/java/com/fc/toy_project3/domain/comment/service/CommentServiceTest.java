@@ -49,33 +49,26 @@ public class CommentServiceTest {
         @Test
         @DisplayName("여행 댓글 정보를 저장할 수 있다.")
         void _willSuccess() {
-            //given
+            // given
             CommentCreateRequestDTO commentCreateRequestDTO = new CommentCreateRequestDTO(1L,
                 "여행 계획 정말 멋있다.");
-            given(tripService.getTrip(any(Long.TYPE))).willReturn(
-                Trip.builder()
-                    .id(1L)
-                    .name("제주도 여행")
-                    .startDate(LocalDate.of(2023, 10, 25))
-                    .endDate(LocalDate.of(2023, 10, 26))
-                    .isDomestic(true)
-                    .itineraries(new ArrayList<>())
-                    .build());
-            given(memberRepository.findById(any(Long.TYPE))).willReturn(
-                java.util.Optional.ofNullable(Member.builder().id(1L).email("toyproject3@gmail.com")
-                    .password("toypro3")
-                    .name("김토이").nickname("토이").build()));
+            Member member = Member.builder().id(1L).nickname("토이").build();
+            Trip trip = Trip.builder().id(1L).member(member).name("제주도 여행")
+                .startDate(LocalDate.of(2023, 10, 25))
+                .endDate(LocalDate.of(2023, 10, 26))
+                .isDomestic(true)
+                .itineraries(new ArrayList<>())
+                .build();
+            Comment comment = Comment.builder().id(1L).trip(trip).member(member)
+                .content("여행 계획 정말 멋있다.").build();
+            given(tripService.getTrip(any(Long.TYPE))).willReturn(trip);
+            given(memberRepository.findById(any(Long.TYPE))).willReturn(Optional.of(member));
+            given(commentRepository.save(any(Comment.class))).willReturn(comment);
 
-            Trip trip = tripService.getTrip(1L);
-            Member member = memberRepository.findById(1L).get();
-            given(commentRepository.save(any(Comment.class))).willReturn(
-                Comment.builder().id(1L).trip(trip)
-                    .member(member).content("여행 계획 정말 멋있다.").build());
-
-            //when
+            // when
             CommentResponseDTO result = commentService.postComment(1L, commentCreateRequestDTO);
 
-            //then
+            // then
             assertThat(result).extracting("tripId", "memberId", "content")
                 .containsExactly(1L, 1L, "여행 계획 정말 멋있다.");
         }
@@ -89,39 +82,28 @@ public class CommentServiceTest {
         @Test
         @DisplayName("여행 댓글 정보를 수정할 수 있다.")
         void _willSuccess() {
-            //given
+            // given
             Long commentId = 1L;
             CommentUpdateRequestDTO commentUpdateRequestDTO = new CommentUpdateRequestDTO(
-                "여행 잘 다녀와.");
-
-            given(tripService.getTrip(any(Long.TYPE))).willReturn(
-                Trip.builder()
-                    .id(1L)
-                    .name("제주도 여행")
-                    .startDate(LocalDate.of(2023, 10, 25))
-                    .endDate(LocalDate.of(2023, 10, 26))
-                    .isDomestic(true)
-                    .itineraries(new ArrayList<>())
-                    .build());
-            given(memberRepository.findById(any(Long.TYPE))).willReturn(
-                java.util.Optional.ofNullable(Member.builder().id(1L).email("toyproject3@gmail.com")
-                    .password("toypro3")
-                    .name("김토이").nickname("토이").build()));
-
-            Trip trip = tripService.getTrip(1L);
-            Member member = memberRepository.findById(1L).get();
+                "여행 정말 재밌겠다.");
+            Member member = Member.builder().id(1L).nickname("토이").build();
+            Trip trip = Trip.builder().id(1L).member(member).name("제주도 여행")
+                .startDate(LocalDate.of(2023, 10, 25))
+                .endDate(LocalDate.of(2023, 10, 26))
+                .isDomestic(true)
+                .itineraries(new ArrayList<>())
+                .build();
             Comment comment = Comment.builder().id(1L).trip(trip).member(member)
                 .content("여행 잘 다녀와.").build();
-            given(commentRepository.findById(any(Long.TYPE))).willReturn(
-                Optional.of(comment));
+            given(commentRepository.findById(any(Long.TYPE))).willReturn(Optional.of(comment));
 
-            //when
+            // when
             CommentResponseDTO result = commentService.patchComment(1L, commentId,
                 commentUpdateRequestDTO);
 
-            //then
+            // then
             assertThat(result).extracting("tripId", "memberId", "content")
-                .containsExactly(1L, 1L, "여행 잘 다녀와.");
+                .containsExactly(1L, 1L, "여행 정말 재밌겠다.");
         }
     }
 
@@ -132,32 +114,23 @@ public class CommentServiceTest {
         @Test
         @DisplayName("여행 댓글 정보를 삭제할 수 있다.")
         void _willSuccess() {
-            //given
+            // given
             Long commentId = 1L;
-            given(tripService.getTrip(any(Long.TYPE))).willReturn(
-                Trip.builder()
-                    .id(1L)
-                    .name("제주도 여행")
-                    .startDate(LocalDate.of(2023, 10, 25))
-                    .endDate(LocalDate.of(2023, 10, 26))
-                    .isDomestic(true)
-                    .itineraries(new ArrayList<>())
-                    .build());
-            given(memberRepository.findById(any(Long.TYPE))).willReturn(
-                java.util.Optional.ofNullable(Member.builder().id(1L).email("toyproject3@gmail.com")
-                    .password("toypro3")
-                    .name("김토이").nickname("토이").build()));
-
-            Trip trip = tripService.getTrip(1L);
-            Member member = memberRepository.findById(1L).get();
+            Member member = Member.builder().id(1L).nickname("토이").build();
+            Trip trip = Trip.builder().id(1L).member(member).name("제주도 여행")
+                .startDate(LocalDate.of(2023, 10, 25))
+                .endDate(LocalDate.of(2023, 10, 26))
+                .isDomestic(true)
+                .itineraries(new ArrayList<>())
+                .build();
             Comment comment = Comment.builder().id(1L).trip(trip).member(member)
                 .content("여행 잘 다녀와.").build();
             given(commentRepository.findById(any(Long.TYPE))).willReturn(Optional.of(comment));
 
-            //when
+            // when
             CommentDeleteResponseDTO result = commentService.softDeleteComment(1L, commentId);
 
-            //then
+            // then
             assertThat(result.getCommentId()).isEqualTo(1);
 
         }

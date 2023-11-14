@@ -65,7 +65,7 @@ public class CommentRepositoryTest {
     @Test
     @DisplayName("댓글이 DB에 저장이 됐습니다.")
     void saveComment() {
-        //given
+        // given
         Member member = Member.builder().id(1L).email("toyproject3@gmail.com")
             .password("toypro3")
             .name("김토이").nickname("토이").build();
@@ -84,10 +84,10 @@ public class CommentRepositoryTest {
         Comment comment = Comment.builder().id(1L).trip(trip).member(member).content("여행 잘 다녀와.")
             .build();
 
-        //when
+        // when
         Comment savedComment = commentRepository.save(comment);
 
-        //then
+        // then
         assertThat(comment.getId()).isEqualTo(savedComment.getId());
         assertThat(savedComment.getId()).isNotNull();
         assertThat(savedComment.getTrip().getId()).isEqualTo(1L);
@@ -101,7 +101,7 @@ public class CommentRepositoryTest {
     @Test
     @DisplayName("지정된 댓글이 조회 됐습니다.")
     void findCommentById() {
-        //given
+        // given
         Member member1 = Member.builder().id(1L).nickname("닉네임1").build();
         Member member2 = Member.builder().id(2L).nickname("닉네임1").build();
         Trip trip1 = Trip.builder()
@@ -132,14 +132,14 @@ public class CommentRepositoryTest {
         tripRepository.saveAll(List.of(trip1, trip2));
         commentRepository.saveAll(List.of(comment1, comment2));
 
-        //when
+        // when
         Comment findComment1 = commentRepository.findById(comment1.getId())
             .orElseThrow(CommentNotFoundException::new);
 
         Comment findComment2 = commentRepository.findById(comment2.getId())
             .orElseThrow(CommentNotFoundException::new);
 
-        //then
+        // then
         assertThat(findComment1.getId()).isEqualTo(1L);
         assertThat(findComment1.getTrip().getId()).isEqualTo(1L);
         assertThat(findComment1.getMember().getId()).isEqualTo(1L);
