@@ -2,6 +2,7 @@ package com.fc.toy_project3.domain.trip.unit.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.fc.toy_project3.config.TestJpaConfig;
 import com.fc.toy_project3.domain.member.entity.Member;
 import com.fc.toy_project3.domain.member.repository.MemberRepository;
 import com.fc.toy_project3.domain.trip.dto.request.GetTripsRequestDTO;
@@ -14,6 +15,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
@@ -22,16 +24,17 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.transaction.annotation.Transactional;
 
 @DataJpaTest
-@Transactional
-@EnableJpaAuditing
-@TestMethodOrder(value = MethodOrderer.OrderAnnotation.class)
+@Import({TestJpaConfig.class})
+@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 public class TripRepositoryTest {
 
     @Autowired
@@ -110,7 +113,6 @@ public class TripRepositoryTest {
 
         @Test
         @DisplayName("여행 정보를 저장할 수 있다.")
-        @Order(1)
         void _willSuccess() {
             // given
             Member member = Member.builder().nickname("닉네임1").build();
@@ -146,7 +148,6 @@ public class TripRepositoryTest {
 
         @Test
         @DisplayName("여행 ID로 여행 정보를 조회할 수 있다.")
-        @Order(2)
         void _willSuccess() {
             // given
             saveTripList();
@@ -174,7 +175,6 @@ public class TripRepositoryTest {
 
         @Test
         @DisplayName("여행 이름으로 여행 목록을 조회할 수 있다.")
-        @Order(3)
         void tripName_willSuccess() {
             // given
             saveTripList();
@@ -203,7 +203,6 @@ public class TripRepositoryTest {
 
         @Test
         @DisplayName("여행 이름으로 여행 목록을 조회할 수 있다.")
-        @Order(4)
         void nickname_willSuccess() {
             // given
             saveTripList();
@@ -232,7 +231,6 @@ public class TripRepositoryTest {
 
         @Test
         @DisplayName("최신순으로 여행 목록을 정렬하여 조회할 수 있다.")
-        @Order(5)
         void orderByCreatedAt_willSuccess() {
             // given
             saveTripList();
@@ -262,7 +260,6 @@ public class TripRepositoryTest {
 
         @Test
         @DisplayName("좋아요순으로 여행 목록을 정렬하여 조회할 수 있다.")
-        @Order(6)
         void orderByLikeCount_willSuccess() {
             // given
             saveTripList();

@@ -19,6 +19,7 @@ import com.fc.toy_project3.domain.trip.dto.response.GetTripResponseDTO;
 import com.fc.toy_project3.domain.trip.dto.response.GetTripsResponseDTO;
 import com.fc.toy_project3.domain.trip.dto.response.TripResponseDTO;
 import com.fc.toy_project3.domain.trip.entity.Trip;
+import com.fc.toy_project3.domain.trip.exception.InvalidPagingRequestException;
 import com.fc.toy_project3.domain.trip.exception.InvalidTripDateRangeException;
 import com.fc.toy_project3.domain.trip.exception.TripNotFoundException;
 import com.fc.toy_project3.domain.trip.exception.WrongTripStartDateException;
@@ -35,11 +36,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
