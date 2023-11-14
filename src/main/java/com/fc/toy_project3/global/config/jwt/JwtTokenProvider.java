@@ -13,10 +13,12 @@ import java.util.Date;
 
 @Configuration
 public class JwtTokenProvider {
-    @Value("${jwt.secretKey}")
-    private String secretKey;
-    @Value("${jwt.tokenValidTime}")
-    private long tokenValidTime; // 30min
+//    @Value("${jwt.secretKey}")
+//    private String secretKey;
+//    @Value("${jwt.tokenValidTime}")
+//    private long tokenValidTime; // 30min
+    private String secretKey = "toyproject9-3";
+    private Long tokenValidTime = 10 * 60 * 1000L;
     @Autowired
     private UserDetailsService userDetailsService;
 
