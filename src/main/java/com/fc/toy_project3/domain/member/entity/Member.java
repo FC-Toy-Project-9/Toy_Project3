@@ -16,20 +16,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Member extends BaseTimeEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(unique = true, length = 30)
     private String email;
-
     @Column()
     private String password;
-
     @Column(length = 30)
     private String name;
-
     @Column(unique = true, length = 30)
     private String nickname;
 
@@ -39,7 +34,7 @@ public class Member extends BaseTimeEntity {
         this.email = email;
         this.name = name;
         this.nickname = nickname;
-        this.password = password;
+        this.password = password; 
     }
     public SignUpResponseDTO toMemberResponseDTO() {
         return SignUpResponseDTO.builder()

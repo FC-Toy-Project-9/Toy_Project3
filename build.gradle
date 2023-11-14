@@ -41,8 +41,9 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.projectlombok:lombok:1.18.28'
 
-    // MariaDB
+    // DB
     runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+    testImplementation 'com.h2database:h2:2.2.220'
 
     // JSON
     implementation 'org.json:json:20230227'
@@ -53,17 +54,17 @@ dependencies {
 
     // Security
     testImplementation 'org.springframework.security:spring-security-test'
-
     //jwt
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
-
-    //servlet
-    implementation 'org.springframework.boot:spring-boot-starter-web'
 
     implementation 'javax.xml.bind:jaxb-api:2.3.1'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0' // 사용하는 버전
 
-
+    // QueryDSL
+    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+    annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
+    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 }
 
 test {
@@ -75,6 +76,20 @@ asciidoctor {
     inputs.dir snippetsDir
     configurations 'asciidoctorExtentions'
     dependsOn test
+}
+
+def querydslDir = "src/main/generated"
+
+sourceSets {
+    main.java.srcDirs += [ querydslDir ]
+}
+
+tasks.withType(JavaCompile) {
+    options.getGeneratedSourceOutputDirectory().set(file(querydslDir))
+}
+
+clean.doLast {
+    file(querydslDir).deleteDir()
 }
 
 tasks.register('copyDocument', Copy) {

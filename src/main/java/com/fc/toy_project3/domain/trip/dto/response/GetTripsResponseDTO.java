@@ -3,15 +3,23 @@ package com.fc.toy_project3.domain.trip.dto.response;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
-@Builder
+@NoArgsConstructor
 public class GetTripsResponseDTO {
 
-    private Long tripId;
-    private String tripName;
-    private String startDate;
-    private String endDate;
-    private Boolean isDomestic;
-    private List<ItineraryInfoDTO> itineraries;
+    private int totalPages;
+    private Boolean isLastPage;
+    private long totalTrips;
+    private List<TripsResponseDTO> trips;
+
+    @Builder
+    public GetTripsResponseDTO(int totalPages, Boolean isLastPage, long totalTrips,
+        List<TripsResponseDTO> trips) {
+        this.totalPages = totalPages;
+        this.isLastPage = isLastPage;
+        this.totalTrips = totalTrips;
+        this.trips = trips;
+    }
 }

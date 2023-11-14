@@ -9,12 +9,17 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import com.fc.toy_project3.domain.member.entity.Member;
+import com.fc.toy_project3.domain.member.repository.MemberRepository;
+import com.fc.toy_project3.domain.trip.dto.request.GetTripsRequestDTO;
 import com.fc.toy_project3.domain.trip.dto.request.PostTripRequestDTO;
+import com.fc.toy_project3.domain.trip.dto.request.TripPageRequestDTO;
 import com.fc.toy_project3.domain.trip.dto.request.UpdateTripRequestDTO;
 import com.fc.toy_project3.domain.trip.dto.response.GetTripResponseDTO;
 import com.fc.toy_project3.domain.trip.dto.response.GetTripsResponseDTO;
 import com.fc.toy_project3.domain.trip.dto.response.TripResponseDTO;
 import com.fc.toy_project3.domain.trip.entity.Trip;
+import com.fc.toy_project3.domain.trip.exception.InvalidPagingRequestException;
 import com.fc.toy_project3.domain.trip.exception.InvalidTripDateRangeException;
 import com.fc.toy_project3.domain.trip.exception.TripNotFoundException;
 import com.fc.toy_project3.domain.trip.exception.WrongTripStartDateException;
@@ -31,8 +36,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -48,6 +53,9 @@ public class TripServiceTest {
     @Mock
     private TripRepository tripRepository;
 
+    @Mock
+    private MemberRepository memberRepository;
+
     @Nested
     @DisplayName("postTrip()은")
     class Context_postTrip {
@@ -56,19 +64,32 @@ public class TripServiceTest {
         @DisplayName("여행 정보를 저장할 수 있다.")
         void _willSuccess() {
             //given
-            PostTripRequestDTO postTripRequestDTO = PostTripRequestDTO.builder().tripName("제주도 여행")
-                .startDate("2023-10-25").endDate("2023-10-26").isDomestic(true).build();
-            Trip trip = Trip.builder().id(1L).name("제주도 여행").startDate(LocalDate.of(2023, 10, 25))
-                .endDate(LocalDate.of(2023, 10, 26)).isDomestic(true).itineraries(new ArrayList<>())
+            PostTripRequestDTO postTripRequestDTO = PostTripRequestDTO.builder()
+                .tripName("제주도 여행")
+                .startDate("2023-10-25")
+                .endDate("2023-10-26")
+                .isDomestic(true)
                 .build();
+            Member member = Member.builder().id(1L).nickname("닉네임").build();
+            Trip trip = Trip.builder()
+                .id(1L)
+                .member(member)
+                .name("제주도 여행")
+                .startDate(LocalDate.of(2023, 10, 25))
+                .endDate(LocalDate.of(2023, 10, 26))
+                .isDomestic(true)
+                .itineraries(new ArrayList<>())
+                .build();
+            given(memberRepository.findById(any(Long.TYPE))).willReturn(Optional.of(member));
             given(tripRepository.save(any(Trip.class))).willReturn(trip);
 
             // when
-            TripResponseDTO result = tripService.postTrip(postTripRequestDTO);
+            TripResponseDTO result = tripService.postTrip(postTripRequestDTO, 1L);
 
             // then
-            assertThat(result).extracting("tripId", "tripName", "startDate", "endDate",
-                "isDomestic").containsExactly(1L, "제주도 여행", "2023-10-25", "2023-10-26", true);
+            assertThat(result).extracting("tripId", "memberId", "nickname", "tripName", "startDate",
+                    "endDate", "isDomestic")
+                .containsExactly(1L, 1L, "닉네임", "제주도 여행", "2023-10-25", "2023-10-26", true);
             verify(tripRepository, times(1)).save(any(Trip.class));
         }
 
@@ -76,12 +97,16 @@ public class TripServiceTest {
         @DisplayName("여행 종료일이 시작일보다 빠르면 여행 정보를 저장할 수 없다.")
         void InvalidTripDateRange_willFail() {
             // given
-            PostTripRequestDTO postTripRequestDTO = PostTripRequestDTO.builder().tripName("제주도 여행")
-                .startDate("2023-10-26").endDate("2023-10-25").isDomestic(true).build();
+            PostTripRequestDTO postTripRequestDTO = PostTripRequestDTO.builder()
+                .tripName("제주도 여행")
+                .startDate("2023-10-26")
+                .endDate("2023-10-25")
+                .isDomestic(true)
+                .build();
 
             // when, then
             Throwable exception = assertThrows(InvalidTripDateRangeException.class, () -> {
-                tripService.postTrip(postTripRequestDTO);
+                tripService.postTrip(postTripRequestDTO, 1L);
             });
             assertEquals("시작일이 종료일보다 빨라야 합니다.", exception.getMessage());
             verify(tripRepository, never()).save(any(Trip.class));
@@ -96,25 +121,55 @@ public class TripServiceTest {
         @DisplayName("여행 정보 목록을 조회할 수 있다.")
         void _willSuccess() {
             // given
-            List<Trip> trips = new ArrayList<>();
-            trips.add(Trip.builder().id(1L).name("제주도 여행").startDate(LocalDate.of(2023, 10, 23))
-                .endDate(LocalDate.of(2023, 10, 27)).isDomestic(true).itineraries(new ArrayList<>())
-                .build());
-            trips.add(Trip.builder().id(2L).name("속초 겨울바다 여행").startDate(LocalDate.of(2023, 11, 27))
-                .endDate(LocalDate.of(2023, 11, 29)).isDomestic(true).itineraries(new ArrayList<>())
-                .build());
-            trips.add(
-                Trip.builder().id(3L).name("크리스마스 미국 여행").startDate(LocalDate.of(2023, 12, 24))
-                    .endDate(LocalDate.of(2023, 12, 26)).isDomestic(false)
-                    .itineraries(new ArrayList<>()).build());
-            given(tripRepository.findAll(Sort.by(Direction.ASC, "id"))).willReturn(trips);
+            GetTripsRequestDTO getTripsRequestDTO = GetTripsRequestDTO.builder()
+                .tripName("제주도")
+                .build();
+            Pageable pageable = TripPageRequestDTO.builder()
+                .page(0)
+                .size(10)
+                .criteria("createdAt")
+                .sort("ASC")
+                .build().of();
+            Member member1 = Member.builder().id(1L).nickname("닉네임1").build();
+            Member member2 = Member.builder().id(2L).nickname("닉네임2").build();
+            Member member3 = Member.builder().id(3L).nickname("닉네임3").build();
+            Trip trip1 = Trip.builder()
+                .id(1L)
+                .member(member1)
+                .name("제주도 여행")
+                .startDate(LocalDate.of(2023, 10, 23))
+                .endDate(LocalDate.of(2023, 10, 27))
+                .isDomestic(true)
+                .itineraries(new ArrayList<>())
+                .build();
+            Trip trip2 = Trip.builder()
+                .id(2L)
+                .member(member2)
+                .name("속초 겨울바다 여행")
+                .startDate(LocalDate.of(2023, 11, 27))
+                .endDate(LocalDate.of(2023, 11, 29))
+                .isDomestic(true)
+                .itineraries(new ArrayList<>())
+                .build();
+            Trip trip3 = Trip.builder()
+                .id(3L)
+                .member(member3)
+                .name("크리스마스 미국 여행")
+                .startDate(LocalDate.of(2023, 12, 24))
+                .endDate(LocalDate.of(2023, 12, 26))
+                .isDomestic(false)
+                .itineraries(new ArrayList<>())
+                .build();
+            given(tripRepository.findAllBySearchCondition(any(GetTripsRequestDTO.class), any(
+                Pageable.class))).willReturn(new PageImpl<>(List.of(trip1, trip2, trip3)));
 
             // when
-            List<GetTripsResponseDTO> result = tripService.getTrips();
+            GetTripsResponseDTO result = tripService.getTrips(getTripsRequestDTO, pageable);
 
             // then
-            assertThat(result).isNotEmpty();
-            verify(tripRepository, times(1)).findAll(Sort.by(Direction.ASC, "id"));
+            assertThat(result.getTrips()).isNotEmpty();
+            verify(tripRepository, times(1)).findAllBySearchCondition(any(GetTripsRequestDTO.class),
+                any(Pageable.class));
         }
     }
 
@@ -126,18 +181,25 @@ public class TripServiceTest {
         @DisplayName("여행 정보를 조회할 수 있다.")
         void _willSuccess() {
             // given
-            Optional<Trip> trip = Optional.of(
-                Trip.builder().id(1L).name("제주도 여행").startDate(LocalDate.of(2023, 10, 23))
-                    .endDate(LocalDate.of(2023, 10, 27)).isDomestic(true)
-                    .itineraries(new ArrayList<>()).build());
+            Member member = Member.builder().id(1L).nickname("닉네임").build();
+            Optional<Trip> trip = Optional.of(Trip.builder()
+                .id(1L)
+                .member(member)
+                .name("제주도 여행")
+                .startDate(LocalDate.of(2023, 10, 23))
+                .endDate(LocalDate.of(2023, 10, 27))
+                .isDomestic(true)
+                .itineraries(new ArrayList<>())
+                .build());
             given(tripRepository.findById(any(Long.TYPE))).willReturn(trip);
 
             // when
             GetTripResponseDTO result = tripService.getTripById(1L);
 
             // then
-            assertThat(result).extracting("tripId", "tripName", "startDate", "endDate",
-                "isDomestic").containsExactly(1L, "제주도 여행", "2023-10-23", "2023-10-27", true);
+            assertThat(result).extracting("tripId", "memberId", "nickname", "tripName", "startDate",
+                    "endDate", "isDomestic")
+                .containsExactly(1L, 1L, "닉네임", "제주도 여행", "2023-10-23", "2023-10-27", true);
             verify(tripRepository, times(1)).findById(any(Long.TYPE));
         }
 
@@ -168,8 +230,10 @@ public class TripServiceTest {
             UpdateTripRequestDTO updateTripRequestDTO = UpdateTripRequestDTO.builder().tripId(1L)
                 .tripName("울릉도 여행").startDate("2023-10-25").endDate("2023-10-26").isDomestic(true)
                 .build();
+            Member member = Member.builder().id(1L).nickname("닉네임").build();
             Optional<Trip> trip = Optional.of(
-                Trip.builder().id(1L).name("제주도 여행").startDate(LocalDate.of(2023, 10, 23))
+                Trip.builder().id(1L).member(member).name("제주도 여행")
+                    .startDate(LocalDate.of(2023, 10, 23))
                     .endDate(LocalDate.of(2023, 10, 27)).isDomestic(true)
                     .itineraries(new ArrayList<>()).build());
             given(tripRepository.findById(any(Long.TYPE))).willReturn(trip);
@@ -178,8 +242,10 @@ public class TripServiceTest {
             TripResponseDTO result = tripService.updateTrip(updateTripRequestDTO);
 
             // then
-            assertThat(result).extracting("tripId", "tripName", "startDate", "endDate",
-                "isDomestic").containsExactly(1L, "울릉도 여행", "2023-10-25", "2023-10-26", true);
+            assertThat(result).extracting("tripId", "memberId", "nickname", "tripName", "startDate",
+                    "endDate",
+                    "isDomestic")
+                .containsExactly(1L, 1L, "닉네임", "울릉도 여행", "2023-10-25", "2023-10-26", true);
             verify(tripRepository, times(1)).findById(any(Long.TYPE));
         }
 
@@ -190,8 +256,10 @@ public class TripServiceTest {
             UpdateTripRequestDTO updateTripRequestDTO = UpdateTripRequestDTO.builder().tripId(1L)
                 .tripName("울릉도 여행").startDate("2023-10-25").endDate("2023-10-24").isDomestic(true)
                 .build();
+            Member member = Member.builder().id(1L).nickname("닉네임").build();
             Optional<Trip> trip = Optional.of(
-                Trip.builder().id(1L).name("제주도 여행").startDate(LocalDate.of(2023, 10, 23))
+                Trip.builder().id(1L).member(member).name("제주도 여행")
+                    .startDate(LocalDate.of(2023, 10, 23))
                     .endDate(LocalDate.of(2023, 10, 27)).isDomestic(true)
                     .itineraries(new ArrayList<>()).build());
             given(tripRepository.findById(any(Long.TYPE))).willReturn(trip);
@@ -213,17 +281,19 @@ public class TripServiceTest {
         @DisplayName("특정 id를 가진 여행 정보를 삭제할 수 있다.")
         void _willSuccess() {
             // given
-            Trip trip = Trip.builder().id(1L).name("제주도 여행").startDate(LocalDate.of(2023, 10, 25))
+            Member member = Member.builder().id(1L).nickname("닉네임").build();
+            Trip trip = Trip.builder().id(1L).member(member).name("제주도 여행")
+                .startDate(LocalDate.of(2023, 10, 25))
                 .endDate(LocalDate.of(2023, 10, 26)).isDomestic(true).itineraries(new ArrayList<>())
                 .build();
             given(tripRepository.findById(any(Long.TYPE))).willReturn(Optional.of(trip));
 
             // when
-            tripService.deleteTripById(1L);
+            TripResponseDTO tripResponseDTO = tripService.deleteTripById(1L);
 
             // then
+            assertThat(tripResponseDTO.getTripId()).isEqualTo(1);
             verify(tripRepository, times(1)).findById(any(Long.TYPE));
-            verify(tripRepository, times(1)).delete(trip);
         }
 
         @Test

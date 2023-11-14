@@ -1,0 +1,42 @@
+ifndef::snippets[]
+:snippets: ../../build/generated-snippets
+endif::[]
+= Toy Project 3 API 문서
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+
+== API
+
+=== link:trip/trip-api.html[여행 API, window=blank]
+
+=== link:itinerary/itinerary-api.html[여정 API, window=blank]
+
+== API Common Response
+
+[[overview-http-status-code]]
+=== 1. HTTP Status Code
+
+|===
+| Status code | Useage
+| `200 OK` | 요청을 성공적으로 수행
+| `201 Created` | 생성 요청 (ex: 여행 등록)을 성공적으로 수행
+| `400 Bad Request` | API 에 기술되어 있는 요구사항에 부적합 시 발생
+| `401 Unauthorized` | 해당 API에 대한 인증 정보가 없는 경우 발생
+| `403 Forbiddon` | 해당 API에 대한 권한이 없는 경우 발생
+| `404 NotFound` | 지원하지 않는 API 경로로 요청 시 발생
+| `500 Internal Server Error` | 내부 서버 에러
+|===
+
+[[overview-common-response]]
+=== 2. API Common Response
+
+* Toy Project 2 API 에서 공통적으로 제공하는 Response 요소들입니다.
+* 통상적인 상황이나 에러 발생시 모두 제공되는 포맷입니다.
+
+include::{snippets}/sample-controller-docs-test/common/response-body.adoc[]
+include::{snippets}/sample-controller-docs-test/common/response-fields.adoc[]

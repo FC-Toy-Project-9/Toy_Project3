@@ -1,20 +1,17 @@
-package com.fc.toy_project3.domain.itinerary.dto.request;
+package com.fc.toy_project3.domain.itinerary.dto.request.create;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Builder
 @NoArgsConstructor
-@AllArgsConstructor
-public class TransportationUpdateRequestDTO {
+public class TransportationCreateRequestDTO {
 
-    @NotNull(message = "여정 ID를 입력하세요.")
-    private Long itineraryId;
+    @NotNull(message = "여행 ID를 입력하세요.")
+    private Long tripId;
     @NotBlank(message = "여정 이름을 입력하세요.")
     private String itineraryName;
     @NotBlank(message = "이동 수단을 입력하세요.")
@@ -31,4 +28,19 @@ public class TransportationUpdateRequestDTO {
     private String departureTime;
     @NotBlank(message = "도착 일시를 입력하세요.(yyyy-MM-dd HH:ss)")
     private String arrivalTime;
+
+    @Builder
+    public TransportationCreateRequestDTO(Long tripId, String itineraryName, String transportation,
+        String departurePlace, String departurePlaceRoadAddressName, String destination,
+        String destinationRoadAddressName, String departureTime, String arrivalTime) {
+        this.tripId = tripId;
+        this.itineraryName = itineraryName;
+        this.transportation = transportation;
+        this.departurePlace = departurePlace;
+        this.departurePlaceRoadAddressName = departurePlaceRoadAddressName;
+        this.destination = destination;
+        this.destinationRoadAddressName = destinationRoadAddressName;
+        this.departureTime = departureTime;
+        this.arrivalTime = arrivalTime;
+    }
 }
