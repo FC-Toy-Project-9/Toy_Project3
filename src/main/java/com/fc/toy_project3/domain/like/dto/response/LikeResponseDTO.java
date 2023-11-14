@@ -3,8 +3,10 @@ package com.fc.toy_project3.domain.like.dto.response;
 import com.fc.toy_project3.domain.like.entity.Like;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class LikeResponseDTO {
     private Long likeId;
     private Long memberId;

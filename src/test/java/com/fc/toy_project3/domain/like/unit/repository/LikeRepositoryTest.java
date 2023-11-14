@@ -100,23 +100,28 @@ public class LikeRepositoryTest {
         @DisplayName("특정 회원 id와 여행 id를 가진 좋아요 정보 Entity를 조회할 수 있다.")
         void _willSuccess() {
             //given
+            Long memberId = 1L, tripId = 1L;
             Member member = Member.builder().id(1L).email("fc123@naver.com").nickname("닉1").password("1234").build();
             Trip trip = Trip.builder().id(1L).name("제주도 여행").startDate(LocalDate.of(2023, 10, 25))
                 .endDate(LocalDate.of(2023, 10, 26)).isDomestic(true).itineraries(new ArrayList<>())
                 .build();
             Like like = Like.builder().id(1L).trip(trip).member(member).build();
 
-            memberRepository.save(member);
-            tripRepository.save(trip);
+            if(!memberRepository.existsById(memberId)){
+                memberRepository.save(member);
+            }
+            if(!tripRepository.existsById(tripId)){
+                tripRepository.save(trip);
+            }
             likeRepository.save(like);
 
 
             // when
-            Like result = likeRepository.findByMemberIdAndTripId(1L, 1L);
+            Like result = likeRepository.findByMemberIdAndTripId(memberId, tripId);
 
             //then
             assertNotNull(result.getId());
-            assertThat(result).extracting("likeId", "tripId", "memberId").containsExactly(1L, 1L, 1L);
+            assertThat(result).extracting("id", "tripId", "memberId").containsExactly(1L, 1L, 1L);
         }
     }
 
