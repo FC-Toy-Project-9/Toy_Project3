@@ -20,6 +20,8 @@ import lombok.NoArgsConstructor;
 public class GetTripResponseDTO {
 
     private Long tripId;
+    private Long memberId;
+    private String nickname;
     private String tripName;
     private String startDate;
     private String endDate;
@@ -30,10 +32,12 @@ public class GetTripResponseDTO {
     private List<Object> itineraries;
 
     @Builder
-    public GetTripResponseDTO(Long tripId, String tripName, String startDate, String endDate,
+    public GetTripResponseDTO(Long tripId, Long memberId, String nickname, String tripName, String startDate, String endDate,
         Boolean isDomestic, Long likeCount, String createdAt, String updatedAt,
         List<Object> itineraries) {
         this.tripId = tripId;
+        this.memberId = memberId;
+        this.nickname = nickname;
         this.tripName = tripName;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -46,6 +50,8 @@ public class GetTripResponseDTO {
 
     public GetTripResponseDTO(Trip trip) {
         this.tripId = trip.getId();
+        this.memberId = trip.getMember().getId();
+        this.nickname = trip.getMember().getNickname();
         this.tripName = trip.getName();
         this.startDate = DateTypeFormatterUtil.localDateToString(trip.getStartDate());
         this.endDate = DateTypeFormatterUtil.localDateToString(trip.getEndDate());
