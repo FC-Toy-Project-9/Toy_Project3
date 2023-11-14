@@ -36,7 +36,7 @@ public class CommentService {
     public CommentResponseDTO postComment(Long memberId,
         CommentCreateRequestDTO commentCreateRequestDTO) {
         Trip trip = tripService.getTrip(commentCreateRequestDTO.getTripId());
-        Member member = memberRepository.findById(memberId).get();
+        Member member = memberRepository.findById(memberId).get(); // memberService 함수로 변경 예정
         Comment comment = Comment.builder().trip(trip).member(member)
             .content(commentCreateRequestDTO.getContent()).build();
         commentRepository.save(comment);

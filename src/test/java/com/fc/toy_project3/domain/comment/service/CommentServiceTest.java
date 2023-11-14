@@ -73,7 +73,7 @@ public class CommentServiceTest {
                     .member(member).content("여행 계획 정말 멋있다.").build());
 
             //when
-            CommentResponseDTO result = commentService.postComment(1L,commentCreateRequestDTO);
+            CommentResponseDTO result = commentService.postComment(1L, commentCreateRequestDTO);
 
             //then
             assertThat(result).extracting("tripId", "memberId", "content")
@@ -116,7 +116,7 @@ public class CommentServiceTest {
                 Optional.of(comment));
 
             //when
-            CommentResponseDTO result = commentService.patchComment(1L,commentId,
+            CommentResponseDTO result = commentService.patchComment(1L, commentId,
                 commentUpdateRequestDTO);
 
             //then
@@ -155,7 +155,7 @@ public class CommentServiceTest {
             given(commentRepository.findById(any(Long.TYPE))).willReturn(Optional.of(comment));
 
             //when
-            CommentDeleteResponseDTO result = commentService.softDeleteComment(1L,commentId);
+            CommentDeleteResponseDTO result = commentService.softDeleteComment(1L, commentId);
 
             //then
             assertThat(result.getCommentId()).isEqualTo(1);

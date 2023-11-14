@@ -18,7 +18,8 @@ public class CommentResponseDTO {
     private String updatedAt;
 
     @Builder
-    public CommentResponseDTO(long tripId, long memberId, String nickname, String content, String createdAt, String updatedAt) {
+    public CommentResponseDTO(long tripId, long memberId, String nickname, String content,
+        String createdAt, String updatedAt) {
         this.tripId = tripId;
         this.memberId = memberId;
         this.nickname = nickname;

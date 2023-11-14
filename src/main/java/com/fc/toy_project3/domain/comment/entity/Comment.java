@@ -12,7 +12,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -49,18 +48,12 @@ public class Comment extends BaseTimeEntity {
 
     @Override
     public void delete(LocalDateTime currentTime) {
-        try {
-            Field deletedAtField = BaseTimeEntity.class.getDeclaredField("deletedAt");
-            deletedAtField.setAccessible(true);
-            if (deletedAtField.get(this) == null) {
-                deletedAtField.set(this, currentTime);
-            }
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
+        super.delete(currentTime);
     }
 
     public void update(CommentUpdateRequestDTO commentUpdateRequestDTO) {
-        this.content = commentUpdateRequestDTO.getContent();
+        if (commentUpdateRequestDTO.getContent() != null) {
+            this.content = commentUpdateRequestDTO.getContent();
+        }
     }
 }
