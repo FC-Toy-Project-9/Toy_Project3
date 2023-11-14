@@ -25,9 +25,10 @@ public class LikeService {
 
     /**
      * 좋아요 정보 등록
-     * @param memberId 회원 id
-     * @param likeRequestDTO 좋아요 등록 요청 dto
-     * @return 좋아요 정보 응답 dto
+     *
+     * @param memberId 회원 ID
+     * @param likeRequestDTO 좋아요 등록 요청 DTO
+     * @return 좋아요 정보 응답 DTO
      */
     public LikeResponseDTO createLike(Long memberId, LikeRequestDTO likeRequestDTO) {
         //getMember(), MemberNotFoundException 으로 변경 예정
@@ -36,5 +37,22 @@ public class LikeService {
             .build();
         //여행 entity like_count 증가 로직 추가 예정
         return new LikeResponseDTO(likeRepository.save(like));
+    }
+
+
+    /**
+     * 특정 회원 ID, 여행 ID 값을 가지는 좋아요 정보 조회
+     *
+     * @param memberId 회원 ID
+     * @param tripId 여행 ID
+     * @return 좋아요 정보 응답 DTO
+     */
+    public LikeResponseDTO getLikeByMemberIdAndTripId(Long memberId, Long tripId){
+        Like like = likeRepository.findByMemberIdAndTripId(memberId, tripId);
+        if(like==null){
+            throw new LikeNotFoundException();
+        }else{
+            return new LikeResponseDTO(like);
+        }
     }
 }
