@@ -1,7 +1,6 @@
 package com.fc.toy_project3.domain.like.unit.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -16,7 +15,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,9 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 @ExtendWith(MockitoExtension.class)
 public class LikeRepositoryTest {
 
-    @InjectMocks
+    @Mock
     private LikeRepository likeRepository;
-
 
     @Nested
     @DisplayName("findByMemberIdAndTripId()은")
@@ -41,14 +39,14 @@ public class LikeRepositoryTest {
                 .endDate(LocalDate.of(2023, 10, 26)).isDomestic(true).itineraries(new ArrayList<>())
                 .build();
             Like like = Like.builder().id(1L).trip(trip).member(member).build();
-            given(likeRepository.findByMemberIdAndTripId(1L, 1L)).willReturn(like);
+            given(likeRepository.findByMemberIdAndTripId(1L, 1l)).willReturn(like);
 
             // when
             Like result = likeRepository.findByMemberIdAndTripId(1L, 1L);
 
             //then
             assertEquals(like, result);
-            verify(likeRepository, times(1)).findByMemberIdAndTripId(any(Long.TYPE), any(Long.TYPE));
+            verify(likeRepository, times(1)).findByMemberIdAndTripId(1L, 1L);
         }
     }
 }
