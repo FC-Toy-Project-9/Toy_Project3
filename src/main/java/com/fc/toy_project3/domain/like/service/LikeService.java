@@ -4,6 +4,7 @@ import com.fc.toy_project3.domain.like.dto.request.LikeRequestDTO;
 import com.fc.toy_project3.domain.like.dto.response.LikeResponseDTO;
 import com.fc.toy_project3.domain.like.entity.Like;
 import com.fc.toy_project3.domain.like.exception.LikeNotFoundException;
+import com.fc.toy_project3.domain.like.exception.LikeUnauthorizedException;
 import com.fc.toy_project3.domain.like.repository.LikeRepository;
 import com.fc.toy_project3.domain.member.repository.MemberRepository;
 import com.fc.toy_project3.domain.trip.service.TripService;
@@ -71,8 +72,11 @@ public class LikeService {
      * @param likeId lIKE
      * @return 삭제한 좋아요 정보 응답 DTO
      */
-    public LikeResponseDTO deleteLikeById(Long likeId){
+    public LikeResponseDTO deleteLikeById(Long memberId, Long likeId){
         Like like = getLike(likeId);
+        if(!like.getMember().getId().equals(memberId)){
+            throw new LikeUnauthorizedException();
+        }
         likeRepository.deleteById(likeId);
         //여행 entity like_count 감소 로직 추가 예정
         return new LikeResponseDTO(like);

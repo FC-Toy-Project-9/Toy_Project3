@@ -86,10 +86,10 @@ public class LikeRestControllerDocsTest extends RestDocsSupport {
     @DisplayName("deleteLikeById()은 특정 id를 가진 좋아요 정보를 삭제할 수 있다.")
     void deleteLikeById() throws Exception {
         //given
-        Long likeId = 1L;
+        Long likeId = 1L; Long memberId = 1L;
         LikeResponseDTO likeResponseDTO = LikeResponseDTO.builder().likeId(likeId).memberId(1L).tripId(1L).build();
 
-        given(likeService.deleteLikeById(likeId)).willReturn(likeResponseDTO);
+        given(likeService.deleteLikeById(memberId, likeId)).willReturn(likeResponseDTO);
 
         //when, then
         mockMvc.perform(RestDocumentationRequestBuilders.delete("/api/likes/{likeId}", 1L))
@@ -100,7 +100,7 @@ public class LikeRestControllerDocsTest extends RestDocsSupport {
                         fieldWithPath("data.likeId").type(JsonFieldType.NUMBER).description("좋아요 식별자"),
                         fieldWithPath("data.memberId").type(JsonFieldType.NUMBER).description("회원 식별자"),
                         fieldWithPath("data.tripId").type(JsonFieldType.NUMBER).description("여행 식별자"))));
-        verify(likeService, times(1)).deleteLikeById(any(Long.TYPE));
+        verify(likeService, times(1)).deleteLikeById(memberId, likeId);
     }
 }
 

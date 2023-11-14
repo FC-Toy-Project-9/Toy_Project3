@@ -130,7 +130,7 @@ class LikeServiceTest {
             given(likeRepository.findById(any(Long.TYPE))).willReturn(Optional.of(like));
 
             // when
-            likeService.deleteLikeById(1L);
+            likeService.deleteLikeById(1L, 1L);
 
             // then
             verify(likeRepository, times(1)).findById(any(Long.TYPE));
@@ -146,7 +146,7 @@ class LikeServiceTest {
 
             // when, then
             Throwable exception = assertThrows(LikeNotFoundException.class, () -> {
-                likeService.deleteLikeById(1L);
+                likeService.deleteLikeById(1L, 1L);
             });
             assertEquals("좋아요 정보를 찾을 수 없습니다.", exception.getMessage());
             verify(likeRepository, times(1)).findById(any(Long.TYPE));
