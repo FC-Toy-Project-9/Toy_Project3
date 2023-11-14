@@ -26,29 +26,30 @@ public class CommentRestController {
     private final CommentService commentService;
 
     @PostMapping
-    public ResponseEntity<ResponseDTO<CommentResponseDTO>> postComment(
+    public ResponseEntity<ResponseDTO<CommentResponseDTO>> postComment(@PathVariable long memberId,
         @Valid @RequestBody CommentCreateRequestDTO commentCreateRequestDTO) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(ResponseDTO.res(HttpStatus.CREATED, commentService.postComment(
-                    commentCreateRequestDTO),
+                    memberId, commentCreateRequestDTO),
                 "성공적으로 댓글을 등록했습니다."));
     }
 
     @PatchMapping("/{commentId}")
-    public ResponseEntity<ResponseDTO<CommentResponseDTO>> patchComment(
+    public ResponseEntity<ResponseDTO<CommentResponseDTO>> patchComment(@PathVariable long memberId,
         @PathVariable long commentId,
         @Valid @RequestBody CommentUpdateRequestDTO commentUpdateRequestDTO) {
         return ResponseEntity.status(HttpStatus.OK).body(
             ResponseDTO.res(HttpStatus.OK,
-                commentService.patchComment(commentId, commentUpdateRequestDTO),
+                commentService.patchComment(memberId, commentId, commentUpdateRequestDTO),
                 "댓글을 성공적으로 수정했습니다."));
     }
 
     @DeleteMapping("/{commentId}")
     public ResponseEntity<ResponseDTO<CommentDeleteResponseDTO>> softDeleteComment(
+        @PathVariable long memberId,
         @PathVariable long commentId) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            ResponseDTO.res(HttpStatus.OK, commentService.softDeleteComment(commentId),
+            ResponseDTO.res(HttpStatus.OK, commentService.softDeleteComment(memberId, commentId),
                 "댓글을 성공적으로 삭제했습니다."));
     }
 }

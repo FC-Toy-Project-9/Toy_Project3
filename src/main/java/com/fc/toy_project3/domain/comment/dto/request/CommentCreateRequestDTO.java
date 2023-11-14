@@ -12,15 +12,12 @@ public class CommentCreateRequestDTO {
 
     @NotNull(message = "여행 ID를 입력하세요.")
     private Long tripId;
-    @NotNull(message = "회원 ID를 입력하세요.")
-    private Long memberId;
     @NotEmpty(message = "댓글을 입력하세요.")
     private String content;
 
     @Builder
-    public CommentCreateRequestDTO(Long tripId, Long memberId, String content) {
+    public CommentCreateRequestDTO(Long tripId, String content) {
         this.tripId = tripId;
-        this.memberId = memberId;
         this.content = content;
     }
 
