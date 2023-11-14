@@ -156,6 +156,7 @@ public class TripRepositoryTest {
             // when
             Optional<Trip> result = tripRepository.findById(tripId);
 
+            // then
             assertThat(result.isPresent()).isTrue();
             assertThat(result.get().getId()).isNotNull();
             assertThat(result.get().getMember().getNickname()).isEqualTo("닉네임1");
