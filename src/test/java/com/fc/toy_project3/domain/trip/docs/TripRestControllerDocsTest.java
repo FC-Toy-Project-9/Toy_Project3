@@ -14,16 +14,18 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fc.toy_project3.docs.RestDocsSupport;
 import com.fc.toy_project3.domain.itinerary.dto.response.get.GetAccommodationResponseDTO;
 import com.fc.toy_project3.domain.itinerary.dto.response.get.GetTransportationResponseDTO;
 import com.fc.toy_project3.domain.itinerary.dto.response.get.GetVisitResponseDTO;
 import com.fc.toy_project3.domain.trip.controller.TripRestController;
+import com.fc.toy_project3.domain.trip.dto.request.GetTripsRequestDTO;
 import com.fc.toy_project3.domain.trip.dto.request.PostTripRequestDTO;
+import com.fc.toy_project3.domain.trip.dto.request.TripPageRequestDTO;
 import com.fc.toy_project3.domain.trip.dto.request.UpdateTripRequestDTO;
 import com.fc.toy_project3.domain.trip.dto.response.GetTripResponseDTO;
 import com.fc.toy_project3.domain.trip.dto.response.GetTripsResponseDTO;
+import com.fc.toy_project3.domain.trip.dto.response.TripsResponseDTO;
 import com.fc.toy_project3.domain.trip.dto.response.TripResponseDTO;
 import com.fc.toy_project3.domain.trip.service.TripService;
 import java.util.ArrayList;
@@ -31,6 +33,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.constraints.ConstraintDescriptions;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
@@ -67,16 +70,18 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
             .build();
         TripResponseDTO trip = TripResponseDTO.builder()
             .tripId(1L)
+            .memberId(1L)
+            .nickname("깜찍이")
             .tripName("제주도 여행")
             .startDate("2023-10-25")
             .endDate("2023-10-26")
             .likeCount(0L)
             .isDomestic(true)
             .build();
-        given(tripService.postTrip(any(PostTripRequestDTO.class))).willReturn(trip);
+        given(tripService.postTrip(any(PostTripRequestDTO.class), any(Long.TYPE))).willReturn(trip);
 
         // when, then
-        mockMvc.perform(RestDocumentationRequestBuilders.post("/api/trips")
+        mockMvc.perform(RestDocumentationRequestBuilders.post("/api/trips/{memberId}", 1L)
                 .content(objectMapper.writeValueAsString(postTripRequestDTO))
                 .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isCreated())
@@ -97,6 +102,8 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
                 responseFields(responseCommon()).and(
                     fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터"),
                     fieldWithPath("data.tripId").type(JsonFieldType.NUMBER).description("여행 식별자"),
+                    fieldWithPath("data.memberId").type(JsonFieldType.NUMBER).description("회원 식별자"),
+                    fieldWithPath("data.nickname").type(JsonFieldType.STRING).description("회원 닉네임"),
                     fieldWithPath("data.tripName").type(JsonFieldType.STRING).description("여행 이름"),
                     fieldWithPath("data.startDate").type(JsonFieldType.STRING)
                         .description("여행 시작일"),
@@ -107,16 +114,27 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
                         .description("좋아요 개수")
                 )
             ));
-        verify(tripService, times(1)).postTrip((any(PostTripRequestDTO.class)));
+        verify(tripService, times(1)).postTrip(any(PostTripRequestDTO.class), any(Long.TYPE));
     }
 
     @Test
     @DisplayName("getTrips()은 여행 정보 목록을 조회할 수 있다.")
     void getTrips() throws Exception {
         // given
-        List<GetTripsResponseDTO> trips = new ArrayList<>();
-        trips.add(GetTripsResponseDTO.builder()
+        GetTripsRequestDTO getTripsRequestDTO = GetTripsRequestDTO.builder()
+            .tripName("제주도")
+            .build();
+        Pageable pageable = TripPageRequestDTO.builder()
+            .page(0)
+            .size(10)
+            .criteria("createdAt")
+            .sort("ASC")
+            .build().of();
+        List<TripsResponseDTO> trips = new ArrayList<>();
+        trips.add(TripsResponseDTO.builder()
             .tripId(1L)
+            .memberId(1L)
+            .nickname("깜찍이")
             .tripName("제주도 여행")
             .startDate("2023-10-23")
             .endDate("2023-10-27")
@@ -125,8 +143,10 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
             .createdAt("2023-10-01 10:00")
             .updatedAt(null)
             .build());
-        trips.add(GetTripsResponseDTO.builder()
+        trips.add(TripsResponseDTO.builder()
             .tripId(2L)
+            .memberId(2L)
+            .nickname("멋쟁이")
             .tripName("속초 겨울바다 여행")
             .startDate("2023-11-27")
             .endDate("2023-11-29")
@@ -135,8 +155,10 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
             .createdAt("2023-10-01 12:00")
             .updatedAt(null)
             .build());
-        trips.add(GetTripsResponseDTO.builder()
+        trips.add(TripsResponseDTO.builder()
             .tripId(3L)
+            .memberId(3L)
+            .nickname("꿈틀이")
             .tripName("크리스마스 미국 여행")
             .startDate("2023-12-24")
             .endDate("2023-12-26")
@@ -145,28 +167,48 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
             .createdAt("2023-10-02 10:00")
             .updatedAt(null)
             .build());
-        given(tripService.getTrips()).willReturn(trips);
+        GetTripsResponseDTO getTripsResponseDTO = GetTripsResponseDTO.builder()
+            .totalTrips(1)
+            .isLastPage(true)
+            .totalTrips(3)
+            .trips(trips)
+            .build();
+        given(tripService.getTrips(any(GetTripsRequestDTO.class), any(Pageable.class))).willReturn(
+            getTripsResponseDTO);
 
         // when, then
-        mockMvc.perform(get("/api/trips"))
+        mockMvc.perform(get("/api/trips")
+                .queryParam("page", "0")
+                .queryParam("pageSize", "10"))
             .andExpect(status().isOk())
             .andDo(restDoc.document(
                 responseFields(responseCommon()).and(
-                    fieldWithPath("data").type(JsonFieldType.ARRAY).description("응답 데이터"),
-                    fieldWithPath("data[].tripId").type(JsonFieldType.NUMBER).description("여행 식별자"),
-                    fieldWithPath("data[].tripName").type(JsonFieldType.STRING)
+                    fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터"),
+                    fieldWithPath("data.totalPages").type(JsonFieldType.NUMBER)
+                        .description("총 페이지 수"),
+                    fieldWithPath("data.isLastPage").type(JsonFieldType.BOOLEAN)
+                        .description("마지막 페이지 여부"),
+                    fieldWithPath("data.totalTrips").type(JsonFieldType.NUMBER)
+                        .description("총 여행 수"),
+                    fieldWithPath("data.trips").type(JsonFieldType.ARRAY).description("여행 목록"),
+                    fieldWithPath("data.trips[].tripId").type(JsonFieldType.NUMBER).description("여행 식별자"),
+                    fieldWithPath("data.trips[].memberId").type(JsonFieldType.NUMBER)
+                        .description("회원 식별자"),
+                    fieldWithPath("data.trips[].nickname").type(JsonFieldType.STRING)
+                        .description("회원 닉네임"),
+                    fieldWithPath("data.trips[].tripName").type(JsonFieldType.STRING)
                         .description("여행 이름"),
-                    fieldWithPath("data[].startDate").type(JsonFieldType.STRING)
+                    fieldWithPath("data.trips[].startDate").type(JsonFieldType.STRING)
                         .description("여행 시작일"),
-                    fieldWithPath("data[].endDate").type(JsonFieldType.STRING)
+                    fieldWithPath("data.trips[].endDate").type(JsonFieldType.STRING)
                         .description("여행 종료일"),
-                    fieldWithPath("data[].isDomestic").type(JsonFieldType.BOOLEAN)
+                    fieldWithPath("data.trips[].isDomestic").type(JsonFieldType.BOOLEAN)
                         .description("국내 여행 여부"),
-                    fieldWithPath("data[].likeCount").type(JsonFieldType.NUMBER)
+                    fieldWithPath("data.trips[].likeCount").type(JsonFieldType.NUMBER)
                         .description("좋아요 개수"),
-                    fieldWithPath("data[].createdAt").type(JsonFieldType.STRING)
+                    fieldWithPath("data.trips[].createdAt").type(JsonFieldType.STRING)
                         .description("생성 일시"),
-                    fieldWithPath("data[].updatedAt").type(JsonFieldType.STRING).optional()
+                    fieldWithPath("data.trips[].updatedAt").type(JsonFieldType.STRING).optional()
                         .description("수정 일시")
                 )
             ));
@@ -209,6 +251,8 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
             .build());
         GetTripResponseDTO trip = GetTripResponseDTO.builder()
             .tripId(1L)
+            .memberId(1L)
+            .nickname("깜찍이")
             .tripName("제주도 여행")
             .startDate("2023-10-23")
             .endDate("2023-10-27")
@@ -227,6 +271,8 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
                 responseFields(responseCommon()).and(
                     fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터"),
                     fieldWithPath("data.tripId").type(JsonFieldType.NUMBER).description("여행 식별자"),
+                    fieldWithPath("data.memberId").type(JsonFieldType.NUMBER).description("회원 식별자"),
+                    fieldWithPath("data.nickname").type(JsonFieldType.STRING).description("회원 닉네임"),
                     fieldWithPath("data.tripName").type(JsonFieldType.STRING).description("여행 이름"),
                     fieldWithPath("data.startDate").type(JsonFieldType.STRING)
                         .description("여행 시작일"),
@@ -294,6 +340,8 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
             .build();
         TripResponseDTO trip = TripResponseDTO.builder()
             .tripId(1L)
+            .memberId(1L)
+            .nickname("깜찍이")
             .tripName("제주도 여행")
             .startDate("2023-10-23")
             .endDate("2023-10-27")
@@ -325,6 +373,8 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
                 responseFields(responseCommon()).and(
                     fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터"),
                     fieldWithPath("data.tripId").type(JsonFieldType.NUMBER).description("여행 식별자"),
+                    fieldWithPath("data.memberId").type(JsonFieldType.NUMBER).description("회원 식별자"),
+                    fieldWithPath("data.nickname").type(JsonFieldType.STRING).description("회원 닉네임"),
                     fieldWithPath("data.tripName").type(JsonFieldType.STRING).description("여행 이름"),
                     fieldWithPath("data.startDate").type(JsonFieldType.STRING)
                         .description("여행 시작일"),
@@ -344,6 +394,8 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
         //given
         TripResponseDTO tripResponseDTO = TripResponseDTO.builder()
             .tripId(1L)
+            .memberId(1L)
+            .nickname("깜찍이")
             .tripName("제주도 여행")
             .startDate("2023-10-23")
             .endDate("2023-10-27")
@@ -360,6 +412,8 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
                 responseFields(responseCommon()).and(
                     fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터"),
                     fieldWithPath("data.tripId").type(JsonFieldType.NUMBER).description("여행 식별자"),
+                    fieldWithPath("data.memberId").type(JsonFieldType.NUMBER).description("회원 식별자"),
+                    fieldWithPath("data.nickname").type(JsonFieldType.STRING).description("회원 닉네임"),
                     fieldWithPath("data.tripName").type(JsonFieldType.STRING).description("여행 이름"),
                     fieldWithPath("data.startDate").type(JsonFieldType.STRING)
                         .description("여행 시작일"),
