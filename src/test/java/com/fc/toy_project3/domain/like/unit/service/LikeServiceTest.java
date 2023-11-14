@@ -17,6 +17,7 @@ import com.fc.toy_project3.domain.like.service.LikeService;
 import com.fc.toy_project3.domain.member.entity.Member;
 import com.fc.toy_project3.domain.member.repository.MemberRepository;
 import com.fc.toy_project3.domain.trip.entity.Trip;
+import com.fc.toy_project3.domain.trip.service.TripService;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -40,6 +41,8 @@ class LikeServiceTest {
     private LikeRepository likeRepository;
     @Mock
     private MemberRepository memberRepository;
+    @Mock
+    private TripService tripService;
 
     @Nested
     @DisplayName("createLike()은")
@@ -60,6 +63,7 @@ class LikeServiceTest {
 
             given(likeRepository.save(any(Like.class))).willReturn(like);
             given(memberRepository.findById(any(Long.TYPE))).willReturn(Optional.ofNullable(member));
+            given(tripService.getTrip(any(Long.TYPE))).willReturn(trip);
 
             // when
             LikeResponseDTO result = likeService.createLike(memberId, likeRequestDTO);
