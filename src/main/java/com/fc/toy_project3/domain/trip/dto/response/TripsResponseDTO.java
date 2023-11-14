@@ -6,12 +6,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-/**
- * 여행 정보 응답 DTO
- */
 @Getter
 @NoArgsConstructor
-public class TripResponseDTO {
+public class TripsResponseDTO {
 
     private Long tripId;
     private Long memberId;
@@ -21,10 +18,12 @@ public class TripResponseDTO {
     private String endDate;
     private Boolean isDomestic;
     private Long likeCount;
+    private String createdAt;
+    private String updatedAt;
 
     @Builder
-    public TripResponseDTO(Long tripId, Long memberId, String nickname, String tripName, String startDate, String endDate,
-        Long likeCount, Boolean isDomestic) {
+    public TripsResponseDTO(Long tripId, Long memberId, String nickname, String tripName, String startDate, String endDate,
+        Boolean isDomestic, Long likeCount, String createdAt, String updatedAt) {
         this.tripId = tripId;
         this.memberId = memberId;
         this.nickname = nickname;
@@ -33,9 +32,11 @@ public class TripResponseDTO {
         this.endDate = endDate;
         this.isDomestic = isDomestic;
         this.likeCount = likeCount;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
-    public TripResponseDTO(Trip trip) {
+    public TripsResponseDTO(Trip trip) {
         this.tripId = trip.getId();
         this.memberId = trip.getMember().getId();
         this.nickname = trip.getMember().getNickname();
@@ -44,5 +45,9 @@ public class TripResponseDTO {
         this.endDate = DateTypeFormatterUtil.localDateToString(trip.getEndDate());
         this.isDomestic = trip.getIsDomestic();
         this.likeCount = trip.getLikeCount();
+        this.createdAt = trip.getCreatedAt() == null ? null
+            : DateTypeFormatterUtil.localDateTimeToString(trip.getCreatedAt());
+        this.updatedAt = trip.getUpdatedAt() == null ? null
+            : DateTypeFormatterUtil.localDateTimeToString(trip.getUpdatedAt());
     }
 }
