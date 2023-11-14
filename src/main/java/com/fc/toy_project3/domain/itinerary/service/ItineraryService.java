@@ -31,7 +31,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,7 +47,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
 @Transactional
-@RequiredArgsConstructor
 public class ItineraryService {
 
     private final ItineraryRepository itineraryRepository;
@@ -57,19 +55,33 @@ public class ItineraryService {
     private final VisitRepository visitRepository;
     private final TripService tripService;
 
-    @Value("${kakao-api.api-url}")
     private String uri;
 
-    @Value("${kakao-api.api-key}")
     private String key;
 
     private HttpEntity<String> httpEntity;
+
+    public ItineraryService(
+        ItineraryRepository itineraryRepository,
+        AccommodationRepository accommodationRepository,
+        TransportationRepository transportationRepository,
+        VisitRepository visitRepository,
+        TripService tripService,
+        @Value("${kakao-api.api-url}") String uri, @Value("${kakao-api.api-key}") String key){
+        this.itineraryRepository = itineraryRepository;
+        this.accommodationRepository = accommodationRepository;
+        this.transportationRepository = transportationRepository;
+        this.visitRepository = visitRepository;
+        this.tripService = tripService;
+        this.uri = uri;
+        this.key = key;
+    }
 
     /**
      * Kakao Open API [키워드 검색하기] 를 위한 httpEntity를 생성하는 메서드
      */
     @PostConstruct
-    protected void init() {
+    public void init() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set(HttpHeaders.AUTHORIZATION, "KakaoAK " + key);

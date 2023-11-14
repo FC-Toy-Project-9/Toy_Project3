@@ -16,6 +16,7 @@ import com.fc.toy_project3.domain.itinerary.dto.request.update.TransportationUpd
 import com.fc.toy_project3.domain.itinerary.dto.request.update.VisitUpdateRequestDTO;
 import com.fc.toy_project3.domain.itinerary.dto.response.AccommodationResponseDTO;
 import com.fc.toy_project3.domain.itinerary.dto.response.ItineraryDeleteResponseDTO;
+import com.fc.toy_project3.domain.itinerary.dto.response.ItinerarySearchResponseDTO;
 import com.fc.toy_project3.domain.itinerary.dto.response.TransportationResponseDTO;
 import com.fc.toy_project3.domain.itinerary.dto.response.VisitResponseDTO;
 import com.fc.toy_project3.domain.itinerary.entity.Accommodation;
@@ -33,6 +34,7 @@ import com.fc.toy_project3.domain.trip.service.TripService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -64,6 +66,31 @@ public class ItineraryServiceTest {
 
     @Mock
     private TripService tripService;
+
+
+    @Nested
+    @DisplayName("getPlaceByKeyword()는")
+    class Context_getPlaceByKeyword {
+
+        @Test
+        @DisplayName("키워드로 query를 톻해 장소를 조회할 수 있다.")
+        void _willSuccess() throws Exception {
+            // given
+            String uri = "https://dapi.kakao.com/v2/local/search/keyword.json";
+            String key = "ee9365450630d3cded7bc8d99d32ec04";
+            ItineraryService itineraryService = new ItineraryService(itineraryRepository,
+                accommodationRepository, transportationRepository, visitRepository, tripService,
+                uri, key);
+            itineraryService.init();
+
+            // when
+            List<ItinerarySearchResponseDTO> result = itineraryService.getPlaceByKeyword("카카오프렌즈");
+
+            // then
+            assertThat(result.get(0)).isNotNull();
+        }
+
+    }
 
     @Nested
     @DisplayName("createAccommodation()은")
