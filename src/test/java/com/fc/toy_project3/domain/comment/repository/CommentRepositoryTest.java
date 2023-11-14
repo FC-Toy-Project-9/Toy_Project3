@@ -2,6 +2,7 @@ package com.fc.toy_project3.domain.comment.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.fc.toy_project3.config.TestJpaConfig;
 import com.fc.toy_project3.domain.comment.entity.Comment;
 import com.fc.toy_project3.domain.comment.exception.CommentNotFoundException;
 import com.fc.toy_project3.domain.member.entity.Member;
@@ -63,12 +64,10 @@ public class CommentRepositoryTest {
 
 
     @Test
-    @DisplayName("댓글이 DB에 저장이 됐습니다.")
+    @DisplayName("댓글이 DB에 저장 됐습니다.")
     void saveComment() {
         // given
-        Member member = Member.builder().id(1L).email("toyproject3@gmail.com")
-            .password("toypro3")
-            .name("김토이").nickname("토이").build();
+        Member member = Member.builder().id(1L).nickname("토이").build();
         Trip trip = Trip.builder()
             .id(1L)
             .member(member)
@@ -79,8 +78,8 @@ public class CommentRepositoryTest {
             .itineraries(new ArrayList<>())
             .build();
 
-        tripRepository.save(trip);
         memberRepository.save(member);
+        tripRepository.save(trip);
         Comment comment = Comment.builder().id(1L).trip(trip).member(member).content("여행 잘 다녀와.")
             .build();
 

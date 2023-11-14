@@ -33,7 +33,9 @@ public class CommentResponseDTO {
         this.memberId = comment.getMember().getId();
         this.nickname = comment.getMember().getNickname();
         this.content = comment.getContent();
-        this.createdAt = DateTypeFormatterUtil.localDateTimeToString(comment.getCreatedAt());
-        this.updatedAt = DateTypeFormatterUtil.localDateTimeToString(comment.getUpdatedAt());
+        this.createdAt = comment.getCreatedAt() == null ? null
+            : DateTypeFormatterUtil.localDateTimeToString(comment.getCreatedAt());
+        this.updatedAt = comment.getUpdatedAt() == null ? null
+            : DateTypeFormatterUtil.localDateTimeToString(comment.getUpdatedAt());
     }
 }
