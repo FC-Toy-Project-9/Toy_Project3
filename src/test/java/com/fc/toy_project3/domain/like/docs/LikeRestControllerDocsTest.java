@@ -44,7 +44,7 @@ public class LikeRestControllerDocsTest extends RestDocsSupport {
         Long memberId = 1L;
         LikeResponseDTO likeResponseDTO = LikeResponseDTO.builder().likeId(1L).memberId(memberId).tripId(likeRequestDTO.getTripId()).build();
 
-        given(likeService.createLike(memberId, any(LikeRequestDTO.class))).willReturn(likeResponseDTO);
+        given(likeService.createLike(memberId, likeRequestDTO)).willReturn(likeResponseDTO);
 
         // when, then
         mockMvc.perform(RestDocumentationRequestBuilders.post("/api/likes")
@@ -73,9 +73,7 @@ public class LikeRestControllerDocsTest extends RestDocsSupport {
         // when, then
         mockMvc.perform(RestDocumentationRequestBuilders.get("/api/likes/{tripId}", 1L))
             .andExpect(status().isOk()).andDo(
-                restDoc.document(requestFields(
-                        fieldWithPath("tripId").type(JsonFieldType.NUMBER).description("여행 식별자")
-                            .attributes(key("constraints").value(postDescriptions.descriptionsForProperty("tripId")))),
+                restDoc.document(pathParameters(parameterWithName("tripId").description("여행 식별자")),
                     responseFields(responseCommon()).and(
                         fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터"),
                         fieldWithPath("data.likeId").type(JsonFieldType.NUMBER).description("좋아요 식별자"),
