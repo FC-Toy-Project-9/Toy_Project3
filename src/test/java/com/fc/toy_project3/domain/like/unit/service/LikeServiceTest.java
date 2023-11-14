@@ -15,6 +15,7 @@ import com.fc.toy_project3.domain.like.exception.LikeNotFoundException;
 import com.fc.toy_project3.domain.like.repository.LikeRepository;
 import com.fc.toy_project3.domain.like.service.LikeService;
 import com.fc.toy_project3.domain.member.entity.Member;
+import com.fc.toy_project3.domain.member.repository.MemberRepository;
 import com.fc.toy_project3.domain.trip.entity.Trip;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -37,6 +38,8 @@ class LikeServiceTest {
 
     @Mock
     private LikeRepository likeRepository;
+    @Mock
+    private MemberRepository memberRepository;
 
     @Nested
     @DisplayName("createLike()은")
@@ -49,14 +52,14 @@ class LikeServiceTest {
             LikeRequestDTO likeRequestDTO = LikeRequestDTO.builder().tripId(1L).build();
             Long memberId = 1L;
 
-            Member member = Member.builder().id(1L).email("fc123@naver.com").nickname("닉1")
-                .password("1234").build();
+            Member member = Member.builder().id(1L).email("fc123@naver.com").nickname("닉1").password("1234").build();
             Trip trip = Trip.builder().id(1L).name("제주도 여행").startDate(LocalDate.of(2023, 10, 25))
                 .endDate(LocalDate.of(2023, 10, 26)).isDomestic(true).itineraries(new ArrayList<>())
                 .build();
             Like like = Like.builder().id(1L).trip(trip).member(member).build();
 
             given(likeRepository.save(any(Like.class))).willReturn(like);
+            given(memberRepository.findById(any(Long.TYPE))).willReturn(Optional.ofNullable(member));
 
             // when
             LikeResponseDTO result = likeService.createLike(memberId, likeRequestDTO);
@@ -72,7 +75,7 @@ class LikeServiceTest {
     class Context_getLikeByMemberIdAndTripId {
 
         @Test
-        @DisplayName("특정 id를 가진 좋아요 정보를 조회할 수 있다.")
+        @DisplayName("특정 회원 id와 여행 id를 가진 좋아요 정보를 조회할 수 있다.")
         void _willSuccess() {
             // given
             Long memberId = 1L; Long tripId = 1L;
@@ -80,30 +83,30 @@ class LikeServiceTest {
             Trip trip = Trip.builder().id(1L).name("제주도 여행").startDate(LocalDate.of(2023, 10, 25))
                 .endDate(LocalDate.of(2023, 10, 26)).isDomestic(true).itineraries(new ArrayList<>())
                 .build();
-            Optional<Like> like = Optional.of(Like.builder().id(1L).trip(trip).member(member).build());
-            given(likeRepository.findById(any(Long.TYPE))).willReturn(like);
+            Like like = Like.builder().id(1L).trip(trip).member(member).build();
+            given(likeRepository.findByMemberIdAndTripId(any(Long.TYPE),any(Long.TYPE))).willReturn(like);
 
             // when
             LikeResponseDTO result = likeService.getLikeByMemberIdAndTripId(memberId, tripId);
 
             // then
             assertThat(result).extracting("tripId", "memberId").containsExactly(1L, 1L);
-            verify(likeRepository, times(1)).findById(any(Long.TYPE));
+            verify(likeRepository, times(1)).findByMemberIdAndTripId(any(Long.TYPE), any(Long.TYPE));
         }
 
         @Test
-        @DisplayName("특정 id를 가진 좋아요 정보를 찾을 수 없으면 조회할 수 없다.")
+        @DisplayName("특정 회원 id와 여행 id를 가진 좋아요 정보를 찾을 수 없으면 조회할 수 없다.")
         void likeNotFound_willFail() {
             // given
-            Optional<Like> like = Optional.empty();
-            given(likeRepository.findById(any(Long.TYPE))).willReturn(like);
+            Like like = null;
+            given(likeRepository.findByMemberIdAndTripId(any(Long.TYPE), any(Long.TYPE))).willReturn(like);
 
             // when, then
             Throwable exception = assertThrows(LikeNotFoundException.class, () -> {
                 likeService.getLikeByMemberIdAndTripId(1L, 1L);
             });
             assertEquals("좋아요 정보를 찾을 수 없습니다.", exception.getMessage());
-            verify(likeRepository, times(1)).findById(any(Long.TYPE));
+            verify(likeRepository, times(1)).findByMemberIdAndTripId(any(Long.TYPE), any(Long.TYPE));
         }
     }
 
@@ -120,7 +123,6 @@ class LikeServiceTest {
                 .endDate(LocalDate.of(2023, 10, 26)).isDomestic(true).itineraries(new ArrayList<>())
                 .build();
             Like like = Like.builder().id(1L).trip(trip).member(member).build();
-
             given(likeRepository.findById(any(Long.TYPE))).willReturn(Optional.of(like));
 
             // when
@@ -144,7 +146,7 @@ class LikeServiceTest {
             });
             assertEquals("좋아요 정보를 찾을 수 없습니다.", exception.getMessage());
             verify(likeRepository, times(1)).findById(any(Long.TYPE));
-            verify(likeRepository, never()).delete(any(Like.class));
+            verify(likeRepository, never()).deleteById(any(Long.TYPE));
         }
     }
 }

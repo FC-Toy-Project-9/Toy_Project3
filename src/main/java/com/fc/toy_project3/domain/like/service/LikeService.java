@@ -72,9 +72,9 @@ public class LikeService {
      * @return 삭제한 좋아요 정보 응답 DTO
      */
     public LikeResponseDTO deleteLikeById(Long likeId){
-        LikeResponseDTO likeResponseDTO = new LikeResponseDTO(getLike(likeId));
-        likeRepository.delete(getLike(likeId));
+        Like like = getLike(likeId);
+        likeRepository.deleteById(likeId);
         //여행 entity like_count 감소 로직 추가 예정
-        return likeResponseDTO;
+        return new LikeResponseDTO(like);
     }
 }
