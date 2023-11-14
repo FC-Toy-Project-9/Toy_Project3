@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,5 +37,11 @@ public class LikeRestController {
     public ResponseEntity<ResponseDTO<LikeResponseDTO>> getLikeByMemberIdAndTripId(@PathVariable Long tripId){
         return ResponseEntity.status(HttpStatus.OK).body(
             ResponseDTO.res(HttpStatus.OK, likeService.getLikeByMemberIdAndTripId(1L, tripId), "성공적으로 좋아요 정보를 조회했습니다."));
+    }
+
+    @DeleteMapping("/{tripId}")
+    public ResponseEntity<ResponseDTO<LikeResponseDTO>> deleteLikeById(@PathVariable Long likeId){
+        return ResponseEntity.status(HttpStatus.OK).body(
+            ResponseDTO.res(HttpStatus.OK, likeService.deleteLikeById(likeId), "성공적으로 좋아요 정보를 삭제했습니다."));
     }
 }
