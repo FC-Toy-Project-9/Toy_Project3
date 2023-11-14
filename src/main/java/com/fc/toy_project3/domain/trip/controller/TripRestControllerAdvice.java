@@ -1,6 +1,7 @@
 package com.fc.toy_project3.domain.trip.controller;
 
 import com.fc.toy_project3.domain.trip.dto.response.TripResponseDTO;
+import com.fc.toy_project3.domain.trip.exception.InvalidPagingRequestException;
 import com.fc.toy_project3.domain.trip.exception.InvalidTripDateRangeException;
 import com.fc.toy_project3.domain.trip.exception.TripNotFoundException;
 import com.fc.toy_project3.domain.trip.exception.WrongTripEndDateException;
@@ -41,6 +42,13 @@ public class TripRestControllerAdvice {
     @ExceptionHandler
     public ResponseEntity<ResponseDTO<TripResponseDTO>> wrongTripEndDateException(
         WrongTripEndDateException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(ResponseDTO.res(HttpStatus.BAD_REQUEST, e.getMessage()));
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ResponseDTO<TripResponseDTO>> invalidPagingRequestException(
+        InvalidPagingRequestException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(ResponseDTO.res(HttpStatus.BAD_REQUEST, e.getMessage()));
     }

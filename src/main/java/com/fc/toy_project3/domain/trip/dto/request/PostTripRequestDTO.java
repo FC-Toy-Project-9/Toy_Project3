@@ -7,10 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Builder
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 public class PostTripRequestDTO {
 
     @NotBlank(message = "여행 이름을 입력하세요.")
@@ -21,4 +19,13 @@ public class PostTripRequestDTO {
     private String endDate;
     @NotNull(message = "국내여행 여부를 입력하세요.")
     private Boolean isDomestic;
+
+    @Builder
+    public PostTripRequestDTO(String tripName, String startDate, String endDate,
+        Boolean isDomestic) {
+        this.tripName = tripName;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.isDomestic = isDomestic;
+    }
 }

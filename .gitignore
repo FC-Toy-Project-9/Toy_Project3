@@ -41,3 +41,6 @@ out/
 
 ### REST Docs Html ###
 **/*.html
+
+### QueryDSL ###
+src/main/generated/
