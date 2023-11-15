@@ -239,6 +239,12 @@ public class TripService {
         trip.updateLikeCount(isIncrease);
     }
 
+    /**
+     * 요청 회원과 여행 작성자가 일치하는지 확인
+     *
+     * @param trip 여행 Entity
+     * @param memberId 요청 회원 ID
+     */
     public void isAuthor(Trip trip, long memberId){
         if(trip.getMember().getId() != memberId){
             throw new NotTripAuthorException();
