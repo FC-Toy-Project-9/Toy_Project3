@@ -1,5 +1,6 @@
 package com.fc.toy_project3.domain.member.entity;
 
+import com.fc.toy_project3.domain.member.dto.SignUpResponseDTO;
 import com.fc.toy_project3.global.common.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,29 +16,24 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Member extends BaseTimeEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(length = 30)
+    @Column(unique = true, length = 30)
     private String email;
-
-    @Column(length = 30)
+    @Column()
     private String password;
-
     @Column(length = 30)
     private String name;
-
-    @Column(length = 30)
+    @Column(unique = true, length = 30)
     private String nickname;
 
     @Builder
     public Member(Long id, String email, String password, String name, String nickname) {
         this.id = id;
         this.email = email;
-        this.password = password;
         this.name = name;
         this.nickname = nickname;
+        this.password = password; 
     }
 }
