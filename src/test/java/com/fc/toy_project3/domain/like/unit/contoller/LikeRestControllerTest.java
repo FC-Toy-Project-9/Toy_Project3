@@ -5,6 +5,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -51,7 +52,7 @@ public class LikeRestControllerTest {
             given(likeService.createLike(memberId, likeRequestDTO)).willReturn(likeResponseDTO);
 
             //when, then
-            mockMvc.perform(post("/api/likes")
+            mockMvc.perform(post("/api/likes").with(csrf())
                 .content(new ObjectMapper().writeValueAsString(likeRequestDTO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
@@ -75,7 +76,7 @@ public class LikeRestControllerTest {
                 LikeRequestDTO likeRequestDTO = LikeRequestDTO.builder().tripId(null).build();
 
                 // when, then
-                mockMvc.perform(post("/api/trip")
+                mockMvc.perform(post("/api/trip").with(csrf())
                         .content(new ObjectMapper().writeValueAsString(likeRequestDTO))
                         .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest())
                     .andDo(print());
@@ -100,7 +101,7 @@ public class LikeRestControllerTest {
             given(likeService.getLikeByMemberIdAndTripId(memberId, tripId)).willReturn(likeResponseDTO);
 
             //when, then
-            mockMvc.perform(get("/api/likes/{tripId}", 1L))
+            mockMvc.perform(get("/api/likes/{tripId}", 1L).with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").exists()).andExpect(jsonPath("$.message").exists())
                 .andExpect(jsonPath("$.data").isMap())
@@ -128,7 +129,7 @@ public class LikeRestControllerTest {
             given(likeService.deleteLikeById(memberId, tripId)).willReturn(likeResponseDTO);
 
             //when, then
-            mockMvc.perform(delete("/api/likes/{likeId}", 1L))
+            mockMvc.perform(delete("/api/likes/{likeId}", 1L).with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").exists()).andExpect(jsonPath("$.message").exists())
                 .andExpect(jsonPath("$.data").isMap())
