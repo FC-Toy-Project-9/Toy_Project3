@@ -11,6 +11,7 @@ import com.fc.toy_project3.domain.comment.exception.CommentNotFoundException;
 import com.fc.toy_project3.domain.comment.repository.CommentRepository;
 import com.fc.toy_project3.domain.member.entity.Member;
 import com.fc.toy_project3.domain.member.repository.MemberRepository;
+import com.fc.toy_project3.domain.member.service.MemberService;
 import com.fc.toy_project3.domain.trip.entity.Trip;
 import com.fc.toy_project3.domain.trip.service.TripService;
 import java.time.LocalDateTime;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class CommentService {
 
     private final TripService tripService;
+    private final MemberService memberService;
     private final MemberRepository memberRepository;
     private final CommentRepository commentRepository;
 
@@ -36,7 +38,7 @@ public class CommentService {
     public CommentResponseDTO postComment(Long memberId,
         CommentCreateRequestDTO commentCreateRequestDTO) {
         Trip trip = tripService.getTrip(commentCreateRequestDTO.getTripId());
-        Member member = memberRepository.findById(memberId).get(); // memberService 함수로 변경 예정
+        Member member = memberService.getMember(memberId); // memberService 함수로 변경 예정
         Comment comment = Comment.builder().trip(trip).member(member)
             .content(commentCreateRequestDTO.getContent()).build();
         commentRepository.save(comment);

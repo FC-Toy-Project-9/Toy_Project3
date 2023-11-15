@@ -11,7 +11,7 @@ import com.fc.toy_project3.domain.comment.dto.response.CommentResponseDTO;
 import com.fc.toy_project3.domain.comment.entity.Comment;
 import com.fc.toy_project3.domain.comment.repository.CommentRepository;
 import com.fc.toy_project3.domain.member.entity.Member;
-import com.fc.toy_project3.domain.member.repository.MemberRepository;
+import com.fc.toy_project3.domain.member.service.MemberService;
 import com.fc.toy_project3.domain.trip.entity.Trip;
 import com.fc.toy_project3.domain.trip.service.TripService;
 import java.time.LocalDate;
@@ -36,11 +36,12 @@ public class CommentServiceTest {
     @Mock
     private CommentRepository commentRepository;
 
-    @Mock
-    private MemberRepository memberRepository;
 
     @Mock
     private TripService tripService;
+
+    @Mock
+    private MemberService memberService;
 
     @Nested
     @DisplayName("postComment()는")
@@ -62,7 +63,7 @@ public class CommentServiceTest {
             Comment comment = Comment.builder().id(1L).trip(trip).member(member)
                 .content("여행 계획 정말 멋있다.").build();
             given(tripService.getTrip(any(Long.TYPE))).willReturn(trip);
-            given(memberRepository.findById(any(Long.TYPE))).willReturn(Optional.of(member));
+            given(memberService.getMember(any(Long.TYPE))).willReturn(member);
             given(commentRepository.save(any(Comment.class))).willReturn(comment);
 
             // when
