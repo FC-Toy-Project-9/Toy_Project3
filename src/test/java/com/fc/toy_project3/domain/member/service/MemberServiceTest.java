@@ -124,7 +124,7 @@ class MemberServiceTest {
         Member member = new Member(1L, "ypd06021@naver.com", "bcrypt}$2a$10$AXubVWjicX7CXOu94iA2j.yHFq1QmBb0vvIKszO/Hik7P38hEp8KK", "패캠", "fastcam");
         when(memberRepository.findByEmail(any())).thenReturn(Optional.of(member));
 
-        SignUpResponseDTO response = memberService.test();
+        SignUpResponseDTO response = memberService.userInfo();
 
         assertNotNull(response);
         assertEquals("ypd06021@naver.com", response.getEmail());
@@ -138,7 +138,7 @@ class MemberServiceTest {
 
         when(memberRepository.findByEmail(any())).thenReturn(Optional.empty());
 
-        SignUpResponseDTO response = memberService.test();
+        SignUpResponseDTO response = memberService.userInfo();
 
         assertNull(response);
     }

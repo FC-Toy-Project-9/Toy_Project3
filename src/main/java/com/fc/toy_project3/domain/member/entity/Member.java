@@ -34,6 +34,6 @@ public class Member extends BaseTimeEntity {
         this.email = email;
         this.name = name;
         this.nickname = nickname;
-        this.password = password; 
+        this.password = password;
     }
 }

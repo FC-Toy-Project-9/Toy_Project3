@@ -44,7 +44,7 @@ public class MemberRestController {
     @PostMapping("/test")
     public ResponseEntity<ResponseDTO<SignUpResponseDTO>> test () {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDTO.res(HttpStatus.OK,
-                memberService.test(),
+                memberService.userInfo(),
                 "성공"));
     }
 
