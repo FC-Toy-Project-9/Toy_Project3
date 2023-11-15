@@ -4,14 +4,18 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.snippet.Attributes.key;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fc.toy_project3.docs.RestDocsSupport;
@@ -28,6 +32,7 @@ import com.fc.toy_project3.domain.trip.dto.response.GetTripsResponseDTO;
 import com.fc.toy_project3.domain.trip.dto.response.TripsResponseDTO;
 import com.fc.toy_project3.domain.trip.dto.response.TripResponseDTO;
 import com.fc.toy_project3.domain.trip.service.TripService;
+import com.fc.toy_project3.global.config.jwt.CustomUserDetails;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -79,9 +84,13 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
             .isDomestic(true)
             .build();
         given(tripService.postTrip(any(PostTripRequestDTO.class), any(Long.TYPE))).willReturn(trip);
+        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
+            "test");
 
         // when, then
-        mockMvc.perform(RestDocumentationRequestBuilders.post("/api/trips/{memberId}", 1L)
+        mockMvc.perform(post("/api/trips", 1L)
+                .with(user(customUserDetails))
+                .with(csrf())
                 .content(objectMapper.writeValueAsString(postTripRequestDTO))
                 .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isCreated())
@@ -121,15 +130,6 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
     @DisplayName("getTrips()은 여행 정보 목록을 조회할 수 있다.")
     void getTrips() throws Exception {
         // given
-        GetTripsRequestDTO getTripsRequestDTO = GetTripsRequestDTO.builder()
-            .tripName("제주도")
-            .build();
-        Pageable pageable = TripPageRequestDTO.builder()
-            .page(0)
-            .size(10)
-            .criteria("createdAt")
-            .sort("ASC")
-            .build().of();
         List<TripsResponseDTO> trips = new ArrayList<>();
         trips.add(TripsResponseDTO.builder()
             .tripId(1L)
@@ -175,11 +175,15 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
             .build();
         given(tripService.getTrips(any(GetTripsRequestDTO.class), any(Pageable.class))).willReturn(
             getTripsResponseDTO);
+        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
+            "test");
 
         // when, then
         mockMvc.perform(get("/api/trips")
                 .queryParam("page", "0")
-                .queryParam("pageSize", "10"))
+                .queryParam("pageSize", "10")
+                .with(user(customUserDetails))
+                .with(csrf()))
             .andExpect(status().isOk())
             .andDo(restDoc.document(
                 responseFields(responseCommon()).and(
@@ -218,15 +222,6 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
     @DisplayName("getLikedTrips()은 회원이 좋아요 한 여행 정보 목록을 조회할 수 있다.")
     void getLikedTrips() throws Exception {
         // given
-        GetTripsRequestDTO getTripsRequestDTO = GetTripsRequestDTO.builder()
-            .tripName("제주도")
-            .build();
-        Pageable pageable = TripPageRequestDTO.builder()
-            .page(0)
-            .size(10)
-            .criteria("createdAt")
-            .sort("ASC")
-            .build().of();
         List<TripsResponseDTO> trips = new ArrayList<>();
         trips.add(TripsResponseDTO.builder()
             .tripId(1L)
@@ -272,11 +267,15 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
             .build();
         given(tripService.getLikedTrips(any(Long.TYPE), any(Pageable.class))).willReturn(
             getTripsResponseDTO);
+        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
+            "test");
 
         // when, then
-        mockMvc.perform(get("/api/trips/likes/{memberId}", 1L)
+        mockMvc.perform(get("/api/trips/likes", 1L)
                 .queryParam("page", "0")
-                .queryParam("pageSize", "10"))
+                .queryParam("pageSize", "10")
+                .with(user(customUserDetails))
+                .with(csrf()))
             .andExpect(status().isOk())
             .andDo(restDoc.document(
                 responseFields(responseCommon()).and(
@@ -359,9 +358,13 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
             .createdAt("2023-10-02 10:00")
             .build();
         given(tripService.getTripById(any(Long.TYPE))).willReturn(trip);
+        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
+            "test");
 
         // when, then
-        mockMvc.perform(RestDocumentationRequestBuilders.get("/api/trips/{tripId}", 1L))
+        mockMvc.perform(RestDocumentationRequestBuilders.get("/api/trips/{tripId}", 1L)
+                .with(user(customUserDetails))
+                .with(csrf()))
             .andExpect(status().isOk())
             .andDo(restDoc.document(
                 pathParameters(parameterWithName("tripId").description("여행 식별자")),
@@ -445,10 +448,14 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
             .isDomestic(true)
             .likeCount(7L)
             .build();
-        given(tripService.updateTrip(any(UpdateTripRequestDTO.class))).willReturn(trip);
+        given(tripService.updateTrip(any(UpdateTripRequestDTO.class), any(Long.TYPE))).willReturn(trip);
+        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
+            "test");
 
         // when, then
         mockMvc.perform(patch("/api/trips")
+                .with(user(customUserDetails))
+                .with(csrf())
                 .content(objectMapper.writeValueAsString(request))
                 .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -482,7 +489,7 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
                         .description("좋아요 개수")
                 )
             ));
-        verify(tripService, times(1)).updateTrip(any(UpdateTripRequestDTO.class));
+        verify(tripService, times(1)).updateTrip(any(UpdateTripRequestDTO.class), any(Long.TYPE));
     }
 
     @Test
@@ -499,10 +506,14 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
             .isDomestic(true)
             .likeCount(7L)
             .build();
-        given(tripService.deleteTripById(any(Long.TYPE))).willReturn(tripResponseDTO);
+        given(tripService.deleteTripById(any(Long.TYPE), any(Long.TYPE))).willReturn(tripResponseDTO);
+        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
+            "test");
 
         //when, then
-        mockMvc.perform(RestDocumentationRequestBuilders.delete("/api/trips/{tripId}", 1L))
+        mockMvc.perform(delete("/api/trips/{tripId}", 1L)
+                .with(user(customUserDetails))
+                .with(csrf()))
             .andExpect(status().isOk())
             .andDo(restDoc.document(
                 pathParameters(parameterWithName("tripId").description("여행 식별자")),
@@ -521,6 +532,6 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
                         .description("좋아요 개수")
                 )
             ));
-        verify(tripService, times(1)).deleteTripById(any(Long.TYPE));
+        verify(tripService, times(1)).deleteTripById(any(Long.TYPE), any(Long.TYPE));
     }
 }

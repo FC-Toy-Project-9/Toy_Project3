@@ -81,7 +81,7 @@ public class ItineraryServiceTest {
                 .checkIn("2023-10-25 15:00")
                 .checkOut("2023-10-26 11:00")
                 .build();
-            Member member = Member.builder().nickname("닉네임1").build();
+            Member member = Member.builder().id(1L).nickname("닉네임1").build();
             Trip trip = Trip.builder()
                 .member(member)
                 .name("제주도 여행")
@@ -113,7 +113,7 @@ public class ItineraryServiceTest {
 
             // when
             AccommodationResponseDTO result = itineraryService.createAccommodation(
-                accommodationCreateRequestDTO);
+                accommodationCreateRequestDTO, member.getId());
 
             // then
             assertThat(result).extracting("itineraryName", "accommodationName",
@@ -142,7 +142,7 @@ public class ItineraryServiceTest {
                 .departureTime("2023-10-26 12:00")
                 .arrivalTime("2023-10-26 13:00")
                 .build();
-            Member member = Member.builder().nickname("닉네임1").build();
+            Member member = Member.builder().id(1L).nickname("닉네임1").build();
             Trip trip = Trip.builder()
                 .member(member)
                 .name("제주도 여행")
@@ -177,7 +177,7 @@ public class ItineraryServiceTest {
 
             // when
             TransportationResponseDTO result = itineraryService.createTransportation(
-                transportationCreateRequestDTO);
+                transportationCreateRequestDTO, member.getId());
 
             // then
             assertThat(result).extracting("itineraryName", "transportation", "departurePlace",
@@ -205,7 +205,7 @@ public class ItineraryServiceTest {
                 .arrivalTime("2023-10-26 14:00")
                 .departureTime("2023-10-26 16:00")
                 .build();
-            Member member = Member.builder().nickname("닉네임1").build();
+            Member member = Member.builder().id(1L).nickname("닉네임1").build();
             Trip trip = Trip.builder()
                 .member(member)
                 .name("제주도 여행")
@@ -236,7 +236,7 @@ public class ItineraryServiceTest {
                     .build());
 
             // when
-            VisitResponseDTO result = itineraryService.createVisit(visitCreateRequestDTO);
+            VisitResponseDTO result = itineraryService.createVisit(visitCreateRequestDTO, member.getId());
 
             // then
             assertThat(result).extracting("itineraryName", "placeName", "placeRoadAddressName",
@@ -260,6 +260,7 @@ public class ItineraryServiceTest {
                 .itineraryName("즐거운 제주여정1")
                 .checkOut("2023-10-26 10:00")
                 .build();
+            Member member = Member.builder().id(1L).nickname("닉네임1").build();
             Optional<Itinerary> itinerary = Optional.of(
                 Accommodation.builder()
                     .id(1L)
@@ -270,6 +271,7 @@ public class ItineraryServiceTest {
                     .checkOut(LocalDateTime.of(2023, 10, 26, 11, 0))
                     .trip(Trip.builder()
                         .id(1L)
+                        .member(member)
                         .startDate(LocalDate.of(2023, 10, 25))
                         .endDate(LocalDate.of(2023, 10, 26))
                         .build())
@@ -279,7 +281,7 @@ public class ItineraryServiceTest {
 
             // when
             AccommodationResponseDTO result = itineraryService.updateAccommodation(
-                accommodationUpdateRequestDTO);
+                accommodationUpdateRequestDTO, member.getId());
 
             // then
             assertThat(result).extracting("itineraryName", "accommodationName",
@@ -302,6 +304,7 @@ public class ItineraryServiceTest {
                 .itineraryName("즐거운 제주여정2")
                 .departureTime("2023-10-26 12:00")
                 .arrivalTime("2023-10-26 13:00").build();
+            Member member = Member.builder().id(1L).nickname("닉네임1").build();
             Optional<Itinerary> itinerary = Optional.of(
                 Transportation.builder()
                     .id(2L)
@@ -315,6 +318,7 @@ public class ItineraryServiceTest {
                     .arrivalTime(LocalDateTime.of(2023, 10, 26, 13, 0))
                     .trip(Trip.builder()
                         .id(1L)
+                        .member(member)
                         .startDate(LocalDate.of(2023, 10, 25))
                         .endDate(LocalDate.of(2023, 10, 26))
                         .build())
@@ -324,7 +328,7 @@ public class ItineraryServiceTest {
 
             // when
             TransportationResponseDTO result = itineraryService.updateTransportation(
-                transportationUpdateRequestDTO);
+                transportationUpdateRequestDTO, member.getId());
 
             // then
             assertThat(result).extracting("itineraryName", "transportation", "departurePlace",
@@ -348,6 +352,7 @@ public class ItineraryServiceTest {
                 .itineraryId(1L)
                 .itineraryName("즐거운 제주여정3")
                 .build();
+            Member member = Member.builder().id(1L).nickname("닉네임1").build();
             Optional<Itinerary> itinerary = Optional.of(
                 Visit.builder()
                     .id(3L)
@@ -358,6 +363,7 @@ public class ItineraryServiceTest {
                     .departureTime(LocalDateTime.of(2023, 10, 26, 16, 0))
                     .trip(Trip.builder()
                         .id(1L)
+                        .member(member)
                         .startDate(LocalDate.of(2023, 10, 25))
                         .endDate(LocalDate.of(2023, 10, 26))
                         .build())
@@ -366,7 +372,7 @@ public class ItineraryServiceTest {
                 itinerary);
 
             // when
-            VisitResponseDTO result = itineraryService.updateVisit(visitUpdateRequestDTO);
+            VisitResponseDTO result = itineraryService.updateVisit(visitUpdateRequestDTO, member.getId());
 
             // then
             assertThat(result).extracting("itineraryName", "placeName", "placeRoadAddressName",
@@ -385,8 +391,10 @@ public class ItineraryServiceTest {
         void _willSuccess() throws ItineraryNotFoundException {
             // given
             Long itineraryId = 1L;
+            Member member = Member.builder().id(1L).nickname("닉네임1").build();
             Trip trip = Trip.builder()
                 .id(1L)
+                .member(member)
                 .name("제주도 여행")
                 .startDate(LocalDate.of(2023, 10, 23))
                 .endDate(LocalDate.of(2023, 10, 27))
@@ -407,7 +415,7 @@ public class ItineraryServiceTest {
 
             // when
             AccommodationResponseDTO result = (AccommodationResponseDTO) itineraryService.deleteItinerary(
-                itineraryId);
+                itineraryId, member.getId());
 
             // then
             assertThat(result.getItineraryId()).isEqualTo(1);
