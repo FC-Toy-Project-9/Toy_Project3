@@ -79,57 +79,6 @@ public class ItineraryRepositoryTest {
         entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY TRUE").executeUpdate();
     }
 
-    private Trip saveTrip() {
-        Member member = Member.builder().nickname("닉네임1").build();
-        memberRepository.save(member);
-        Trip trip = Trip.builder()
-            .member(member)
-            .name("제주도 여행")
-            .startDate(LocalDate.of(2023, 10, 25))
-            .endDate(LocalDate.of(2023, 10, 26))
-            .isDomestic(true)
-            .likeCount(0L)
-            .itineraries(new ArrayList<>())
-            .build();
-        return tripRepository.save(trip);
-    }
-
-    private void saveItineraryList() {
-        Trip trip = saveTrip();
-        Accommodation accommodation = Accommodation.builder()
-            .trip(trip)
-            .name("제주여정1")
-            .accommodationName("제주신라호텔")
-            .accommodationRoadAddressName("제주 서귀포시 중문관광로72번길 75")
-            .checkIn(LocalDateTime.of(2023, 10, 25, 15, 0))
-            .checkOut(LocalDateTime.of(2023, 10, 26, 11, 0))
-            .build();
-        accommodationRepository.save(accommodation);
-        Transportation transportation = Transportation.builder()
-            .id(2L)
-            .trip(trip)
-            .itineraryName("제주여정2")
-            .transportation("카카오택시")
-            .departurePlace("제주신라호텔")
-            .departurePlaceRoadAddressName("제주 서귀포시 중문관광로72번길 75")
-            .destination("오설록 티 뮤지엄")
-            .destinationRoadAddressName("제주 서귀포시 안덕면 신화역사로 15 오설록")
-            .departureTime(LocalDateTime.of(2023, 10, 26, 12, 0))
-            .arrivalTime(LocalDateTime.of(2023, 10, 26, 13, 0))
-            .build();
-        transportationRepository.save(transportation);
-        Visit visit = Visit.builder()
-            .id(3L)
-            .trip(trip)
-            .itineraryName("제주여정3")
-            .placeName("카멜리아힐")
-            .placeRoadAddressName("제주 서귀포시 안덕면 병악로 166")
-            .arrivalTime(LocalDateTime.of(2023, 10, 26, 14, 0))
-            .departureTime(LocalDateTime.of(2023, 10, 26, 16, 0))
-            .build();
-        visitRepository.save(visit);
-    }
-
     @Nested
     @DisplayName("save는 ")
     class Context_save {
@@ -255,5 +204,56 @@ public class ItineraryRepositoryTest {
                 null);
             assertThat(result.isPresent()).isFalse();
         }
+    }
+
+    private Trip saveTrip() {
+        Member member = Member.builder().nickname("닉네임1").build();
+        memberRepository.save(member);
+        Trip trip = Trip.builder()
+            .member(member)
+            .name("제주도 여행")
+            .startDate(LocalDate.of(2023, 10, 25))
+            .endDate(LocalDate.of(2023, 10, 26))
+            .isDomestic(true)
+            .likeCount(0L)
+            .itineraries(new ArrayList<>())
+            .build();
+        return tripRepository.save(trip);
+    }
+
+    private void saveItineraryList() {
+        Trip trip = saveTrip();
+        Accommodation accommodation = Accommodation.builder()
+            .trip(trip)
+            .name("제주여정1")
+            .accommodationName("제주신라호텔")
+            .accommodationRoadAddressName("제주 서귀포시 중문관광로72번길 75")
+            .checkIn(LocalDateTime.of(2023, 10, 25, 15, 0))
+            .checkOut(LocalDateTime.of(2023, 10, 26, 11, 0))
+            .build();
+        accommodationRepository.save(accommodation);
+        Transportation transportation = Transportation.builder()
+            .id(2L)
+            .trip(trip)
+            .itineraryName("제주여정2")
+            .transportation("카카오택시")
+            .departurePlace("제주신라호텔")
+            .departurePlaceRoadAddressName("제주 서귀포시 중문관광로72번길 75")
+            .destination("오설록 티 뮤지엄")
+            .destinationRoadAddressName("제주 서귀포시 안덕면 신화역사로 15 오설록")
+            .departureTime(LocalDateTime.of(2023, 10, 26, 12, 0))
+            .arrivalTime(LocalDateTime.of(2023, 10, 26, 13, 0))
+            .build();
+        transportationRepository.save(transportation);
+        Visit visit = Visit.builder()
+            .id(3L)
+            .trip(trip)
+            .itineraryName("제주여정3")
+            .placeName("카멜리아힐")
+            .placeRoadAddressName("제주 서귀포시 안덕면 병악로 166")
+            .arrivalTime(LocalDateTime.of(2023, 10, 26, 14, 0))
+            .departureTime(LocalDateTime.of(2023, 10, 26, 16, 0))
+            .build();
+        visitRepository.save(visit);
     }
 }

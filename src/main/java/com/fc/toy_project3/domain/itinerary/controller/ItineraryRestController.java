@@ -11,8 +11,6 @@ import com.fc.toy_project3.domain.itinerary.dto.response.ItinerarySearchResponse
 import com.fc.toy_project3.domain.itinerary.dto.response.TransportationResponseDTO;
 import com.fc.toy_project3.domain.itinerary.dto.response.VisitResponseDTO;
 import com.fc.toy_project3.domain.itinerary.service.ItineraryService;
-import com.fc.toy_project3.domain.member.entity.Member;
-import com.fc.toy_project3.domain.member.service.MemberService;
 import com.fc.toy_project3.global.common.ResponseDTO;
 import com.fc.toy_project3.global.config.jwt.CustomUserDetails;
 import jakarta.validation.Valid;
@@ -21,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -37,7 +34,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class ItineraryRestController {
 
     private final ItineraryService itineraryService;
-    private final MemberService memberService;
 
     @GetMapping("/keyword/{query}")
     public ResponseEntity<ResponseDTO<List<ItinerarySearchResponseDTO>>> getPlaceByKeyword(

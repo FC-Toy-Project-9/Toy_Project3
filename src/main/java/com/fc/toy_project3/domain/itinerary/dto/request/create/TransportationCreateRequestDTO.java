@@ -2,6 +2,7 @@ package com.fc.toy_project3.domain.itinerary.dto.request.create;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,16 +14,22 @@ public class TransportationCreateRequestDTO {
     @NotNull(message = "여행 ID를 입력하세요.")
     private Long tripId;
     @NotBlank(message = "여정 이름을 입력하세요.")
+    @Size(max = 100, message = "여정 이름은 100자 이내로 입력하세요.")
     private String itineraryName;
     @NotBlank(message = "이동 수단을 입력하세요.")
+    @Size(max = 100, message = "이동 수단은 100자 이내로 입력하세요.")
     private String transportation;
     @NotBlank(message = "출발지를 입력하세요.")
+    @Size(max = 100, message = "출발지는 100자 이내로 입력하세요.")
     private String departurePlace;
     @NotBlank(message = "출발지 도로명 주소를 입력하세요.")
+    @Size(max = 255, message = "출발지 도로명 주소은 100자 이내로 입력하세요.")
     private String departurePlaceRoadAddressName;
     @NotBlank(message = "도착지를 입력하세요.")
+    @Size(max = 100, message = "도착지는 100자 이내로 입력하세요.")
     private String destination;
     @NotBlank(message = "도착지 도로명 주소를 입력하세요.")
+    @Size(max = 255, message = "도착지 도로명 주소는 100자 이내로 입력하세요.")
     private String destinationRoadAddressName;
     @NotBlank(message = "출발 일시를 입력하세요.(yyyy-MM-dd HH:ss)")
     private String departureTime;
