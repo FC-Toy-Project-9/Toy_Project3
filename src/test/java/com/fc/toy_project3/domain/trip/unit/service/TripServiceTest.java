@@ -11,9 +11,7 @@ import static org.mockito.Mockito.verify;
 
 import com.fc.toy_project3.domain.like.entity.Like;
 import com.fc.toy_project3.domain.like.repository.LikeRepository;
-import com.fc.toy_project3.domain.like.service.LikeService;
 import com.fc.toy_project3.domain.member.entity.Member;
-import com.fc.toy_project3.domain.member.repository.MemberRepository;
 import com.fc.toy_project3.domain.member.service.MemberService;
 import com.fc.toy_project3.domain.trip.dto.request.GetTripsRequestDTO;
 import com.fc.toy_project3.domain.trip.dto.request.PostTripRequestDTO;
@@ -24,6 +22,7 @@ import com.fc.toy_project3.domain.trip.dto.response.GetTripsResponseDTO;
 import com.fc.toy_project3.domain.trip.dto.response.TripResponseDTO;
 import com.fc.toy_project3.domain.trip.entity.Trip;
 import com.fc.toy_project3.domain.trip.exception.InvalidTripDateRangeException;
+import com.fc.toy_project3.domain.trip.exception.NotTripAuthorException;
 import com.fc.toy_project3.domain.trip.exception.TripNotFoundException;
 import com.fc.toy_project3.domain.trip.exception.WrongTripStartDateException;
 import com.fc.toy_project3.domain.trip.repository.TripRepository;
@@ -41,6 +40,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -101,7 +101,7 @@ public class TripServiceTest {
 
         @Test
         @DisplayName("여행 종료일이 시작일보다 빠르면 여행 정보를 저장할 수 없다.")
-        void InvalidTripDateRange_willFail() {
+        void invalidTripDateRange_willFail() {
             // given
             PostTripRequestDTO postTripRequestDTO = PostTripRequestDTO.builder()
                 .tripName("제주도 여행")
@@ -115,6 +115,26 @@ public class TripServiceTest {
                 tripService.postTrip(postTripRequestDTO, 1L);
             });
             assertEquals("시작일이 종료일보다 빨라야 합니다.", exception.getMessage());
+            verify(tripRepository, never()).save(any(Trip.class));
+        }
+
+        @Test
+        @DisplayName("회원 정보를 조회할 수 없으면 여행 정보를 저장할 수 없다.")
+        void memberNotFound_willFail() {
+            PostTripRequestDTO postTripRequestDTO = PostTripRequestDTO.builder()
+                .tripName("제주도 여행")
+                .startDate("2023-10-25")
+                .endDate("2023-10-26")
+                .isDomestic(true)
+                .build();
+            given(memberService.getMember(any(Long.TYPE))).willThrow(
+                new UsernameNotFoundException(1L + "해당 Id를 찾을 수 없습니다."));
+
+            // when, then
+            Throwable exception = assertThrows(UsernameNotFoundException.class, () -> {
+                tripService.postTrip(postTripRequestDTO, 1L);
+            });
+            assertEquals(1L + "해당 Id를 찾을 수 없습니다.", exception.getMessage());
             verify(tripRepository, never()).save(any(Trip.class));
         }
     }
@@ -330,7 +350,7 @@ public class TripServiceTest {
 
         @Test
         @DisplayName("여행 시작일이 알맞지 않으면 수정할 수 없다.")
-        void WrongStartDate_willFail() {
+        void wrongStartDate_willFail() {
             // given
             UpdateTripRequestDTO updateTripRequestDTO = UpdateTripRequestDTO.builder().tripId(1L)
                 .tripName("울릉도 여행").startDate("2023-10-25").endDate("2023-10-24").isDomestic(true)
@@ -350,6 +370,33 @@ public class TripServiceTest {
             assertEquals("여행 시작일을 다시 확인해주세요.", exception.getMessage());
             verify(tripRepository, times(1)).findById(any(Long.TYPE));
         }
+
+        @Test
+        @DisplayName("여행 작성자가 아니면 수정할 수 없다.")
+        void notAuthor_willFail() {
+            // given
+            UpdateTripRequestDTO updateTripRequestDTO = UpdateTripRequestDTO.builder().tripId(1L)
+                .tripName("울릉도 여행").startDate("2023-10-25").endDate("2023-10-24").isDomestic(true)
+                .build();
+            Member member = Member.builder().id(1L).nickname("닉네임").build();
+            Optional<Trip> trip = Optional.of(
+                Trip.builder()
+                    .id(1L)
+                    .member(Member.builder()
+                        .id(2L)
+                        .build()).name("제주도 여행")
+                    .startDate(LocalDate.of(2023, 10, 23))
+                    .endDate(LocalDate.of(2023, 10, 27)).isDomestic(true)
+                    .itineraries(new ArrayList<>()).build());
+            given(tripRepository.findById(any(Long.TYPE))).willReturn(trip);
+
+            // when, then
+            Throwable exception = assertThrows(NotTripAuthorException.class, () -> {
+                tripService.updateTrip(updateTripRequestDTO, member.getId());
+            });
+            assertEquals("여행 정보 작성자가 아닙니다.", exception.getMessage());
+            verify(tripRepository, times(1)).findById(any(Long.TYPE));
+        }
     }
 
     @Nested
@@ -361,14 +408,19 @@ public class TripServiceTest {
         void _willSuccess() {
             // given
             Member member = Member.builder().id(1L).nickname("닉네임").build();
-            Trip trip = Trip.builder().id(1L).member(member).name("제주도 여행")
+            Trip trip = Trip.builder()
+                .id(1L)
+                .member(member)
+                .name("제주도 여행")
                 .startDate(LocalDate.of(2023, 10, 25))
-                .endDate(LocalDate.of(2023, 10, 26)).isDomestic(true).itineraries(new ArrayList<>())
+                .endDate(LocalDate.of(2023, 10, 26))
+                .isDomestic(true).itineraries(new ArrayList<>())
                 .build();
             given(tripRepository.findById(any(Long.TYPE))).willReturn(Optional.of(trip));
 
             // when
-            TripResponseDTO tripResponseDTO = tripService.deleteTripById(trip.getId(), member.getId());
+            TripResponseDTO tripResponseDTO = tripService.deleteTripById(trip.getId(),
+                member.getId());
 
             // then
             assertThat(tripResponseDTO.getTripId()).isEqualTo(1);
@@ -388,7 +440,32 @@ public class TripServiceTest {
             });
             assertEquals("여행 기록을 찾을 수 없습니다.", exception.getMessage());
             verify(tripRepository, times(1)).findById(any(Long.TYPE));
-            verify(tripRepository, never()).delete(any(Trip.class));
+        }
+
+        @Test
+        @DisplayName("여행 작성자가 아니면 여행 정보를 삭제할 수 있다.")
+        void notAuthor_willFail() {
+            // given
+            Member member = Member.builder().id(1L).nickname("닉네임").build();
+            Trip trip = Trip.builder()
+                .id(1L)
+                .member(Member.builder()
+                    .id(2L)
+                    .build())
+                .name("제주도 여행")
+                .startDate(LocalDate.of(2023, 10, 25))
+                .endDate(LocalDate.of(2023, 10, 26))
+                .isDomestic(true)
+                .itineraries(new ArrayList<>())
+                .build();
+            given(tripRepository.findById(any(Long.TYPE))).willReturn(Optional.of(trip));
+
+            // when, then
+            Throwable exception = assertThrows(NotTripAuthorException.class, () -> {
+                tripService.deleteTripById(1L, member.getId());
+            });
+            assertEquals("여행 정보 작성자가 아닙니다.", exception.getMessage());
+            verify(tripRepository, times(1)).findById(any(Long.TYPE));
         }
     }
 }

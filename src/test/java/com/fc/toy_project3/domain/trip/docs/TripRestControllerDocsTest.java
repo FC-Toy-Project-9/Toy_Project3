@@ -25,12 +25,11 @@ import com.fc.toy_project3.domain.itinerary.dto.response.get.GetVisitResponseDTO
 import com.fc.toy_project3.domain.trip.controller.TripRestController;
 import com.fc.toy_project3.domain.trip.dto.request.GetTripsRequestDTO;
 import com.fc.toy_project3.domain.trip.dto.request.PostTripRequestDTO;
-import com.fc.toy_project3.domain.trip.dto.request.TripPageRequestDTO;
 import com.fc.toy_project3.domain.trip.dto.request.UpdateTripRequestDTO;
 import com.fc.toy_project3.domain.trip.dto.response.GetTripResponseDTO;
 import com.fc.toy_project3.domain.trip.dto.response.GetTripsResponseDTO;
-import com.fc.toy_project3.domain.trip.dto.response.TripsResponseDTO;
 import com.fc.toy_project3.domain.trip.dto.response.TripResponseDTO;
+import com.fc.toy_project3.domain.trip.dto.response.TripsResponseDTO;
 import com.fc.toy_project3.domain.trip.service.TripService;
 import com.fc.toy_project3.global.config.jwt.CustomUserDetails;
 import java.util.ArrayList;
@@ -84,12 +83,10 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
             .isDomestic(true)
             .build();
         given(tripService.postTrip(any(PostTripRequestDTO.class), any(Long.TYPE))).willReturn(trip);
-        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
-            "test");
 
         // when, then
         mockMvc.perform(post("/api/trips", 1L)
-                .with(user(customUserDetails))
+                .with(user(getCustomUserDetails()))
                 .with(csrf())
                 .content(objectMapper.writeValueAsString(postTripRequestDTO))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -175,14 +172,12 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
             .build();
         given(tripService.getTrips(any(GetTripsRequestDTO.class), any(Pageable.class))).willReturn(
             getTripsResponseDTO);
-        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
-            "test");
 
         // when, then
         mockMvc.perform(get("/api/trips")
                 .queryParam("page", "0")
                 .queryParam("pageSize", "10")
-                .with(user(customUserDetails))
+                .with(user(getCustomUserDetails()))
                 .with(csrf()))
             .andExpect(status().isOk())
             .andDo(restDoc.document(
@@ -195,7 +190,8 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
                     fieldWithPath("data.totalTrips").type(JsonFieldType.NUMBER)
                         .description("총 여행 수"),
                     fieldWithPath("data.trips").type(JsonFieldType.ARRAY).description("여행 목록"),
-                    fieldWithPath("data.trips[].tripId").type(JsonFieldType.NUMBER).description("여행 식별자"),
+                    fieldWithPath("data.trips[].tripId").type(JsonFieldType.NUMBER)
+                        .description("여행 식별자"),
                     fieldWithPath("data.trips[].memberId").type(JsonFieldType.NUMBER)
                         .description("회원 식별자"),
                     fieldWithPath("data.trips[].nickname").type(JsonFieldType.STRING)
@@ -267,14 +263,12 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
             .build();
         given(tripService.getLikedTrips(any(Long.TYPE), any(Pageable.class))).willReturn(
             getTripsResponseDTO);
-        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
-            "test");
 
         // when, then
         mockMvc.perform(get("/api/trips/likes", 1L)
                 .queryParam("page", "0")
                 .queryParam("pageSize", "10")
-                .with(user(customUserDetails))
+                .with(user(getCustomUserDetails()))
                 .with(csrf()))
             .andExpect(status().isOk())
             .andDo(restDoc.document(
@@ -287,7 +281,8 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
                     fieldWithPath("data.totalTrips").type(JsonFieldType.NUMBER)
                         .description("총 여행 수"),
                     fieldWithPath("data.trips").type(JsonFieldType.ARRAY).description("여행 목록"),
-                    fieldWithPath("data.trips[].tripId").type(JsonFieldType.NUMBER).description("여행 식별자"),
+                    fieldWithPath("data.trips[].tripId").type(JsonFieldType.NUMBER)
+                        .description("여행 식별자"),
                     fieldWithPath("data.trips[].memberId").type(JsonFieldType.NUMBER)
                         .description("회원 식별자"),
                     fieldWithPath("data.trips[].nickname").type(JsonFieldType.STRING)
@@ -358,12 +353,10 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
             .createdAt("2023-10-02 10:00")
             .build();
         given(tripService.getTripById(any(Long.TYPE))).willReturn(trip);
-        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
-            "test");
 
         // when, then
         mockMvc.perform(RestDocumentationRequestBuilders.get("/api/trips/{tripId}", 1L)
-                .with(user(customUserDetails))
+                .with(user(getCustomUserDetails()))
                 .with(csrf()))
             .andExpect(status().isOk())
             .andDo(restDoc.document(
@@ -448,13 +441,12 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
             .isDomestic(true)
             .likeCount(7L)
             .build();
-        given(tripService.updateTrip(any(UpdateTripRequestDTO.class), any(Long.TYPE))).willReturn(trip);
-        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
-            "test");
+        given(tripService.updateTrip(any(UpdateTripRequestDTO.class), any(Long.TYPE))).willReturn(
+            trip);
 
         // when, then
         mockMvc.perform(patch("/api/trips")
-                .with(user(customUserDetails))
+                .with(user(getCustomUserDetails()))
                 .with(csrf())
                 .content(objectMapper.writeValueAsString(request))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -506,13 +498,12 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
             .isDomestic(true)
             .likeCount(7L)
             .build();
-        given(tripService.deleteTripById(any(Long.TYPE), any(Long.TYPE))).willReturn(tripResponseDTO);
-        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
-            "test");
+        given(tripService.deleteTripById(any(Long.TYPE), any(Long.TYPE))).willReturn(
+            tripResponseDTO);
 
         //when, then
         mockMvc.perform(delete("/api/trips/{tripId}", 1L)
-                .with(user(customUserDetails))
+                .with(user(getCustomUserDetails()))
                 .with(csrf()))
             .andExpect(status().isOk())
             .andDo(restDoc.document(
@@ -533,5 +524,9 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
                 )
             ));
         verify(tripService, times(1)).deleteTripById(any(Long.TYPE), any(Long.TYPE));
+    }
+
+    private CustomUserDetails getCustomUserDetails() {
+        return new CustomUserDetails(1L, "test", "test@mail.com", "test");
     }
 }
