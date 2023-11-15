@@ -77,7 +77,6 @@ public class CommentRestControllerDocsTest extends RestDocsSupport {
     @WithMockUser
     void postComment() throws Exception {
         // given
-        Long memberId = 1L;
         CommentCreateRequestDTO commentCreateRequestDTO = CommentCreateRequestDTO.builder()
             .tripId(1L)
             .content("여행 계획 정말 멋있다.").build();
@@ -90,7 +89,7 @@ public class CommentRestControllerDocsTest extends RestDocsSupport {
         given(commentService.postComment(any(Long.TYPE),
             any(CommentCreateRequestDTO.class))).willReturn(
             commentResponseDTO);
-        CustomUserDetails customUserDetails = new CustomUserDetails(memberId);
+        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com", "test");
 
         // when, then
         mockMvc.perform(
@@ -123,7 +122,6 @@ public class CommentRestControllerDocsTest extends RestDocsSupport {
     @DisplayName("patchComment()는 여행 댓글 정보를 수정할 수 있다.")
     void patchComment() throws Exception {
         // given
-        Long memberId = 1L;
         CommentUpdateRequestDTO commentUpdateRequestDTO = CommentUpdateRequestDTO.builder()
             .content("여행 잘 다녀와.").build();
         CommentResponseDTO commentResponseDTO = CommentResponseDTO.builder().tripId(1L)
@@ -136,7 +134,7 @@ public class CommentRestControllerDocsTest extends RestDocsSupport {
             commentService.patchComment(any(Long.TYPE), any(Long.TYPE),
                 any(CommentUpdateRequestDTO.class))).willReturn(
             commentResponseDTO);
-        CustomUserDetails customUserDetails = new CustomUserDetails(memberId);
+        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com", "test");
 
         // when, then
         mockMvc.perform(
@@ -169,12 +167,11 @@ public class CommentRestControllerDocsTest extends RestDocsSupport {
     @DisplayName("softDeleteComment()는 여행 댓글 정보를 삭제할 수 있다.")
     void softDeleteComment() throws Exception {
         // given
-        Long memberId = 1L;
         CommentDeleteResponseDTO commentDeleteResponseDTO = CommentDeleteResponseDTO.builder()
             .commentId(1L).build();
         given(commentService.softDeleteComment(any(Long.TYPE), any(Long.TYPE))).willReturn(
             commentDeleteResponseDTO);
-        CustomUserDetails customUserDetails = new CustomUserDetails(memberId);
+        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com", "test");
 
         // when, then
         mockMvc.perform(delete("/api/comments/{commentId}", 1L).with(user(customUserDetails)).with(csrf())).andExpect(status().isOk()).andDo(

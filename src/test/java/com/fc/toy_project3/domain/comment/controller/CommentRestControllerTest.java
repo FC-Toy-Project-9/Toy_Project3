@@ -20,7 +20,6 @@ import com.fc.toy_project3.domain.comment.dto.request.CommentUpdateRequestDTO;
 import com.fc.toy_project3.domain.comment.dto.response.CommentDeleteResponseDTO;
 import com.fc.toy_project3.domain.comment.dto.response.CommentResponseDTO;
 import com.fc.toy_project3.domain.comment.service.CommentService;
-import com.fc.toy_project3.global.config.WebSecurityConfig;
 import com.fc.toy_project3.global.config.jwt.CustomUserDetails;
 import com.fc.toy_project3.global.util.DateTypeFormatterUtil;
 import java.time.LocalDateTime;
@@ -31,8 +30,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -71,7 +68,6 @@ public class CommentRestControllerTest {
         @WithMockUser
         void _willSuccess() throws Exception {
             // given
-            Long memberId = 1L;
             CommentCreateRequestDTO commentCreateRequestDTO = CommentCreateRequestDTO.builder()
                 .tripId(1L)
                 .content("여행 계획 정말 멋있다.").build();
@@ -84,7 +80,8 @@ public class CommentRestControllerTest {
             given(commentService.postComment(any(Long.TYPE),
                 any(CommentCreateRequestDTO.class))).willReturn(
                 commentResponseDTO);
-            CustomUserDetails customUserDetails = new CustomUserDetails(memberId);
+            CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
+                "test");
 
             // when
             mockMvc.perform(
@@ -110,7 +107,6 @@ public class CommentRestControllerTest {
         @DisplayName("patchComment()는 여행 댓글을 수정할 수 있다.")
         void _willSuccess() throws Exception {
             // given
-            Long memberId = 1L;
             CommentUpdateRequestDTO commentUpdateRequestDTO = CommentUpdateRequestDTO.builder()
                 .content("여행 잘 다녀와.").build();
             CommentResponseDTO commentResponseDTO = CommentResponseDTO.builder().tripId(1L)
@@ -124,7 +120,8 @@ public class CommentRestControllerTest {
                 commentService.patchComment(any(Long.TYPE), any(Long.TYPE),
                     any(CommentUpdateRequestDTO.class))).willReturn(
                 commentResponseDTO);
-            CustomUserDetails customUserDetails = new CustomUserDetails(memberId);
+            CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
+                "test");
 
             // when
             mockMvc.perform(
@@ -153,12 +150,12 @@ public class CommentRestControllerTest {
         @DisplayName("여행 댓글을 수정할 수 있다.")
         void _willSuccess() throws Exception {
             // given
-            Long memberId = 1L;
             CommentDeleteResponseDTO commentDeleteResponseDTO = CommentDeleteResponseDTO.builder()
                 .commentId(1L).build();
             given(commentService.softDeleteComment(any(Long.TYPE), any(Long.TYPE))).willReturn(
                 commentDeleteResponseDTO);
-            CustomUserDetails customUserDetails = new CustomUserDetails(memberId);
+            CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
+                "test");
 
             // when
             mockMvc.perform(
