@@ -11,8 +11,15 @@ import java.util.Collections;
 @Getter
 public class CustomUserDetails implements UserDetails {
     private final Long memberId;
-    public CustomUserDetails(Long memberId) {
+    private final String nickname;
+    private final String name;
+    private final String email;
+
+    public CustomUserDetails(Long memberId, String nickname, String email, String name) {
         this.memberId = memberId;
+        this.nickname = nickname;
+        this.name = name;
+        this.email=email;
     }
     public Long getMemberId() {
         return memberId;
@@ -23,13 +30,11 @@ public class CustomUserDetails implements UserDetails {
     }
 
     @Override
-    public String getPassword() {
-        return getPassword();
-    }
+    public String getPassword() { return "***";}
 
     @Override
     public String getUsername() {
-        return null;
+        return email;
     }
 
     @Override

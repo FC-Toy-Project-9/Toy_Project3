@@ -13,7 +13,6 @@ import com.fc.toy_project3.domain.member.entity.Member;
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final MemberRepository memberRepository;
-
     @Autowired
     public CustomUserDetailsService(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
@@ -23,12 +22,8 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+        Long memberId =  member.getId();
 
-        System.out.println(member.getId());
-        return org.springframework.security.core.userdetails.User
-                .withUsername(email)
-                .username(member.getEmail())
-                .password(member.getPassword())
-                .build();
+        return new CustomUserDetails(memberId, member.getNickname(), member.getEmail(), member.getName());
     }
 }
