@@ -49,7 +49,7 @@ public class LikeRestControllerTest {
         @Test
         @DisplayName("좋아요 정보를 등록할 수 있다.")
         void _willSuccess() throws Exception {
-            //given
+            // given
             Long memberId = 1L;
             Long tripId = 1L;
             Long likeId = 1L;
@@ -58,7 +58,7 @@ public class LikeRestControllerTest {
 
             given(likeService.createLike(any(Long.TYPE), any(LikeRequestDTO.class))).willReturn(likeResponseDTO);
 
-            //when, then
+            // when, then
             mockMvc.perform(post("/api/likes").with(user(makeUserInfo())).with(csrf())
                 .content(objectMapper.writeValueAsString(likeRequestDTO))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -100,7 +100,7 @@ public class LikeRestControllerTest {
         @Test
         @DisplayName("특정 회원 id와 여행 id를 가진 좋아요 정보를 조회할 수 있다.")
         void _willSuccess() throws Exception {
-            //given
+            // given
             Long memberId = 1L;
             Long tripId = 1L;
             Long likeId = 1L;
@@ -108,7 +108,7 @@ public class LikeRestControllerTest {
 
             given(likeService.getLikeByMemberIdAndTripId(memberId, tripId)).willReturn(likeResponseDTO);
 
-            //when, then
+            // when, then
             mockMvc.perform(get("/api/likes/{tripId}", 1L).with(user(makeUserInfo())).with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").exists()).andExpect(jsonPath("$.message").exists())
@@ -127,7 +127,7 @@ public class LikeRestControllerTest {
         @Test
         @DisplayName("특정 id를 가진 좋아요 정보를 삭제할 수 있다.")
         void _willSuccess() throws Exception {
-            //given
+            // given
             Long likeId = 1L;
             Long memberId = 1L;
             Long tripId = 1L;
@@ -135,7 +135,7 @@ public class LikeRestControllerTest {
 
             given(likeService.deleteLikeById(memberId, tripId)).willReturn(likeResponseDTO);
 
-            //when, then
+            // when, then
             mockMvc.perform(delete("/api/likes/{likeId}", 1L).with(user(makeUserInfo())).with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").exists()).andExpect(jsonPath("$.message").exists())

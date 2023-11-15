@@ -51,7 +51,7 @@ class LikeServiceTest {
         @Test
         @DisplayName("좋아요 정보를 저장할 수 있다.")
         void _willSuccess() {
-            //given
+            // given
             LikeRequestDTO likeRequestDTO = LikeRequestDTO.builder().tripId(1L).build();
             Long memberId = 1L;
 
