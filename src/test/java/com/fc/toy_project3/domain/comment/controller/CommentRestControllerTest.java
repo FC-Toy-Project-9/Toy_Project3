@@ -4,7 +4,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -21,7 +20,6 @@ import com.fc.toy_project3.domain.comment.dto.request.CommentUpdateRequestDTO;
 import com.fc.toy_project3.domain.comment.dto.response.CommentDeleteResponseDTO;
 import com.fc.toy_project3.domain.comment.dto.response.CommentResponseDTO;
 import com.fc.toy_project3.domain.comment.service.CommentService;
-import com.fc.toy_project3.domain.member.service.MemberService;
 import com.fc.toy_project3.global.config.WebSecurityConfig;
 import com.fc.toy_project3.global.config.jwt.CustomUserDetails;
 import com.fc.toy_project3.global.util.DateTypeFormatterUtil;
@@ -30,7 +28,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -43,8 +40,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-@WebMvcTest(value = {CommentRestController.class}, excludeFilters = {
-    @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfig.class)})
+@WebMvcTest(CommentRestController.class)
 public class CommentRestControllerTest {
 
     @Autowired
@@ -53,12 +49,9 @@ public class CommentRestControllerTest {
     @MockBean
     private CommentService commentService;
 
-    @MockBean
-    private MemberService memberService;
-
-
     @Autowired
     private WebApplicationContext context;
+
 
     @BeforeEach
     void setUp() {
@@ -75,7 +68,7 @@ public class CommentRestControllerTest {
 
         @Test
         @DisplayName("여행 댓글을 저장할 수 있다.")
-        @WithMockUser()
+        @WithMockUser
         void _willSuccess() throws Exception {
             // given
             Long memberId = 1L;
@@ -88,8 +81,6 @@ public class CommentRestControllerTest {
                 .content("여행 계획 정말 멋있다.")
                 .createdAt(DateTypeFormatterUtil.localDateTimeToString(LocalDateTime.now()))
                 .updatedAt(null).build();
-            CustomUserDetails mock = Mockito.mock(CustomUserDetails.class);
-            when(mock.getMemberId()).thenReturn(memberId);
             given(commentService.postComment(any(Long.TYPE),
                 any(CommentCreateRequestDTO.class))).willReturn(
                 commentResponseDTO);
@@ -119,6 +110,7 @@ public class CommentRestControllerTest {
         @DisplayName("patchComment()는 여행 댓글을 수정할 수 있다.")
         void _willSuccess() throws Exception {
             // given
+            Long memberId = 1L;
             CommentUpdateRequestDTO commentUpdateRequestDTO = CommentUpdateRequestDTO.builder()
                 .content("여행 잘 다녀와.").build();
             CommentResponseDTO commentResponseDTO = CommentResponseDTO.builder().tripId(1L)
@@ -132,12 +124,15 @@ public class CommentRestControllerTest {
                 commentService.patchComment(any(Long.TYPE), any(Long.TYPE),
                     any(CommentUpdateRequestDTO.class))).willReturn(
                 commentResponseDTO);
+            CustomUserDetails customUserDetails = new CustomUserDetails(memberId);
 
             // when
-            mockMvc.perform(patch("/api/comments/{commentId}", 1L).with(csrf()).content(
-                        new ObjectMapper().writeValueAsString(commentUpdateRequestDTO))
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .with(csrf())).andExpect(status().isOk())
+            mockMvc.perform(
+                    patch("/api/comments/{commentId}", 1L).with(user(customUserDetails)).with(csrf())
+                        .content(
+                            new ObjectMapper().writeValueAsString(commentUpdateRequestDTO))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .with(csrf())).andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").exists())
                 .andExpect(jsonPath("$.message").exists())
                 .andExpect(jsonPath("$.data.nickname").exists())
@@ -158,14 +153,17 @@ public class CommentRestControllerTest {
         @DisplayName("여행 댓글을 수정할 수 있다.")
         void _willSuccess() throws Exception {
             // given
+            Long memberId = 1L;
             CommentDeleteResponseDTO commentDeleteResponseDTO = CommentDeleteResponseDTO.builder()
                 .commentId(1L).build();
             given(commentService.softDeleteComment(any(Long.TYPE), any(Long.TYPE))).willReturn(
                 commentDeleteResponseDTO);
+            CustomUserDetails customUserDetails = new CustomUserDetails(memberId);
 
             // when
-            mockMvc.perform(delete("/api/comments/{commentId}", 1L).with(
-                    csrf()))
+            mockMvc.perform(
+                    delete("/api/comments/{commentId}", 1L).with(user(customUserDetails)).with(
+                        csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").exists())
                 .andExpect(jsonPath("$.message").exists())
