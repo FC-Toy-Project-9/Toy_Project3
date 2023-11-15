@@ -1,5 +1,6 @@
 package com.fc.toy_project3.domain.like.unit.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -8,12 +9,14 @@ import com.fc.toy_project3.domain.like.entity.Like;
 import com.fc.toy_project3.domain.like.repository.LikeRepository;
 import com.fc.toy_project3.domain.member.entity.Member;
 import com.fc.toy_project3.domain.member.repository.MemberRepository;
+import com.fc.toy_project3.domain.trip.dto.request.TripPageRequestDTO;
 import com.fc.toy_project3.domain.trip.entity.Trip;
 import com.fc.toy_project3.domain.trip.repository.TripRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,6 +27,8 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @DataJpaTest
 @Import({TestJpaConfig.class})
@@ -127,6 +132,84 @@ public class LikeRepositoryTest {
             assertNotNull(result.get().getId());
             assertEquals(memberId, result.get().getMember().getId());
             assertEquals(tripId, result.get().getTrip().getId());
+        }
+    }
+
+    @Nested
+    @DisplayName("findAllByMemberIdAndPageable()은")
+    class Context_findAllByMemberIdAndPageable {
+
+        @Test
+        @DisplayName("특정 회원 id를 가진 좋아요 정보 리스트 Page를 조회할 수 있다.")
+        void _willSuccess() {
+            // given
+            long memberId = 1L;
+            Pageable pageable = TripPageRequestDTO.builder()
+                .page(0)
+                .size(10)
+                .criteria("createdAt")
+                .sort("ASC")
+                .build().of();
+            Member member1 = Member.builder().id(1L).nickname("닉네임1").build();
+            Member member2 = Member.builder().id(2L).nickname("닉네임2").build();
+            Member member3 = Member.builder().id(3L).nickname("닉네임3").build();
+            memberRepository.saveAll(List.of(member1, member2, member3));
+            Trip trip1 = Trip.builder()
+                .id(1L)
+                .member(member1)
+                .name("제주도 여행")
+                .startDate(LocalDate.of(2023, 10, 23))
+                .endDate(LocalDate.of(2023, 10, 27))
+                .isDomestic(true)
+                .likeCount(0L)
+                .itineraries(new ArrayList<>())
+                .build();
+            Trip trip2 = Trip.builder()
+                .id(2L)
+                .member(member2)
+                .name("속초 겨울바다 여행")
+                .startDate(LocalDate.of(2023, 11, 27))
+                .endDate(LocalDate.of(2023, 11, 29))
+                .isDomestic(true)
+                .likeCount(0L)
+                .itineraries(new ArrayList<>())
+                .build();
+            Trip trip3 = Trip.builder()
+                .id(3L)
+                .member(member3)
+                .name("크리스마스 미국 여행")
+                .startDate(LocalDate.of(2023, 12, 24))
+                .endDate(LocalDate.of(2023, 12, 26))
+                .isDomestic(false)
+                .likeCount(0L)
+                .itineraries(new ArrayList<>())
+                .build();
+            tripRepository.saveAll(List.of(trip1, trip2, trip3));
+            Like like1 = Like.builder()
+                .id(1L)
+                .trip(trip1)
+                .member(member1)
+                .build();
+            Like like2 = Like.builder()
+                .id(2L)
+                .trip(trip2)
+                .member(member1)
+                .build();
+            Like like3 = Like.builder()
+                .id(3L)
+                .trip(trip3)
+                .member(member1)
+                .build();
+            likeRepository.saveAll(List.of(like1, like2, like3));
+
+            // when
+            Page<Like> result = likeRepository.findAllByMemberIdAndPageable(memberId, pageable);
+
+            //then
+            assertThat(result.getTotalPages()).isEqualTo(1L);
+            assertThat(result.isLast()).isTrue();
+            assertThat(result.getTotalElements()).isEqualTo(3L);
+            assertThat(result.get()).isNotEmpty();
         }
     }
 

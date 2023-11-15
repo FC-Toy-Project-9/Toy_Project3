@@ -1,0 +1,46 @@
+= Comment REST API Docs
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+[[Comment-Post]]
+== 댓글 등록
+
+댓글을 등록하는 API 입니다.
+
+=== HttpRequest
+include::{snippets}/comment-rest-controller-docs-test/post-comment/http-request.adoc[]
+include::{snippets}/comment-rest-controller-docs-test/post-comment/request-fields.adoc[]
+
+=== HttpResponse
+include::{snippets}/comment-rest-controller-docs-test/post-comment/http-response.adoc[]
+include::{snippets}/comment-rest-controller-docs-test/post-comment/response-fields.adoc[]
+
+[[Comment-Patch]]
+== 댓글 수정
+
+댓글을 수정하는 API 입니다.
+
+=== HttpRequest
+include::{snippets}/comment-rest-controller-docs-test/patch-comment/http-request.adoc[]
+include::{snippets}/comment-rest-controller-docs-test/patch-comment/path-parameters.adoc[]
+include::{snippets}/comment-rest-controller-docs-test/patch-comment/request-fields.adoc[]
+
+=== HttpResponse
+include::{snippets}/comment-rest-controller-docs-test/patch-comment/http-response.adoc[]
+include::{snippets}/comment-rest-controller-docs-test/patch-comment/response-fields.adoc[]
+
+[[Comment-Delete]]
+== 댓글 삭제
+
+댓글을 삭제하는 API 입니다.
+
+=== HttpRequest
+include::{snippets}/comment-rest-controller-docs-test/soft-delete-comment/http-request.adoc[]
+include::{snippets}/comment-rest-controller-docs-test/soft-delete-comment/path-parameters.adoc[]
+
+=== HttpResponse
+include::{snippets}/comment-rest-controller-docs-test/soft-delete-comment/http-response.adoc[]
+include::{snippets}/comment-rest-controller-docs-test/soft-delete-comment/response-fields.adoc[]
