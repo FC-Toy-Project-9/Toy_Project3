@@ -4,7 +4,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
@@ -16,7 +15,6 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fc.toy_project3.docs.RestDocsSupport;
@@ -29,18 +27,13 @@ import com.fc.toy_project3.domain.comment.service.CommentService;
 import com.fc.toy_project3.global.config.jwt.CustomUserDetails;
 import com.fc.toy_project3.global.util.DateTypeFormatterUtil;
 import java.time.LocalDateTime;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.constraints.ConstraintDescriptions;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 public class CommentRestControllerDocsTest extends RestDocsSupport {
 
@@ -57,19 +50,6 @@ public class CommentRestControllerDocsTest extends RestDocsSupport {
 
     private final ConstraintDescriptions updateCommentConstraints = new ConstraintDescriptions(
         CommentUpdateRequestDTO.class);
-
-    @Autowired
-    private WebApplicationContext context;
-
-
-    @BeforeEach
-    void make(RestDocumentationContextProvider restDocumentationContextProvider) {
-        mockMvc = MockMvcBuilders
-            .webAppContextSetup(context)
-            .apply(documentationConfiguration(restDocumentationContextProvider)) // REST Docs 설정 추가
-            .apply(springSecurity()) // 스프링 시큐리티 설정 적용
-            .build();
-    }
 
 
     @Test
@@ -89,7 +69,8 @@ public class CommentRestControllerDocsTest extends RestDocsSupport {
         given(commentService.postComment(any(Long.TYPE),
             any(CommentCreateRequestDTO.class))).willReturn(
             commentResponseDTO);
-        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com", "test");
+        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
+            "test");
 
         // when, then
         mockMvc.perform(
@@ -134,7 +115,8 @@ public class CommentRestControllerDocsTest extends RestDocsSupport {
             commentService.patchComment(any(Long.TYPE), any(Long.TYPE),
                 any(CommentUpdateRequestDTO.class))).willReturn(
             commentResponseDTO);
-        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com", "test");
+        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
+            "test");
 
         // when, then
         mockMvc.perform(
@@ -171,15 +153,18 @@ public class CommentRestControllerDocsTest extends RestDocsSupport {
             .commentId(1L).build();
         given(commentService.softDeleteComment(any(Long.TYPE), any(Long.TYPE))).willReturn(
             commentDeleteResponseDTO);
-        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com", "test");
+        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
+            "test");
 
         // when, then
-        mockMvc.perform(delete("/api/comments/{commentId}", 1L).with(user(customUserDetails)).with(csrf())).andExpect(status().isOk()).andDo(
-            restDoc.document(pathParameters(parameterWithName("commentId").description("댓글 식별자")),
-                responseFields(responseCommon()).and(
-                    fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터"),
-                    fieldWithPath("data.commentId").type(JsonFieldType.NUMBER)
-                        .description("댓글 식별자"))));
+        mockMvc.perform(
+                delete("/api/comments/{commentId}", 1L).with(user(customUserDetails)).with(csrf()))
+            .andExpect(status().isOk()).andDo(
+                restDoc.document(pathParameters(parameterWithName("commentId").description("댓글 식별자")),
+                    responseFields(responseCommon()).and(
+                        fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터"),
+                        fieldWithPath("data.commentId").type(JsonFieldType.NUMBER)
+                            .description("댓글 식별자"))));
 
     }
 }
