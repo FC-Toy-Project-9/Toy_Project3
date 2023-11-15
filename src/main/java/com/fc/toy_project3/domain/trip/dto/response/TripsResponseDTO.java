@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/**
+ * 여행 목록 조회 응답 DTO
+ */
 @Getter
 @NoArgsConstructor
 public class TripsResponseDTO {
@@ -22,7 +25,8 @@ public class TripsResponseDTO {
     private String updatedAt;
 
     @Builder
-    public TripsResponseDTO(Long tripId, Long memberId, String nickname, String tripName, String startDate, String endDate,
+    public TripsResponseDTO(Long tripId, Long memberId, String nickname, String tripName,
+        String startDate, String endDate,
         Boolean isDomestic, Long likeCount, String createdAt, String updatedAt) {
         this.tripId = tripId;
         this.memberId = memberId;

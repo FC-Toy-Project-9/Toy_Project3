@@ -5,6 +5,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/**
+ * 여행 목록 조회 페이지 응답 DTO
+ */
 @Getter
 @NoArgsConstructor
 public class GetTripsResponseDTO {

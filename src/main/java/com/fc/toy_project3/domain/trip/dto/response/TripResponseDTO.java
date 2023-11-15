@@ -23,7 +23,8 @@ public class TripResponseDTO {
     private Long likeCount;
 
     @Builder
-    public TripResponseDTO(Long tripId, Long memberId, String nickname, String tripName, String startDate, String endDate,
+    public TripResponseDTO(Long tripId, Long memberId, String nickname, String tripName,
+        String startDate, String endDate,
         Long likeCount, Boolean isDomestic) {
         this.tripId = tripId;
         this.memberId = memberId;

@@ -1,8 +1,7 @@
 package com.fc.toy_project3.domain.trip.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,6 +15,7 @@ public class UpdateTripRequestDTO {
 
     @NotNull(message = "수정할 여행 정보 ID를 입력하세요.")
     private Long tripId;
+    @Size(max = 100, message = "여행 이름은 100자 이내로 입력하세요.")
     private String tripName;
     private String startDate;
     private String endDate;

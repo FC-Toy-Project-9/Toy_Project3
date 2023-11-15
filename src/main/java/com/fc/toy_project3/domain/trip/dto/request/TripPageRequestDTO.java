@@ -5,6 +5,9 @@ import lombok.Builder;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 
+/**
+ * 여행 페이징 요청 DTO
+ */
 public class TripPageRequestDTO {
 
     private final int page;
@@ -18,7 +21,7 @@ public class TripPageRequestDTO {
         int DEFAULT_SIZE = 10;
         int MAX_SIZE = 50;
         this.size = size > MAX_SIZE ? DEFAULT_SIZE : size;
-        if(!criteria.equals("likeCount")&&!criteria.equals("createdAt")){
+        if (!criteria.equals("likeCount") && !criteria.equals("createdAt")) {
             throw new InvalidPagingRequestException("orderBy는 `likeCount`와 `createdAt` 중 선택해주세요.");
         }
         this.criteria = criteria;

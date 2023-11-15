@@ -15,6 +15,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/**
+ * 여행 조회 응답 DTO
+ */
 @Getter
 @NoArgsConstructor
 public class GetTripResponseDTO {
