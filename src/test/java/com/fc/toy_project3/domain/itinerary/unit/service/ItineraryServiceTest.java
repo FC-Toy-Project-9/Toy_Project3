@@ -72,7 +72,7 @@ public class ItineraryServiceTest {
         @Test
         @DisplayName("숙박 여정 정보를 저장할 수 있다.")
         void _willSuccess() {
-            //given
+            // given
             AccommodationCreateRequestDTO accommodationCreateRequestDTO = AccommodationCreateRequestDTO.builder()
                 .tripId(1L)
                 .itineraryName("제주여정1")
@@ -130,7 +130,7 @@ public class ItineraryServiceTest {
         @Test
         @DisplayName("교통 여정 정보를 저장할 수 있다.")
         void _willSuccess() {
-            //given
+            // given
             TransportationCreateRequestDTO transportationCreateRequestDTO = TransportationCreateRequestDTO.builder()
                 .tripId(1L)
                 .itineraryName("제주여정2")
@@ -326,7 +326,7 @@ public class ItineraryServiceTest {
             TransportationResponseDTO result = itineraryService.updateTransportation(
                 transportationUpdateRequestDTO);
 
-            //then
+            // then
             assertThat(result).extracting("itineraryName", "transportation", "departurePlace",
                     "departurePlaceRoadAddressName", "destination", "destinationRoadAddressName",
                     "departureTime", "arrivalTime")
@@ -409,7 +409,7 @@ public class ItineraryServiceTest {
             AccommodationResponseDTO result = (AccommodationResponseDTO) itineraryService.deleteItinerary(
                 itineraryId);
 
-            //then
+            // then
             assertThat(result.getItineraryId()).isEqualTo(1);
         }
     }

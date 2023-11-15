@@ -471,6 +471,7 @@ public class ItineraryRestControllerDocsTest extends RestDocsSupport {
     @Test
     @DisplayName("체류 여정 정보를 수정할 수 있다.")
     void updateVisit() throws Exception {
+        // given
         VisitUpdateRequestDTO request = VisitUpdateRequestDTO.builder()
             .itineraryId(1L)
             .itineraryName("즐거운 제주여정3")
@@ -486,6 +487,7 @@ public class ItineraryRestControllerDocsTest extends RestDocsSupport {
         given(itineraryService.updateVisit(any(VisitUpdateRequestDTO.class)))
             .willReturn(visitResponseDTO);
 
+        // when, then
         mockMvc.perform(MockMvcRequestBuilders.patch("/api/itineraries/visits")
                 .content(objectMapper.writeValueAsString(request))
                 .contentType(MediaType.APPLICATION_JSON))
