@@ -12,6 +12,7 @@ import com.fc.toy_project3.domain.like.dto.request.LikeRequestDTO;
 import com.fc.toy_project3.domain.like.dto.response.LikeResponseDTO;
 import com.fc.toy_project3.domain.like.entity.Like;
 import com.fc.toy_project3.domain.like.exception.LikeNotFoundException;
+import com.fc.toy_project3.domain.like.exception.LikeUnauthorizedException;
 import com.fc.toy_project3.domain.like.repository.LikeRepository;
 import com.fc.toy_project3.domain.like.service.LikeService;
 import com.fc.toy_project3.domain.member.entity.Member;
@@ -139,7 +140,7 @@ class LikeServiceTest {
 
         @Test
         @DisplayName("특정 id를 가진 좋아요 정보를 찾을 수 없으면 삭제할 수 없다.")
-        void tripNotFound_willFail() {
+        void likeNotFound_willFail() {
             // given
             Optional<Like> like = Optional.empty();
             given(likeRepository.findById(any(Long.TYPE))).willReturn(like);
@@ -149,6 +150,27 @@ class LikeServiceTest {
                 likeService.deleteLikeById(1L, 1L);
             });
             assertEquals("좋아요 정보를 찾을 수 없습니다.", exception.getMessage());
+            verify(likeRepository, times(1)).findById(any(Long.TYPE));
+            verify(likeRepository, never()).deleteById(any(Long.TYPE));
+        }
+
+        @Test
+        @DisplayName("좋아요를 등록한 회원정보와 일치하지 않으면 좋아요 정보를 삭제할 수 없다.")
+        void likeUnauthorized_willFail() {
+            // given
+            Member member = Member.builder().id(1L).email("fc123@naver.com").nickname("닉1").password("1234").build();
+            Trip trip = Trip.builder().id(1L).name("제주도 여행").startDate(LocalDate.of(2023, 10, 25))
+                .endDate(LocalDate.of(2023, 10, 26)).isDomestic(true).itineraries(new ArrayList<>())
+                .build();
+            Like like = Like.builder().id(1L).trip(trip).member(member).build();
+
+            given(likeRepository.findById(1L)).willReturn(Optional.of(like));
+
+            // when, then
+            Throwable exception = assertThrows(LikeUnauthorizedException.class, () -> {
+                likeService.deleteLikeById(2L, 1L);
+            });
+            assertEquals("해당 좋아요 정보를 등록한 회원이 아닙니다.", exception.getMessage());
             verify(likeRepository, times(1)).findById(any(Long.TYPE));
             verify(likeRepository, never()).deleteById(any(Long.TYPE));
         }

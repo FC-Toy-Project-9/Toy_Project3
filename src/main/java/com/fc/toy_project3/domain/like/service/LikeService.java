@@ -46,7 +46,7 @@ public class LikeService {
      * @param tripId 여행 ID
      * @return 좋아요 정보 응답 DTO
      */
-    public LikeResponseDTO getLikeByMemberIdAndTripId(Long memberId, Long tripId){
+    public LikeResponseDTO getLikeByMemberIdAndTripId(Long memberId, Long tripId) {
         return new LikeResponseDTO(likeRepository.findByMemberIdAndTripId(memberId, tripId).orElseThrow(LikeNotFoundException::new));
     }
 
@@ -55,7 +55,7 @@ public class LikeService {
      * @param likeId lIKE
      * @return 삭제한 좋아요 정보 응답 DTO
      */
-    public LikeResponseDTO deleteLikeById(Long memberId, Long likeId){
+    public LikeResponseDTO deleteLikeById(Long memberId, Long likeId) {
         Like like = likeRepository.findById(likeId).orElseThrow(LikeNotFoundException::new);
         if(!like.getMember().getId().equals(memberId)){
             throw new LikeUnauthorizedException();
