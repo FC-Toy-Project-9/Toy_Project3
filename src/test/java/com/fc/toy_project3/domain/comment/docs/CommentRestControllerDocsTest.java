@@ -22,6 +22,8 @@ import com.fc.toy_project3.domain.comment.dto.request.CommentUpdateRequestDTO;
 import com.fc.toy_project3.domain.comment.dto.response.CommentDeleteResponseDTO;
 import com.fc.toy_project3.domain.comment.dto.response.CommentResponseDTO;
 import com.fc.toy_project3.domain.comment.service.CommentService;
+import com.fc.toy_project3.global.util.DateTypeFormatterUtil;
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -52,8 +54,12 @@ public class CommentRestControllerDocsTest extends RestDocsSupport {
         // given
         CommentCreateRequestDTO commentCreateRequestDTO = CommentCreateRequestDTO.builder().tripId(1L)
             .content("여행 계획 정말 멋있다.").build();
-        CommentResponseDTO commentResponseDTO = CommentResponseDTO.builder().tripId(1L).memberId(1L)
-            .content("여행 계획 정말 멋있다.").build();
+        CommentResponseDTO commentResponseDTO = CommentResponseDTO.builder().tripId(1L)
+            .memberId(1L)
+            .nickname("닉네임1")
+            .content("여행 계획 정말 멋있다.")
+            .createdAt(DateTypeFormatterUtil.localDateTimeToString(LocalDateTime.now()))
+            .updatedAt(null).build();
         given(commentService.postComment(any(Long.TYPE),any(CommentCreateRequestDTO.class))).willReturn(
             commentResponseDTO);
 
@@ -86,8 +92,12 @@ public class CommentRestControllerDocsTest extends RestDocsSupport {
         // given
         CommentUpdateRequestDTO commentUpdateRequestDTO = CommentUpdateRequestDTO.builder()
             .content("여행 잘 다녀와.").build();
-        CommentResponseDTO commentResponseDTO = CommentResponseDTO.builder().tripId(1L).memberId(1L)
-            .content("여행 잘 다녀와.").build();
+        CommentResponseDTO commentResponseDTO = CommentResponseDTO.builder().tripId(1L)
+            .memberId(1L)
+            .nickname("닉네임1")
+            .content("여행 잘 다녀와.")
+            .createdAt(DateTypeFormatterUtil.localDateTimeToString(LocalDateTime.now()))
+            .updatedAt(null).build();
         given(
             commentService.patchComment(any(Long.TYPE),any(Long.TYPE),
                 any(CommentUpdateRequestDTO.class))).willReturn(

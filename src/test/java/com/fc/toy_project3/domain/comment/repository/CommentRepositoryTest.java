@@ -44,9 +44,9 @@ public class CommentRepositoryTest {
     public void reset() {
         entityManager.flush();
         entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY FALSE").executeUpdate();
-        commentRepository.deleteAll();
         tripRepository.deleteAll();
         memberRepository.deleteAll();
+        commentRepository.deleteAll();
         entityManager.createNativeQuery("TRUNCATE TABLE trip").executeUpdate();
         entityManager.createNativeQuery("TRUNCATE TABLE member").executeUpdate();
         entityManager.createNativeQuery("TRUNCATE TABLE comment").executeUpdate();
@@ -102,7 +102,7 @@ public class CommentRepositoryTest {
     void findCommentById() {
         // given
         Member member1 = Member.builder().id(1L).nickname("닉네임1").build();
-        Member member2 = Member.builder().id(2L).nickname("닉네임1").build();
+        Member member2 = Member.builder().id(2L).nickname("닉네임2").build();
         Trip trip1 = Trip.builder()
             .id(1L)
             .member(member1)

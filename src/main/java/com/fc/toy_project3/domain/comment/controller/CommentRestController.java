@@ -6,10 +6,12 @@ import com.fc.toy_project3.domain.comment.dto.response.CommentDeleteResponseDTO;
 import com.fc.toy_project3.domain.comment.dto.response.CommentResponseDTO;
 import com.fc.toy_project3.domain.comment.service.CommentService;
 import com.fc.toy_project3.global.common.ResponseDTO;
+import com.fc.toy_project3.global.config.jwt.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,8 +28,11 @@ public class CommentRestController {
     private final CommentService commentService;
 
     @PostMapping
-    public ResponseEntity<ResponseDTO<CommentResponseDTO>> postComment(@PathVariable long memberId,
+    public ResponseEntity<ResponseDTO<CommentResponseDTO>> postComment(@AuthenticationPrincipal
+        CustomUserDetails customUserDetails,
         @Valid @RequestBody CommentCreateRequestDTO commentCreateRequestDTO) {
+        long memberId = customUserDetails.getMemberId();
+        System.out.println(memberId);
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(ResponseDTO.res(HttpStatus.CREATED, commentService.postComment(
                     memberId, commentCreateRequestDTO),
@@ -35,9 +40,11 @@ public class CommentRestController {
     }
 
     @PatchMapping("/{commentId}")
-    public ResponseEntity<ResponseDTO<CommentResponseDTO>> patchComment(@PathVariable long memberId,
+    public ResponseEntity<ResponseDTO<CommentResponseDTO>> patchComment(@AuthenticationPrincipal
+        CustomUserDetails customUserDetails,
         @PathVariable long commentId,
         @Valid @RequestBody CommentUpdateRequestDTO commentUpdateRequestDTO) {
+        long memberId = customUserDetails.getMemberId();
         return ResponseEntity.status(HttpStatus.OK).body(
             ResponseDTO.res(HttpStatus.OK,
                 commentService.patchComment(memberId, commentId, commentUpdateRequestDTO),
@@ -46,8 +53,10 @@ public class CommentRestController {
 
     @DeleteMapping("/{commentId}")
     public ResponseEntity<ResponseDTO<CommentDeleteResponseDTO>> softDeleteComment(
-        @PathVariable long memberId,
+        @AuthenticationPrincipal
+            CustomUserDetails customUserDetails,
         @PathVariable long commentId) {
+        long memberId = customUserDetails.getMemberId();
         return ResponseEntity.status(HttpStatus.OK).body(
             ResponseDTO.res(HttpStatus.OK, commentService.softDeleteComment(memberId, commentId),
                 "댓글을 성공적으로 삭제했습니다."));
