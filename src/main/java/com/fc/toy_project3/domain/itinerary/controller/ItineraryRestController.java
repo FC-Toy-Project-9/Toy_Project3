@@ -7,7 +7,6 @@ import com.fc.toy_project3.domain.itinerary.dto.request.update.AccommodationUpda
 import com.fc.toy_project3.domain.itinerary.dto.request.update.TransportationUpdateRequestDTO;
 import com.fc.toy_project3.domain.itinerary.dto.request.update.VisitUpdateRequestDTO;
 import com.fc.toy_project3.domain.itinerary.dto.response.AccommodationResponseDTO;
-import com.fc.toy_project3.domain.itinerary.dto.response.ItineraryDeleteResponseDTO;
 import com.fc.toy_project3.domain.itinerary.dto.response.ItinerarySearchResponseDTO;
 import com.fc.toy_project3.domain.itinerary.dto.response.TransportationResponseDTO;
 import com.fc.toy_project3.domain.itinerary.dto.response.VisitResponseDTO;
@@ -94,7 +93,7 @@ public class ItineraryRestController {
     }
 
     @DeleteMapping("/{itineraryId}")
-    public ResponseEntity<ResponseDTO<ItineraryDeleteResponseDTO>> deleteItinerary(
+    public ResponseEntity<ResponseDTO<Object>> deleteItinerary(
         @PathVariable long itineraryId) {
         return ResponseEntity.status(HttpStatus.OK).body(
             ResponseDTO.res(HttpStatus.OK, itineraryService.deleteItinerary(itineraryId),
