@@ -31,11 +31,9 @@ public class CommentRestController {
     public ResponseEntity<ResponseDTO<CommentResponseDTO>> postComment(@AuthenticationPrincipal
         CustomUserDetails customUserDetails,
         @Valid @RequestBody CommentCreateRequestDTO commentCreateRequestDTO) {
-        long memberId = customUserDetails.getMemberId();
-        System.out.println(memberId);
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(ResponseDTO.res(HttpStatus.CREATED, commentService.postComment(
-                    memberId, commentCreateRequestDTO),
+                    customUserDetails.getMemberId(), commentCreateRequestDTO),
                 "성공적으로 댓글을 등록했습니다."));
     }
 
@@ -44,10 +42,10 @@ public class CommentRestController {
         CustomUserDetails customUserDetails,
         @PathVariable long commentId,
         @Valid @RequestBody CommentUpdateRequestDTO commentUpdateRequestDTO) {
-        long memberId = customUserDetails.getMemberId();
         return ResponseEntity.status(HttpStatus.OK).body(
             ResponseDTO.res(HttpStatus.OK,
-                commentService.patchComment(memberId, commentId, commentUpdateRequestDTO),
+                commentService.patchComment(customUserDetails.getMemberId(), commentId,
+                    commentUpdateRequestDTO),
                 "댓글을 성공적으로 수정했습니다."));
     }
 
@@ -56,9 +54,9 @@ public class CommentRestController {
         @AuthenticationPrincipal
             CustomUserDetails customUserDetails,
         @PathVariable long commentId) {
-        long memberId = customUserDetails.getMemberId();
         return ResponseEntity.status(HttpStatus.OK).body(
-            ResponseDTO.res(HttpStatus.OK, commentService.softDeleteComment(memberId, commentId),
+            ResponseDTO.res(HttpStatus.OK,
+                commentService.softDeleteComment(customUserDetails.getMemberId(), commentId),
                 "댓글을 성공적으로 삭제했습니다."));
     }
 }

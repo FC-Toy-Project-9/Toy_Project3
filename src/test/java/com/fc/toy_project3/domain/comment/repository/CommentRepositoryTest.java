@@ -62,12 +62,11 @@ public class CommentRepositoryTest {
         entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY TRUE").executeUpdate();
     }
 
-
     @Test
     @DisplayName("댓글이 DB에 저장 됐습니다.")
     void saveComment() {
         // given
-        Member member = Member.builder().id(1L).nickname("토이").build();
+        Member member = Member.builder().id(1L).nickname("test").build();
         Trip trip = Trip.builder()
             .id(1L)
             .member(member)
@@ -96,13 +95,12 @@ public class CommentRepositoryTest {
         assertThat(commentRepository.count()).isEqualTo(1);
     }
 
-
     @Test
     @DisplayName("지정된 댓글이 조회 됐습니다.")
     void findCommentById() {
         // given
-        Member member1 = Member.builder().id(1L).nickname("닉네임1").build();
-        Member member2 = Member.builder().id(2L).nickname("닉네임2").build();
+        Member member1 = Member.builder().id(1L).nickname("test1").build();
+        Member member2 = Member.builder().id(2L).nickname("test2").build();
         Trip trip1 = Trip.builder()
             .id(1L)
             .member(member1)
@@ -147,5 +145,4 @@ public class CommentRepositoryTest {
         assertThat(findComment2.getMember().getId()).isEqualTo(2L);
         assertThat(commentRepository.count()).isEqualTo(2);
     }
-
 }

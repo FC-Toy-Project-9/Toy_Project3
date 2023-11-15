@@ -10,7 +10,6 @@ import com.fc.toy_project3.domain.comment.exception.CommentMemberNotFoundExcepti
 import com.fc.toy_project3.domain.comment.exception.CommentNotFoundException;
 import com.fc.toy_project3.domain.comment.repository.CommentRepository;
 import com.fc.toy_project3.domain.member.entity.Member;
-import com.fc.toy_project3.domain.member.repository.MemberRepository;
 import com.fc.toy_project3.domain.member.service.MemberService;
 import com.fc.toy_project3.domain.trip.entity.Trip;
 import com.fc.toy_project3.domain.trip.service.TripService;
@@ -26,19 +25,19 @@ public class CommentService {
 
     private final TripService tripService;
     private final MemberService memberService;
-    private final MemberRepository memberRepository;
     private final CommentRepository commentRepository;
 
     /**
      * 여행 댓글 등록
      *
+     * @param memberId                회원 식별자
      * @param commentCreateRequestDTO 댓글 정보 등록 요청 DTO
      * @return 댓글 정보 응답 DTO
      */
     public CommentResponseDTO postComment(Long memberId,
         CommentCreateRequestDTO commentCreateRequestDTO) {
         Trip trip = tripService.getTrip(commentCreateRequestDTO.getTripId());
-        Member member = memberService.getMember(memberId); // memberService 함수로 변경 예정
+        Member member = memberService.getMember(memberId);
         Comment comment = Comment.builder().trip(trip).member(member)
             .content(commentCreateRequestDTO.getContent()).build();
         commentRepository.save(comment);
@@ -48,8 +47,9 @@ public class CommentService {
     /**
      * 여행 댓글 수정
      *
-     * @param commentId
-     * @param commentUpdateRequestDTO
+     * @param memberId                회원 식별자
+     * @param commentId               댓글 식별자
+     * @param commentUpdateRequestDTO 댓글 정보 수정 요청 DTO
      * @return 댓글 정보 응답 DTO
      */
     public CommentResponseDTO patchComment(Long memberId, Long commentId,
@@ -69,6 +69,7 @@ public class CommentService {
     /**
      * 여행 댓글 삭제
      *
+     * @param memberId  회원 식별자
      * @param commentId 댓글 식별자
      * @return 댓글 삭제 정보 응답 DTO
      */

@@ -33,7 +33,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.constraints.ConstraintDescriptions;
 import org.springframework.restdocs.payload.JsonFieldType;
-import org.springframework.security.test.context.support.WithMockUser;
 
 public class CommentRestControllerDocsTest extends RestDocsSupport {
 
@@ -54,7 +53,6 @@ public class CommentRestControllerDocsTest extends RestDocsSupport {
 
     @Test
     @DisplayName("postComment()는 여행 댓글 정보를 저장할 수 있다.")
-    @WithMockUser
     void postComment() throws Exception {
         // given
         CommentCreateRequestDTO commentCreateRequestDTO = CommentCreateRequestDTO.builder()
@@ -141,8 +139,6 @@ public class CommentRestControllerDocsTest extends RestDocsSupport {
 
         verify(commentService, times(1)).patchComment(any(Long.TYPE), any(Long.TYPE),
             any(CommentUpdateRequestDTO.class));
-
-
     }
 
     @Test
@@ -165,6 +161,5 @@ public class CommentRestControllerDocsTest extends RestDocsSupport {
                         fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터"),
                         fieldWithPath("data.commentId").type(JsonFieldType.NUMBER)
                             .description("댓글 식별자"))));
-
     }
 }
