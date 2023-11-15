@@ -68,7 +68,7 @@ public class ItineraryService {
      * Kakao Open API [키워드 검색하기] 를 위한 httpEntity를 생성하는 메서드
      */
     @PostConstruct
-    protected void init() {
+    public void init() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set(HttpHeaders.AUTHORIZATION, "KakaoAK " + key);
