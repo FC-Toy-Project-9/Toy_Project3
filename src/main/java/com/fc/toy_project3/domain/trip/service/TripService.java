@@ -4,6 +4,9 @@ import com.fc.toy_project3.domain.itinerary.entity.Accommodation;
 import com.fc.toy_project3.domain.itinerary.entity.Itinerary;
 import com.fc.toy_project3.domain.itinerary.entity.Transportation;
 import com.fc.toy_project3.domain.itinerary.entity.Visit;
+import com.fc.toy_project3.domain.like.entity.Like;
+import com.fc.toy_project3.domain.like.repository.LikeRepository;
+import com.fc.toy_project3.domain.like.service.LikeService;
 import com.fc.toy_project3.domain.member.entity.Member;
 import com.fc.toy_project3.domain.member.repository.MemberRepository;
 import com.fc.toy_project3.domain.trip.dto.request.GetTripsRequestDTO;
@@ -40,6 +43,7 @@ public class TripService {
 
     private final TripRepository tripRepository;
     private final MemberRepository memberRepository;
+    private final LikeRepository likeRepository;
 
     /**
      * 여행 정보 등록
@@ -66,8 +70,10 @@ public class TripService {
     }
 
     /**
-     * 여행 정보 목록 조회
+     * 여행 정보 목록 페이징 조회
      *
+     * @param getTripsRequestDTO 여행 정보 목록 조회 조건이 담긴 요청 DTO
+     * @param pageable 페이징 요청 정보
      * @return 여행 정보 응답 DTO 리스트
      */
     public GetTripsResponseDTO getTrips(GetTripsRequestDTO getTripsRequestDTO,
@@ -84,6 +90,25 @@ public class TripService {
     }
 
     /**
+     * 회원이 좋아요 한 여행 정보 목록 조회
+     *
+     * @param memberId 회원 ID
+     * @param pageable 페이징 요청 정보
+     * @return 여행 정보 응답 DTO 리스트
+     */
+    public GetTripsResponseDTO getLikedTrips(long memberId,  Pageable pageable){
+        List<TripsResponseDTO> trips = new ArrayList<>();
+        Page<Like> likeList = likeRepository.findAllByMemberIdAndPageable(memberId, pageable);
+        likeList.forEach(like -> trips.add(new TripsResponseDTO(like.getTrip())));
+        return GetTripsResponseDTO.builder()
+            .totalPages(likeList.getTotalPages())
+            .isLastPage(likeList.isLast())
+            .totalTrips(likeList.getTotalElements())
+            .trips(trips)
+            .build();
+    }
+
+    /**
      * 특정 ID 값에 해당하는 여행 정보 조회
      *
      * @param id 조회할 하는 여행 ID
@@ -93,6 +118,12 @@ public class TripService {
         return new GetTripResponseDTO(getTrip(id));
     }
 
+    /**
+     * 여행 정보 수정
+     *
+     * @param updateTripRequestDTO 여행 정보 수정 요청 DTO
+     * @return 수정된 여행 정보 응답 DTO
+     */
     public TripResponseDTO updateTrip(UpdateTripRequestDTO updateTripRequestDTO) {
         Trip trip = getTrip(updateTripRequestDTO.getTripId());
         LocalDate startDate = updateTripRequestDTO.getStartDate() == null ? trip.getStartDate()

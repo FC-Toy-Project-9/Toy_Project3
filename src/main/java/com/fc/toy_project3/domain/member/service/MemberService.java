@@ -93,14 +93,20 @@ public class MemberService {
         return passwordEncoder.matches(inputPassword, hashedPassword);
     }
 
-    public SignUpResponseDTO test() {
+
+    /**
+     * 로그인 이후 유저 객체 리턴하는 메서드 : 현재 인증된 사용자의 정보를 확인하여 해당 사용자의 회원 정보를 반환
+     *
+     * @return 현재 사용자의 회원 정보가 담긴 SignUpResponseDTO 객체(nickname, email, name, memberId)
+     */
+     public SignUpResponseDTO userInfo() {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println(authentication);
         // 현재 사용자의 정보 확인
         if (authentication != null && authentication.isAuthenticated()) {
             String email = authentication.getName();
             Member member = memberRepository.findByEmail(email).get();
+
             // 필요한 작업 수행
             SignUpResponseDTO testResponseDTO = SignUpResponseDTO.builder()
                     .nickname(member.getNickname())
@@ -113,4 +119,27 @@ public class MemberService {
         return null;
     }
 
+    public Long findByUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            String email = authentication.getName();
+            Member member = memberRepository.findByEmail(email).get();
+            Long memberId = member.getId();
+            return memberId;
+        }
+        return null;
+    }
+
+    /**
+     * 주어진 memberId로 회원을 조회하여 반환합니다.
+     *
+     * @param memberId 조회할 회원의 ID
+     * @return 주어진 ID에 해당하는 회원 객체
+     * @throws UsernameNotFoundException 주어진 ID에 해당하는 회원을 찾을 수 없을 때 발생하는 예외
+     */
+    public Member getMember(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new UsernameNotFoundException(memberId+"해당 Id를 찾을 수 없습니다.")
+                );
+    }
 }

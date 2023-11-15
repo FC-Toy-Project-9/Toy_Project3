@@ -215,6 +215,103 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
     }
 
     @Test
+    @DisplayName("getLikedTrips()은 회원이 좋아요 한 여행 정보 목록을 조회할 수 있다.")
+    void getLikedTrips() throws Exception {
+        // given
+        GetTripsRequestDTO getTripsRequestDTO = GetTripsRequestDTO.builder()
+            .tripName("제주도")
+            .build();
+        Pageable pageable = TripPageRequestDTO.builder()
+            .page(0)
+            .size(10)
+            .criteria("createdAt")
+            .sort("ASC")
+            .build().of();
+        List<TripsResponseDTO> trips = new ArrayList<>();
+        trips.add(TripsResponseDTO.builder()
+            .tripId(1L)
+            .memberId(1L)
+            .nickname("깜찍이")
+            .tripName("제주도 여행")
+            .startDate("2023-10-23")
+            .endDate("2023-10-27")
+            .isDomestic(true)
+            .likeCount(7L)
+            .createdAt("2023-10-01 10:00")
+            .updatedAt(null)
+            .build());
+        trips.add(TripsResponseDTO.builder()
+            .tripId(2L)
+            .memberId(2L)
+            .nickname("멋쟁이")
+            .tripName("속초 겨울바다 여행")
+            .startDate("2023-11-27")
+            .endDate("2023-11-29")
+            .isDomestic(true)
+            .likeCount(3L)
+            .createdAt("2023-10-01 12:00")
+            .updatedAt(null)
+            .build());
+        trips.add(TripsResponseDTO.builder()
+            .tripId(3L)
+            .memberId(3L)
+            .nickname("꿈틀이")
+            .tripName("크리스마스 미국 여행")
+            .startDate("2023-12-24")
+            .endDate("2023-12-26")
+            .isDomestic(false)
+            .likeCount(10L)
+            .createdAt("2023-10-02 10:00")
+            .updatedAt(null)
+            .build());
+        GetTripsResponseDTO getTripsResponseDTO = GetTripsResponseDTO.builder()
+            .totalTrips(1)
+            .isLastPage(true)
+            .totalTrips(3)
+            .trips(trips)
+            .build();
+        given(tripService.getLikedTrips(any(Long.TYPE), any(Pageable.class))).willReturn(
+            getTripsResponseDTO);
+
+        // when, then
+        mockMvc.perform(get("/api/trips/likes/{memberId}", 1L)
+                .queryParam("page", "0")
+                .queryParam("pageSize", "10"))
+            .andExpect(status().isOk())
+            .andDo(restDoc.document(
+                responseFields(responseCommon()).and(
+                    fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터"),
+                    fieldWithPath("data.totalPages").type(JsonFieldType.NUMBER)
+                        .description("총 페이지 수"),
+                    fieldWithPath("data.isLastPage").type(JsonFieldType.BOOLEAN)
+                        .description("마지막 페이지 여부"),
+                    fieldWithPath("data.totalTrips").type(JsonFieldType.NUMBER)
+                        .description("총 여행 수"),
+                    fieldWithPath("data.trips").type(JsonFieldType.ARRAY).description("여행 목록"),
+                    fieldWithPath("data.trips[].tripId").type(JsonFieldType.NUMBER).description("여행 식별자"),
+                    fieldWithPath("data.trips[].memberId").type(JsonFieldType.NUMBER)
+                        .description("회원 식별자"),
+                    fieldWithPath("data.trips[].nickname").type(JsonFieldType.STRING)
+                        .description("회원 닉네임"),
+                    fieldWithPath("data.trips[].tripName").type(JsonFieldType.STRING)
+                        .description("여행 이름"),
+                    fieldWithPath("data.trips[].startDate").type(JsonFieldType.STRING)
+                        .description("여행 시작일"),
+                    fieldWithPath("data.trips[].endDate").type(JsonFieldType.STRING)
+                        .description("여행 종료일"),
+                    fieldWithPath("data.trips[].isDomestic").type(JsonFieldType.BOOLEAN)
+                        .description("국내 여행 여부"),
+                    fieldWithPath("data.trips[].likeCount").type(JsonFieldType.NUMBER)
+                        .description("좋아요 개수"),
+                    fieldWithPath("data.trips[].createdAt").type(JsonFieldType.STRING)
+                        .description("생성 일시"),
+                    fieldWithPath("data.trips[].updatedAt").type(JsonFieldType.STRING).optional()
+                        .description("수정 일시")
+                )
+            ));
+    }
+
+    @Test
     @DisplayName("getTripById()는 여행 정보를 조회할 수 있다.")
     void getTripById() throws Exception {
         // given

@@ -59,7 +59,7 @@ class WebSecurityConfigTest {
                 .name("패캠")
                 .build();
 
-        when(memberService.test()).thenReturn(signUpResponseDTO);
+        when(memberService.userInfo()).thenReturn(signUpResponseDTO);
 
         mockMvc.perform(
                         post("/api/members/test")
