@@ -63,6 +63,24 @@ public class TripRestController {
                     .build().of()), "성공적으로 여행 정보 목록을 조회했습니다."));
     }
 
+    @GetMapping("/likes/{memberId}")
+    public ResponseEntity<ResponseDTO<GetTripsResponseDTO>> getLikedTrip(
+        @PathVariable long memberId,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int pageSize,
+        @RequestParam(defaultValue = "createdAt") String orderBy,
+        @RequestParam(defaultValue = "DESC") String sort) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+            ResponseDTO.res(HttpStatus.OK,
+                tripService.getLikedTrips(memberId, TripPageRequestDTO.builder()
+                    .page(page)
+                    .size(pageSize)
+                    .criteria(orderBy)
+                    .sort(sort)
+                    .build().of()),
+                "성공적으로 회원이 좋아요한 여행 정보 목록을 조회했습니다."));
+    }
+
     @GetMapping("/{tripId}")
     public ResponseEntity<ResponseDTO<GetTripResponseDTO>> getTripById(@PathVariable long tripId) {
         return ResponseEntity.status(HttpStatus.OK).body(
