@@ -9,6 +9,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import com.fc.toy_project3.domain.like.entity.Like;
+import com.fc.toy_project3.domain.like.repository.LikeRepository;
+import com.fc.toy_project3.domain.like.service.LikeService;
 import com.fc.toy_project3.domain.member.entity.Member;
 import com.fc.toy_project3.domain.member.repository.MemberRepository;
 import com.fc.toy_project3.domain.trip.dto.request.GetTripsRequestDTO;
@@ -19,7 +22,6 @@ import com.fc.toy_project3.domain.trip.dto.response.GetTripResponseDTO;
 import com.fc.toy_project3.domain.trip.dto.response.GetTripsResponseDTO;
 import com.fc.toy_project3.domain.trip.dto.response.TripResponseDTO;
 import com.fc.toy_project3.domain.trip.entity.Trip;
-import com.fc.toy_project3.domain.trip.exception.InvalidPagingRequestException;
 import com.fc.toy_project3.domain.trip.exception.InvalidTripDateRangeException;
 import com.fc.toy_project3.domain.trip.exception.TripNotFoundException;
 import com.fc.toy_project3.domain.trip.exception.WrongTripStartDateException;
@@ -55,6 +57,9 @@ public class TripServiceTest {
 
     @Mock
     private MemberRepository memberRepository;
+
+    @Mock
+    private LikeRepository likeRepository;
 
     @Nested
     @DisplayName("postTrip()은")
@@ -169,6 +174,79 @@ public class TripServiceTest {
             // then
             assertThat(result.getTrips()).isNotEmpty();
             verify(tripRepository, times(1)).findAllBySearchCondition(any(GetTripsRequestDTO.class),
+                any(Pageable.class));
+        }
+    }
+
+    @Nested
+    @DisplayName("getLikedTrips()은 ")
+    class Context_getLikedTrips {
+
+        @Test
+        @DisplayName("회원이 좋아요 한 여행 정보 목록을 조회할 수 있다.")
+        void _willSuccess() {
+            // given
+            long memberId = 1L;
+            Pageable pageable = TripPageRequestDTO.builder()
+                .page(0)
+                .size(10)
+                .criteria("createdAt")
+                .sort("ASC")
+                .build().of();
+            Member member1 = Member.builder().id(1L).nickname("닉네임1").build();
+            Member member2 = Member.builder().id(2L).nickname("닉네임2").build();
+            Member member3 = Member.builder().id(3L).nickname("닉네임3").build();
+            Trip trip1 = Trip.builder()
+                .id(1L)
+                .member(member1)
+                .name("제주도 여행")
+                .startDate(LocalDate.of(2023, 10, 23))
+                .endDate(LocalDate.of(2023, 10, 27))
+                .isDomestic(true)
+                .itineraries(new ArrayList<>())
+                .build();
+            Trip trip2 = Trip.builder()
+                .id(2L)
+                .member(member2)
+                .name("속초 겨울바다 여행")
+                .startDate(LocalDate.of(2023, 11, 27))
+                .endDate(LocalDate.of(2023, 11, 29))
+                .isDomestic(true)
+                .itineraries(new ArrayList<>())
+                .build();
+            Trip trip3 = Trip.builder()
+                .id(3L)
+                .member(member3)
+                .name("크리스마스 미국 여행")
+                .startDate(LocalDate.of(2023, 12, 24))
+                .endDate(LocalDate.of(2023, 12, 26))
+                .isDomestic(false)
+                .itineraries(new ArrayList<>())
+                .build();
+            Like like1 = Like.builder()
+                .id(1L)
+                .trip(trip1)
+                .member(member1)
+                .build();
+            Like like2 = Like.builder()
+                .id(2L)
+                .trip(trip2)
+                .member(member1)
+                .build();
+            Like like3 = Like.builder()
+                .id(3L)
+                .trip(trip3)
+                .member(member1)
+                .build();
+            given(likeRepository.findAllByMemberIdAndPageable(any(Long.class), any(
+                Pageable.class))).willReturn(new PageImpl<>(List.of(like1, like2, like3)));
+
+            // when
+            GetTripsResponseDTO result = tripService.getLikedTrips(memberId, pageable);
+
+            // then
+            assertThat(result.getTrips()).isNotEmpty();
+            verify(likeRepository, times(1)).findAllByMemberIdAndPageable(any(Long.TYPE),
                 any(Pageable.class));
         }
     }
