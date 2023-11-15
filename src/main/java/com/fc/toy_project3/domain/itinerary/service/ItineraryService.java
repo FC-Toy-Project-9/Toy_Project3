@@ -16,6 +16,7 @@ import com.fc.toy_project3.domain.itinerary.entity.Transportation;
 import com.fc.toy_project3.domain.itinerary.entity.Visit;
 import com.fc.toy_project3.domain.itinerary.exception.InvalidItineraryException;
 import com.fc.toy_project3.domain.itinerary.exception.ItineraryNotFoundException;
+import com.fc.toy_project3.domain.itinerary.exception.NotItineraryAuthorException;
 import com.fc.toy_project3.domain.itinerary.repository.AccommodationRepository;
 import com.fc.toy_project3.domain.itinerary.repository.ItineraryRepository;
 import com.fc.toy_project3.domain.itinerary.repository.TransportationRepository;
@@ -109,8 +110,9 @@ public class ItineraryService {
      * @return 생성된 숙박 여정 응답 DTO
      */
     public AccommodationResponseDTO createAccommodation(
-        AccommodationCreateRequestDTO accommodationCreateRequestDTO) {
+        AccommodationCreateRequestDTO accommodationCreateRequestDTO, long memberId) {
         Trip trip = tripService.getTrip(accommodationCreateRequestDTO.getTripId());
+        tripService.isAuthor(trip, memberId);
         LocalDateTime checkIn = DateTypeFormatterUtil.dateTimeFormatter(
             accommodationCreateRequestDTO.getCheckIn());
         LocalDateTime checkOut = DateTypeFormatterUtil.dateTimeFormatter(
@@ -134,8 +136,9 @@ public class ItineraryService {
      * @return 생성된 이동 여정 응답 DTO
      */
     public TransportationResponseDTO createTransportation(
-        TransportationCreateRequestDTO transportationCreateRequestDTO) {
+        TransportationCreateRequestDTO transportationCreateRequestDTO, long memberId) {
         Trip trip = tripService.getTrip(transportationCreateRequestDTO.getTripId());
+        tripService.isAuthor(trip, memberId);
         LocalDateTime departureTime = DateTypeFormatterUtil.dateTimeFormatter(
             transportationCreateRequestDTO.getDepartureTime());
         LocalDateTime arrivalTime = DateTypeFormatterUtil.dateTimeFormatter(
@@ -162,8 +165,10 @@ public class ItineraryService {
      * @param visitCreateRequestDTO 방문 여정 생성 요청 DTO
      * @return 생성된 방문 여정 응답 DTO
      */
-    public VisitResponseDTO createVisit(VisitCreateRequestDTO visitCreateRequestDTO) {
+    public VisitResponseDTO createVisit(VisitCreateRequestDTO visitCreateRequestDTO,
+        long memberId) {
         Trip trip = tripService.getTrip(visitCreateRequestDTO.getTripId());
+        tripService.isAuthor(trip, memberId);
         LocalDateTime departureTime = DateTypeFormatterUtil.dateTimeFormatter(
             visitCreateRequestDTO.getDepartureTime());
         LocalDateTime arrivalTime = DateTypeFormatterUtil.dateTimeFormatter(
@@ -186,9 +191,10 @@ public class ItineraryService {
      * @return 수정된 숙박 여정 응답 DTO
      */
     public AccommodationResponseDTO updateAccommodation(
-        AccommodationUpdateRequestDTO accommodationUpdateRequestDTO) {
+        AccommodationUpdateRequestDTO accommodationUpdateRequestDTO, long memberId) {
         Accommodation accommodation = (Accommodation) getItinerary(
             accommodationUpdateRequestDTO.getItineraryId());
+        checkAuthor(accommodation, memberId);
         LocalDateTime checkIn = accommodationUpdateRequestDTO.getCheckIn() == null ?
             accommodation.getCheckIn()
             : DateTypeFormatterUtil.dateTimeFormatter(accommodationUpdateRequestDTO.getCheckIn());
@@ -207,9 +213,10 @@ public class ItineraryService {
      * @return 수정된 이동 여정 응답 DTO
      */
     public TransportationResponseDTO updateTransportation(
-        TransportationUpdateRequestDTO transportationUpdateRequestDTO) {
+        TransportationUpdateRequestDTO transportationUpdateRequestDTO, long memberId) {
         Transportation transportation = (Transportation) getItinerary(
             transportationUpdateRequestDTO.getItineraryId());
+        checkAuthor(transportation, memberId);
         LocalDateTime departureTime = transportationUpdateRequestDTO.getDepartureTime() == null ?
             transportation.getDepartureTime() : DateTypeFormatterUtil.dateTimeFormatter(
             transportationUpdateRequestDTO.getDepartureTime());
@@ -227,8 +234,9 @@ public class ItineraryService {
      * @param visitUpdateRequestDTO 방문 여정 수정 요청 DTO
      * @return 수정된 방문 여정 응답 DTO
      */
-    public VisitResponseDTO updateVisit(VisitUpdateRequestDTO visitUpdateRequestDTO) {
+    public VisitResponseDTO updateVisit(VisitUpdateRequestDTO visitUpdateRequestDTO, long memberId) {
         Visit visit = (Visit) getItinerary(visitUpdateRequestDTO.getItineraryId());
+        checkAuthor(visit, memberId);
         LocalDateTime departureTime = visitUpdateRequestDTO.getDepartureTime() == null ?
             visit.getDepartureTime()
             : DateTypeFormatterUtil.dateTimeFormatter(visitUpdateRequestDTO.getDepartureTime());
@@ -246,8 +254,9 @@ public class ItineraryService {
      * @param itineraryId 여정 Id
      * @return 삭제된 여정 정보
      */
-    public Object deleteItinerary(Long itineraryId) {
+    public Object deleteItinerary(Long itineraryId, long memberId) {
         Itinerary itinerary = getItinerary(itineraryId);
+        checkAuthor(itinerary, memberId);
         itinerary.delete(LocalDateTime.now());
         if (itinerary instanceof Accommodation) {
             return new AccommodationResponseDTO((Accommodation) itinerary);
@@ -338,6 +347,12 @@ public class ItineraryService {
         }
         if (departureTime.isAfter(tripEndDateTime)) {
             throw new InvalidItineraryException("출발 시간은 여행 종료일보다 빠른 시간이어야 합니다.");
+        }
+    }
+
+    private void checkAuthor(Itinerary itinerary, long memberId){
+        if(memberId != itinerary.getTrip().getMember().getId()){
+            throw new NotItineraryAuthorException();
         }
     }
 }

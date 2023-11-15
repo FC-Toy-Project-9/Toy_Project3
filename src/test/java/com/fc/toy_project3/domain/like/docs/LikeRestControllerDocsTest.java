@@ -10,6 +10,8 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.snippet.Attributes.key;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fc.toy_project3.docs.RestDocsSupport;
@@ -17,6 +19,7 @@ import com.fc.toy_project3.domain.like.controller.LikeRestController;
 import com.fc.toy_project3.domain.like.dto.request.LikeRequestDTO;
 import com.fc.toy_project3.domain.like.dto.response.LikeResponseDTO;
 import com.fc.toy_project3.domain.like.service.LikeService;
+import com.fc.toy_project3.global.config.jwt.CustomUserDetails;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -46,8 +49,13 @@ public class LikeRestControllerDocsTest extends RestDocsSupport {
 
         given(likeService.createLike(any(Long.TYPE), any(LikeRequestDTO.class))).willReturn(likeResponseDTO);
 
+        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
+            "test");
+
         // when, then
         mockMvc.perform(RestDocumentationRequestBuilders.post("/api/likes")
+            .with(user(customUserDetails))
+            .with(csrf())
             .content(new ObjectMapper().writeValueAsString(likeRequestDTO))
             .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isCreated()).andDo(
             restDoc.document(requestFields(
@@ -70,8 +78,13 @@ public class LikeRestControllerDocsTest extends RestDocsSupport {
 
         given(likeService.getLikeByMemberIdAndTripId(memberId, tripId)).willReturn(likeResponseDTO);
 
+        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
+            "test");
+
         // when, then
-        mockMvc.perform(RestDocumentationRequestBuilders.get("/api/likes/{tripId}", 1L))
+        mockMvc.perform(RestDocumentationRequestBuilders.get("/api/likes/{tripId}", 1L)
+                .with(user(customUserDetails))
+                .with(csrf()))
             .andExpect(status().isOk()).andDo(
                 restDoc.document(pathParameters(parameterWithName("tripId").description("여행 식별자")),
                     responseFields(responseCommon()).and(
@@ -91,8 +104,13 @@ public class LikeRestControllerDocsTest extends RestDocsSupport {
 
         given(likeService.deleteLikeById(memberId, likeId)).willReturn(likeResponseDTO);
 
+        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
+            "test");
+
         //when, then
-        mockMvc.perform(RestDocumentationRequestBuilders.delete("/api/likes/{likeId}", 1L))
+        mockMvc.perform(RestDocumentationRequestBuilders.delete("/api/likes/{likeId}", 1L)
+                .with(user(customUserDetails))
+                .with(csrf()))
             .andExpect(status().isOk()).andDo(
                 restDoc.document(pathParameters(parameterWithName("likeId").description("좋아요 식별자")),
                     responseFields(responseCommon()).and(
