@@ -14,12 +14,14 @@ public class CustomUserDetails implements UserDetails {
     private final String nickname;
     private final String name;
     private final String email;
+    private final String password;
 
-    public CustomUserDetails(Long memberId, String nickname, String email, String name) {
+    public CustomUserDetails(Long memberId, String nickname, String email, String name, String password) {
         this.memberId = memberId;
         this.nickname = nickname;
         this.name = name;
         this.email=email;
+        this.password = password;
     }
     public Long getMemberId() {
         return memberId;
@@ -30,7 +32,7 @@ public class CustomUserDetails implements UserDetails {
     }
 
     @Override
-    public String getPassword() { return "***";}
+    public String getPassword() { return password;}
 
     @Override
     public String getUsername() {

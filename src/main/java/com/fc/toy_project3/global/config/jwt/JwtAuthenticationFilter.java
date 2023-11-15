@@ -1,17 +1,16 @@
 package com.fc.toy_project3.global.config.jwt;
 
+import com.fc.toy_project3.domain.member.exception.InvalidJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
+
 import java.io.IOException;
 
 public class JwtAuthenticationFilter extends GenericFilterBean {
@@ -29,7 +28,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         // 2. /api/members/signUp 주소에 대한 예외 처리
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String requestURI = httpRequest.getRequestURI();
-        if (requestURI.equals("/api/members/signUp") || requestURI.equals("/api/members/signIn")) {
+        if (requestURI.equals("/api/members/signUp") || requestURI.equals("/api/members/signIn") || requestURI.equals("/error")) {
             chain.doFilter(request, response);
             return;
         }
@@ -51,6 +50,6 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer")) {
             return bearerToken.substring(7);
         }
-        return bearerToken;
+        throw new InvalidJwtException("토큰이 존재하지않습니다.");
     }
 }
