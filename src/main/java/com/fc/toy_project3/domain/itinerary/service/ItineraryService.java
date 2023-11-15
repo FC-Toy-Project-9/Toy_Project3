@@ -234,7 +234,8 @@ public class ItineraryService {
      * @param visitUpdateRequestDTO 방문 여정 수정 요청 DTO
      * @return 수정된 방문 여정 응답 DTO
      */
-    public VisitResponseDTO updateVisit(VisitUpdateRequestDTO visitUpdateRequestDTO, long memberId) {
+    public VisitResponseDTO updateVisit(VisitUpdateRequestDTO visitUpdateRequestDTO,
+        long memberId) {
         Visit visit = (Visit) getItinerary(visitUpdateRequestDTO.getItineraryId());
         checkAuthor(visit, memberId);
         LocalDateTime departureTime = visitUpdateRequestDTO.getDepartureTime() == null ?
@@ -267,6 +268,12 @@ public class ItineraryService {
         }
     }
 
+    /**
+     * 여정 Entity 조회
+     *
+     * @param itineraryId 조회할 여정 ID
+     * @return 여정 Entity
+     */
     private Itinerary getItinerary(Long itineraryId) {
         return itineraryRepository.findByIdAndDeletedAt(itineraryId, null)
             .orElseThrow(ItineraryNotFoundException::new);
@@ -350,8 +357,14 @@ public class ItineraryService {
         }
     }
 
-    private void checkAuthor(Itinerary itinerary, long memberId){
-        if(memberId != itinerary.getTrip().getMember().getId()){
+    /**
+     * 여정의 작성자와 요청 회원이 일치하는지 확인
+     *
+     * @param itinerary 여정 Entity
+     * @param memberId  회원 ID
+     */
+    private void checkAuthor(Itinerary itinerary, long memberId) {
+        if (memberId != itinerary.getTrip().getMember().getId()) {
             throw new NotItineraryAuthorException();
         }
     }
