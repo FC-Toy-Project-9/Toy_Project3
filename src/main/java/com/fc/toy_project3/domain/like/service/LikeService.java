@@ -59,22 +59,12 @@ public class LikeService {
     }
 
     /**
-     * 특정 ID 값에 해당하는 좋아요 정보 Entity 조회
-     *
-     * @param likeId 조회할 좋아요 ID
-     * @return 좋아요 정보 Entity
-     */
-    public Like getLike(Long likeId){
-        return likeRepository.findById(likeId).orElseThrow(LikeNotFoundException::new);
-    }
-
-    /**
      * 특정 ID값에 해당하는 좋아요 정보 삭제
      * @param likeId lIKE
      * @return 삭제한 좋아요 정보 응답 DTO
      */
     public LikeResponseDTO deleteLikeById(Long memberId, Long likeId){
-        Like like = getLike(likeId);
+        Like like = likeRepository.findById(likeId).orElseThrow(LikeNotFoundException::new);
         if(!like.getMember().getId().equals(memberId)){
             throw new LikeUnauthorizedException();
         }
