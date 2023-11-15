@@ -45,8 +45,6 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-
-    // userId 추출
     public String extractMemberIdFromToken(String token) {
         try {
             Claims claims = Jwts.parser()

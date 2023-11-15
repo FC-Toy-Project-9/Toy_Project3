@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Member REST Controller
+ */
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/members")
@@ -22,7 +25,6 @@ public class MemberRestController {
 
     private final MemberService memberService;
 
-    // 회원가입
     @PostMapping("/signUp")
     public ResponseEntity<ResponseDTO<SignUpResponseDTO>> signUp (
             @Valid @RequestBody SignUpRequestDTO signUpRequestDTO ) {
@@ -31,7 +33,6 @@ public class MemberRestController {
                 "회원가입이 완료되었습니다."));
     }
 
-    //로그인
     @PostMapping("/signIn")
     public ResponseEntity<ResponseDTO<JwtResponseDTO>> signUp (
             @Valid @RequestBody SignInRequestDTO signInRequestDTO ) {

@@ -48,17 +48,15 @@ class MemberServiceTest {
 
     @Test
     void signUp_Success() {
-        // Given
+
         SignUpRequestDTO signUpRequestDTO = new SignUpRequestDTO("ypd06021@naver.com", "패캠", "fastcam", "asdfQWER1!");
         when(memberRepository.findByEmail(any())).thenReturn(Optional.empty());
         when(memberRepository.findByNickname(any())).thenReturn(Optional.empty());
         when(passwordEncoder.encode(any())).thenReturn("encodedPassword");
         when(memberRepository.save(any())).thenReturn(new Member(1L, "ypd06021@naver.com", "encodedPassword", "패캠", "fastcam"));
 
-        // When
         SignUpResponseDTO response = memberService.signUp(signUpRequestDTO);
 
-        // Then
         assertNotNull(response);
         assertEquals("fastcam", response.getNickname());
         assertEquals("ypd06021@naver.com", response.getEmail());
@@ -69,7 +67,7 @@ class MemberServiceTest {
 
     @Test
     void signUp_Failure_DuplicateEmail() {
-        // Given
+
         SignUpRequestDTO signUpRequestDTO = new SignUpRequestDTO("ypd06021@naver.com", "패캠", "fastcam", "asdfQWER1!");
         when(memberRepository.findByEmail("ypd06021@naver.com")).thenReturn(
                 Optional.of(Member.builder()
@@ -80,14 +78,14 @@ class MemberServiceTest {
                         .password("encodedPassword")
                         .build())
         );
-        // When / Then
+
         assertThrows(ExistingMemberException.class, () -> memberService.signUp(signUpRequestDTO));
         verify(memberRepository, never()).save(any());
     }
 
     @Test
     void signIn_Success() {
-        // Given
+
         SignInRequestDTO signInRequestDTO = new SignInRequestDTO("existing@email.com", "password");
 
         String email = signInRequestDTO.getEmail();
@@ -102,10 +100,8 @@ class MemberServiceTest {
         when(passwordEncoder.matches(any(), any())).thenReturn(true);
         when(jwtTokenProvider.createJwtToken(any())).thenReturn("eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ5cGQwNjAyMUBuYXZlci5jb20iLCJpYXQiOjE2OTk5NDg0NTMsImV4cCI6MTY5OTk1MDI1M30.RZ4c-kUSeeuaxOSH9mbCn7DG-jOCq5Mw052Wvn8zlxuslNjEGaaVXVT9r4H66GELMm__S1lQsX3UpoujhIbV5w");
 
-        // When
         JwtResponseDTO response = memberService.signIn(signInRequestDTO);
 
-        // Then
         assertNotNull(response);
         assertEquals("eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ5cGQwNjAyMUBuYXZlci5jb20iLCJpYXQiOjE2OTk5NDg0NTMsImV4cCI6MTY5OTk1MDI1M30.RZ4c-kUSeeuaxOSH9mbCn7DG-jOCq5Mw052Wvn8zlxuslNjEGaaVXVT9r4H66GELMm__S1lQsX3UpoujhIbV5w", response.getJwtToken());
         verify(jwtTokenProvider, times(1)).createJwtToken(any());
@@ -113,11 +109,10 @@ class MemberServiceTest {
 
     @Test
     void signIn_Failure_InvalidCredentials() {
-        // Given
+
         SignInRequestDTO signInRequestDTO = new SignInRequestDTO("nonexisting@email.com", "wrongPassword");
         when(userDetailsService.loadUserByUsername(any())).thenReturn(null);
 
-        // When / Then
         assertThrows(ExistingMemberException.class, () -> memberService.signIn(signInRequestDTO));
         verify(jwtTokenProvider, never()).createJwtToken(any());
     }
@@ -125,14 +120,12 @@ class MemberServiceTest {
     @Test
     @WithMockUser(username = "ypd06021@naver.com", password = "{bcrypt}$2a$10$AXubVWjicX7CXOu94iA2j.yHFq1QmBb0vvIKszO/Hik7P38hEp8KK")
     void test_Success_AuthenticatedUser() {
-        // Given
+
         Member member = new Member(1L, "ypd06021@naver.com", "bcrypt}$2a$10$AXubVWjicX7CXOu94iA2j.yHFq1QmBb0vvIKszO/Hik7P38hEp8KK", "패캠", "fastcam");
         when(memberRepository.findByEmail(any())).thenReturn(Optional.of(member));
 
-        // When
         SignUpResponseDTO response = memberService.test();
 
-        // Then
         assertNotNull(response);
         assertEquals("ypd06021@naver.com", response.getEmail());
         assertEquals("패캠", response.getName());
@@ -142,13 +135,11 @@ class MemberServiceTest {
 
     @Test
     void test_Success_UnauthenticatedUser() {
-        // Given
+
         when(memberRepository.findByEmail(any())).thenReturn(Optional.empty());
 
-        // When
         SignUpResponseDTO response = memberService.test();
 
-        // Then
         assertNull(response);
     }
 
