@@ -36,7 +36,6 @@ public class CommentServiceTest {
     @Mock
     private CommentRepository commentRepository;
 
-
     @Mock
     private TripService tripService;
 
@@ -53,7 +52,7 @@ public class CommentServiceTest {
             // given
             CommentCreateRequestDTO commentCreateRequestDTO = new CommentCreateRequestDTO(1L,
                 "여행 계획 정말 멋있다.");
-            Member member = Member.builder().id(1L).nickname("토이").build();
+            Member member = Member.builder().id(1L).nickname("test").build();
             Trip trip = Trip.builder().id(1L).member(member).name("제주도 여행")
                 .startDate(LocalDate.of(2023, 10, 25))
                 .endDate(LocalDate.of(2023, 10, 26))
@@ -73,7 +72,6 @@ public class CommentServiceTest {
             assertThat(result).extracting("tripId", "memberId", "content")
                 .containsExactly(1L, 1L, "여행 계획 정말 멋있다.");
         }
-
     }
 
     @Nested
@@ -87,7 +85,7 @@ public class CommentServiceTest {
             Long commentId = 1L;
             CommentUpdateRequestDTO commentUpdateRequestDTO = new CommentUpdateRequestDTO(
                 "여행 정말 재밌겠다.");
-            Member member = Member.builder().id(1L).nickname("토이").build();
+            Member member = Member.builder().id(1L).nickname("test").build();
             Trip trip = Trip.builder().id(1L).member(member).name("제주도 여행")
                 .startDate(LocalDate.of(2023, 10, 25))
                 .endDate(LocalDate.of(2023, 10, 26))
@@ -117,7 +115,7 @@ public class CommentServiceTest {
         void _willSuccess() {
             // given
             Long commentId = 1L;
-            Member member = Member.builder().id(1L).nickname("토이").build();
+            Member member = Member.builder().id(1L).nickname("test").build();
             Trip trip = Trip.builder().id(1L).member(member).name("제주도 여행")
                 .startDate(LocalDate.of(2023, 10, 25))
                 .endDate(LocalDate.of(2023, 10, 26))
@@ -133,9 +131,6 @@ public class CommentServiceTest {
 
             // then
             assertThat(result.getCommentId()).isEqualTo(1);
-
         }
     }
-
-
 }

@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 public class CommentUpdateRequestDTO {
 
     @NotEmpty(message = "댓글을 입력하세요.")
-    @Size(max=255, message = "댓글은 255자 이하여야합니다.")
+    @Size(max = 255, message = "댓글은 255자 이하여야합니다.")
     private String content;
 
     @Builder
