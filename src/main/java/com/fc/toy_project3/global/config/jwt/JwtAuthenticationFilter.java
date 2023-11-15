@@ -50,6 +50,6 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer")) {
             return bearerToken.substring(7);
         }
-        throw new InvalidJwtException("토큰이 존재하지않습니다.");
+        return bearerToken;
     }
 }
