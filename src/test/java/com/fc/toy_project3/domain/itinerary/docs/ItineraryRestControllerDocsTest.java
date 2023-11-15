@@ -8,6 +8,9 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.snippet.Attributes.key;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fc.toy_project3.docs.RestDocsSupport;
@@ -23,26 +26,36 @@ import com.fc.toy_project3.domain.itinerary.dto.response.ItinerarySearchResponse
 import com.fc.toy_project3.domain.itinerary.dto.response.TransportationResponseDTO;
 import com.fc.toy_project3.domain.itinerary.dto.response.VisitResponseDTO;
 import com.fc.toy_project3.domain.itinerary.service.ItineraryService;
+import com.fc.toy_project3.domain.member.service.MemberService;
+import com.fc.toy_project3.global.config.jwt.CustomUserDetails;
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.constraints.ConstraintDescriptions;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 public class ItineraryRestControllerDocsTest extends RestDocsSupport {
 
     @MockBean
     ItineraryService itineraryService;
 
+    @MockBean
+    MemberService memberService;
+
     @Override
     public Object initController() {
-        return new ItineraryRestController(itineraryService);
+        return new ItineraryRestController(itineraryService, memberService);
     }
 
     private final ConstraintDescriptions createAccommodationConstraints = new ConstraintDescriptions(
@@ -84,10 +97,14 @@ public class ItineraryRestControllerDocsTest extends RestDocsSupport {
             .placeUrl("http://place.map.kakao.com/1052618040")
             .build());
         given(itineraryService.getPlaceByKeyword(any())).willReturn(itinerarySearchList);
+        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
+            "test");
 
         // when, then
         mockMvc.perform(RestDocumentationRequestBuilders
-                .get("/api/itineraries/keyword/{query}", "카카오프렌즈"))
+                .get("/api/itineraries/keyword/{query}", "카카오프렌즈")
+                .with(user(customUserDetails))
+                .with(csrf()))
             .andExpect(status().isOk())
             .andDo(restDoc.document(
                 pathParameters(parameterWithName("query").description("키워드")),
@@ -104,6 +121,7 @@ public class ItineraryRestControllerDocsTest extends RestDocsSupport {
 
     @Test
     @DisplayName("숙박 여정 정보를 저장할 수 있다.")
+    @WithMockUser
     void createAccommodation() throws Exception {
         // given
         AccommodationCreateRequestDTO request = AccommodationCreateRequestDTO.builder()
@@ -122,12 +140,16 @@ public class ItineraryRestControllerDocsTest extends RestDocsSupport {
             .checkIn("2023-10-25 15:00")
             .checkOut("2023-10-26 11:00")
             .build();
-
         given(itineraryService.createAccommodation(
-            any(AccommodationCreateRequestDTO.class))).willReturn(accommodationResponseDTO);
+            any(AccommodationCreateRequestDTO.class), any(Long.TYPE))).willReturn(
+            accommodationResponseDTO);
+        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
+            "test");
 
         // when, then
         mockMvc.perform(MockMvcRequestBuilders.post("/api/itineraries/accommodations")
+                .with(user(customUserDetails))
+                .with(csrf())
                 .content(objectMapper.writeValueAsString(request))
                 .contentType(MediaType.APPLICATION_JSON))
             .andExpect(MockMvcResultMatchers.status().isCreated())
@@ -199,11 +221,16 @@ public class ItineraryRestControllerDocsTest extends RestDocsSupport {
             .departureTime("2023-10-26 12:00")
             .arrivalTime("2023-10-26 13:00")
             .build();
-        given(itineraryService.createTransportation(any(TransportationCreateRequestDTO.class)))
+        given(itineraryService.createTransportation(any(TransportationCreateRequestDTO.class),
+            any(Long.TYPE)))
             .willReturn(transportationResponseDTO);
+        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
+            "test");
 
         // when, then
         mockMvc.perform(MockMvcRequestBuilders.post("/api/itineraries/transportations")
+                .with(user(customUserDetails))
+                .with(csrf())
                 .content(objectMapper.writeValueAsString(request))
                 .contentType(MediaType.APPLICATION_JSON))
             .andExpect(MockMvcResultMatchers.status().isCreated())
@@ -288,11 +315,15 @@ public class ItineraryRestControllerDocsTest extends RestDocsSupport {
             .arrivalTime("2023-10-26 14:00")
             .departureTime("2023-10-26 16:00")
             .build();
-        given(itineraryService.createVisit(any(VisitCreateRequestDTO.class)))
+        given(itineraryService.createVisit(any(VisitCreateRequestDTO.class), any(Long.TYPE)))
             .willReturn(visitResponseDTO);
+        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
+            "test");
 
         // when, then
         mockMvc.perform(MockMvcRequestBuilders.post("/api/itineraries/visits")
+                .with(user(customUserDetails))
+                .with(csrf())
                 .content(objectMapper.writeValueAsString(request))
                 .contentType(MediaType.APPLICATION_JSON))
             .andExpect(MockMvcResultMatchers.status().isCreated())
@@ -354,11 +385,15 @@ public class ItineraryRestControllerDocsTest extends RestDocsSupport {
             .checkIn("2023-10-25 15:00")
             .checkOut("2023-10-26 11:00")
             .build();
-        given(itineraryService.updateAccommodation(any(AccommodationUpdateRequestDTO.class)))
-            .willReturn(accommodationResponseDTO);
+        given(itineraryService.updateAccommodation(any(AccommodationUpdateRequestDTO.class),
+            any(Long.TYPE))).willReturn(accommodationResponseDTO);
+        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
+            "test");
 
         // when, then
         mockMvc.perform(MockMvcRequestBuilders.patch("/api/itineraries/accommodations")
+                .with(user(customUserDetails))
+                .with(csrf())
                 .content(objectMapper.writeValueAsString(request))
                 .contentType(MediaType.APPLICATION_JSON))
             .andExpect(MockMvcResultMatchers.status().isOk())
@@ -415,11 +450,15 @@ public class ItineraryRestControllerDocsTest extends RestDocsSupport {
             .departureTime("2023-10-26 11:00")
             .arrivalTime("2023-10-26 13:00")
             .build();
-        given(itineraryService.updateTransportation(any(TransportationUpdateRequestDTO.class)))
-            .willReturn(transportationResponseDTO);
+        given(itineraryService.updateTransportation(any(TransportationUpdateRequestDTO.class),
+            any(Long.TYPE))).willReturn(transportationResponseDTO);
+        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
+            "test");
 
         // when, then
         mockMvc.perform(MockMvcRequestBuilders.patch("/api/itineraries/transportations")
+                .with(user(customUserDetails))
+                .with(csrf())
                 .content(objectMapper.writeValueAsString(request))
                 .contentType(MediaType.APPLICATION_JSON))
             .andExpect(MockMvcResultMatchers.status().isOk())
@@ -484,11 +523,15 @@ public class ItineraryRestControllerDocsTest extends RestDocsSupport {
             .arrivalTime("2023-10-26 14:00")
             .departureTime("2023-10-26 16:00")
             .build();
-        given(itineraryService.updateVisit(any(VisitUpdateRequestDTO.class)))
+        given(itineraryService.updateVisit(any(VisitUpdateRequestDTO.class), any(Long.TYPE)))
             .willReturn(visitResponseDTO);
+        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
+            "test");
 
         // when, then
         mockMvc.perform(MockMvcRequestBuilders.patch("/api/itineraries/visits")
+                .with(user(customUserDetails))
+                .with(csrf())
                 .content(objectMapper.writeValueAsString(request))
                 .contentType(MediaType.APPLICATION_JSON))
             .andExpect(MockMvcResultMatchers.status().isOk())
@@ -536,12 +579,16 @@ public class ItineraryRestControllerDocsTest extends RestDocsSupport {
             .checkIn("2023-10-25 15:00")
             .checkOut("2023-10-26 11:00")
             .build();
-        given(itineraryService.deleteItinerary(any(Long.TYPE))).willReturn(
+        given(itineraryService.deleteItinerary(any(Long.TYPE), any(Long.TYPE))).willReturn(
             accommodationResponseDTO);
+        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
+            "test");
 
         // when, then
         mockMvc.perform(
-                RestDocumentationRequestBuilders.delete("/api/itineraries/{itineraryId}", 1L))
+                RestDocumentationRequestBuilders.delete("/api/itineraries/{itineraryId}", 1L)
+                    .with(user(customUserDetails))
+                    .with(csrf()))
             .andExpect(status().isOk())
             .andDo(restDoc.document(
                 pathParameters(parameterWithName("itineraryId").description("여정 식별자")),

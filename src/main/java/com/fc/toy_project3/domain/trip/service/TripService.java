@@ -4,11 +4,13 @@ import com.fc.toy_project3.domain.itinerary.entity.Accommodation;
 import com.fc.toy_project3.domain.itinerary.entity.Itinerary;
 import com.fc.toy_project3.domain.itinerary.entity.Transportation;
 import com.fc.toy_project3.domain.itinerary.entity.Visit;
+import com.fc.toy_project3.domain.itinerary.exception.NotItineraryAuthorException;
 import com.fc.toy_project3.domain.like.entity.Like;
 import com.fc.toy_project3.domain.like.repository.LikeRepository;
 import com.fc.toy_project3.domain.like.service.LikeService;
 import com.fc.toy_project3.domain.member.entity.Member;
 import com.fc.toy_project3.domain.member.repository.MemberRepository;
+import com.fc.toy_project3.domain.member.service.MemberService;
 import com.fc.toy_project3.domain.trip.dto.request.GetTripsRequestDTO;
 import com.fc.toy_project3.domain.trip.dto.request.PostTripRequestDTO;
 import com.fc.toy_project3.domain.trip.dto.request.UpdateTripRequestDTO;
@@ -18,6 +20,7 @@ import com.fc.toy_project3.domain.trip.dto.response.GetTripsResponseDTO;
 import com.fc.toy_project3.domain.trip.dto.response.TripResponseDTO;
 import com.fc.toy_project3.domain.trip.entity.Trip;
 import com.fc.toy_project3.domain.trip.exception.InvalidTripDateRangeException;
+import com.fc.toy_project3.domain.trip.exception.NotTripAuthorException;
 import com.fc.toy_project3.domain.trip.exception.TripNotFoundException;
 import com.fc.toy_project3.domain.trip.exception.WrongTripEndDateException;
 import com.fc.toy_project3.domain.trip.exception.WrongTripStartDateException;
@@ -42,7 +45,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class TripService {
 
     private final TripRepository tripRepository;
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
     private final LikeRepository likeRepository;
 
     /**
@@ -58,8 +61,7 @@ public class TripService {
         if (startDate.isAfter(endDate)) {
             throw new InvalidTripDateRangeException();
         }
-        // TODO memberService 사용하도록 수정할 것
-        Member member = memberRepository.findById(memberId).get();
+        Member member = memberService.getMember(memberId);
         return new TripResponseDTO(tripRepository.save(Trip.builder()
             .member(member)
             .name(postTripRequestDTO.getTripName())
@@ -124,8 +126,9 @@ public class TripService {
      * @param updateTripRequestDTO 여행 정보 수정 요청 DTO
      * @return 수정된 여행 정보 응답 DTO
      */
-    public TripResponseDTO updateTrip(UpdateTripRequestDTO updateTripRequestDTO) {
+    public TripResponseDTO updateTrip(UpdateTripRequestDTO updateTripRequestDTO, Long memberId) {
         Trip trip = getTrip(updateTripRequestDTO.getTripId());
+        isAuthor(trip, memberId);
         LocalDate startDate = updateTripRequestDTO.getStartDate() == null ? trip.getStartDate()
             : DateTypeFormatterUtil.dateFormatter(updateTripRequestDTO.getStartDate());
         LocalDate endDate = updateTripRequestDTO.getEndDate() == null ? trip.getEndDate()
@@ -218,8 +221,9 @@ public class TripService {
      *
      * @param tripId 삭제할 여행 ID
      */
-    public TripResponseDTO deleteTripById(Long tripId) {
+    public TripResponseDTO deleteTripById(Long tripId, Long memberId) {
         Trip trip = getTrip(tripId);
+        isAuthor(trip, memberId);
         trip.delete(LocalDateTime.now());
         return new TripResponseDTO(trip);
     }
@@ -233,5 +237,11 @@ public class TripService {
     public void like(long tripId, boolean isIncrease) {
         Trip trip = getTrip(tripId);
         trip.updateLikeCount(isIncrease);
+    }
+
+    public void isAuthor(Trip trip, long memberId){
+        if(trip.getMember().getId() != memberId){
+            throw new NotTripAuthorException();
+        }
     }
 }

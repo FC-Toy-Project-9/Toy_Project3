@@ -14,6 +14,7 @@ import com.fc.toy_project3.domain.like.repository.LikeRepository;
 import com.fc.toy_project3.domain.like.service.LikeService;
 import com.fc.toy_project3.domain.member.entity.Member;
 import com.fc.toy_project3.domain.member.repository.MemberRepository;
+import com.fc.toy_project3.domain.member.service.MemberService;
 import com.fc.toy_project3.domain.trip.dto.request.GetTripsRequestDTO;
 import com.fc.toy_project3.domain.trip.dto.request.PostTripRequestDTO;
 import com.fc.toy_project3.domain.trip.dto.request.TripPageRequestDTO;
@@ -56,7 +57,7 @@ public class TripServiceTest {
     private TripRepository tripRepository;
 
     @Mock
-    private MemberRepository memberRepository;
+    private MemberService memberService;
 
     @Mock
     private LikeRepository likeRepository;
@@ -85,7 +86,7 @@ public class TripServiceTest {
                 .isDomestic(true)
                 .itineraries(new ArrayList<>())
                 .build();
-            given(memberRepository.findById(any(Long.TYPE))).willReturn(Optional.of(member));
+            given(memberService.getMember(any(Long.TYPE))).willReturn(member);
             given(tripRepository.save(any(Trip.class))).willReturn(trip);
 
             // when
@@ -317,7 +318,7 @@ public class TripServiceTest {
             given(tripRepository.findById(any(Long.TYPE))).willReturn(trip);
 
             // when
-            TripResponseDTO result = tripService.updateTrip(updateTripRequestDTO);
+            TripResponseDTO result = tripService.updateTrip(updateTripRequestDTO, member.getId());
 
             // then
             assertThat(result).extracting("tripId", "memberId", "nickname", "tripName", "startDate",
@@ -344,7 +345,7 @@ public class TripServiceTest {
 
             // when, then
             Throwable exception = assertThrows(WrongTripStartDateException.class, () -> {
-                tripService.updateTrip(updateTripRequestDTO);
+                tripService.updateTrip(updateTripRequestDTO, member.getId());
             });
             assertEquals("여행 시작일을 다시 확인해주세요.", exception.getMessage());
             verify(tripRepository, times(1)).findById(any(Long.TYPE));
@@ -367,7 +368,7 @@ public class TripServiceTest {
             given(tripRepository.findById(any(Long.TYPE))).willReturn(Optional.of(trip));
 
             // when
-            TripResponseDTO tripResponseDTO = tripService.deleteTripById(1L);
+            TripResponseDTO tripResponseDTO = tripService.deleteTripById(trip.getId(), member.getId());
 
             // then
             assertThat(tripResponseDTO.getTripId()).isEqualTo(1);

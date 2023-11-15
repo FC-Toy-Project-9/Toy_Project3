@@ -34,17 +34,21 @@ public abstract class RestDocsSupport {
     @Autowired
     protected RestDocumentationResultHandler restDoc;
 
-    @Autowired
-    WebApplicationContext context;
-
     protected MockMvc mockMvc;
+
+    @Autowired
+    protected WebApplicationContext context;
 
     @BeforeEach
     public void setup(RestDocumentationContextProvider restDocumentationContextProvider) {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
+        this.mockMvc = MockMvcBuilders
+            .webAppContextSetup(context)
             .apply(documentationConfiguration(restDocumentationContextProvider))
-            .apply(springSecurity()).alwaysDo(print())
-            .alwaysDo(restDoc).addFilters(new CharacterEncodingFilter("UTF-8", true)).build();
+            .alwaysDo(print())
+            .alwaysDo(restDoc)
+            .apply(springSecurity())
+            .addFilters(new CharacterEncodingFilter("UTF-8", true))
+            .build();
     }
 
     public abstract Object initController();
