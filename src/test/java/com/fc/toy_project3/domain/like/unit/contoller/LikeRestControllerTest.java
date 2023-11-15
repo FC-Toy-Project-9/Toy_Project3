@@ -26,7 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(LikeRestController.class)
@@ -38,13 +37,17 @@ public class LikeRestControllerTest {
     @MockBean
     private LikeService likeService;
 
+    private CustomUserDetails makeUserInfo(){
+        return new CustomUserDetails(1L, "test", "test@mail.com","test");
+    }
+
+    ObjectMapper objectMapper = new ObjectMapper();
     @Nested
     @DisplayName("createLike()는")
     class Context_createLike {
 
         @Test
         @DisplayName("좋아요 정보를 등록할 수 있다.")
-        @WithMockUser
         void _willSuccess() throws Exception {
             //given
             Long memberId = 1L;
@@ -55,11 +58,9 @@ public class LikeRestControllerTest {
 
             given(likeService.createLike(any(Long.TYPE), any(LikeRequestDTO.class))).willReturn(likeResponseDTO);
 
-            CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com","test");
-
             //when, then
-            mockMvc.perform(post("/api/likes").with(user(customUserDetails)).with(csrf())
-                .content(new ObjectMapper().writeValueAsString(likeRequestDTO))
+            mockMvc.perform(post("/api/likes").with(user(makeUserInfo())).with(csrf())
+                .content(objectMapper.writeValueAsString(likeRequestDTO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.code").exists()).andExpect(jsonPath("$.message").exists())
@@ -80,11 +81,11 @@ public class LikeRestControllerTest {
                 // given
                 LikeRequestDTO likeRequestDTO = LikeRequestDTO.builder().tripId(null).build();
 
-                CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com","test");
+                CustomUserDetails customUserDetails = makeUserInfo();
 
                 // when, then
                 mockMvc.perform(post("/api/likes").with(user(customUserDetails)).with(csrf())
-                        .content(new ObjectMapper().writeValueAsString(likeRequestDTO))
+                        .content(objectMapper.writeValueAsString(likeRequestDTO))
                         .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest())
                     .andDo(print());
                 verify(likeService, never()).createLike(any(Long.TYPE), any(LikeRequestDTO.class));
@@ -107,10 +108,8 @@ public class LikeRestControllerTest {
 
             given(likeService.getLikeByMemberIdAndTripId(memberId, tripId)).willReturn(likeResponseDTO);
 
-            CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com","test");
-
             //when, then
-            mockMvc.perform(get("/api/likes/{tripId}", 1L).with(user(customUserDetails)).with(csrf()))
+            mockMvc.perform(get("/api/likes/{tripId}", 1L).with(user(makeUserInfo())).with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").exists()).andExpect(jsonPath("$.message").exists())
                 .andExpect(jsonPath("$.data.likeId").exists())
@@ -136,10 +135,8 @@ public class LikeRestControllerTest {
 
             given(likeService.deleteLikeById(memberId, tripId)).willReturn(likeResponseDTO);
 
-            CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com","test");
-
             //when, then
-            mockMvc.perform(delete("/api/likes/{likeId}", 1L).with(user(customUserDetails)).with(csrf()))
+            mockMvc.perform(delete("/api/likes/{likeId}", 1L).with(user(makeUserInfo())).with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").exists()).andExpect(jsonPath("$.message").exists())
                 .andExpect(jsonPath("$.data.likeId").exists())
