@@ -33,10 +33,8 @@ public class MemberService {
     private final CustomUserDetailsService userDetailsService;
 
 
-    // 회원가입
     public SignUpResponseDTO signUp(SignUpRequestDTO signUpRequestDTO) {
 
-        // 데이터베이스에서 확인
         String email = signUpRequestDTO.getEmail();
         String nickname = signUpRequestDTO.getNickname();
 
@@ -48,9 +46,7 @@ public class MemberService {
             throw new ExistingMemberException("이미 존재하는 닉네임입니다.");
         });
 
-        // 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(signUpRequestDTO.getPassword());
-
         Member member = Member.builder()
                 .email(email)
                 .name(signUpRequestDTO.getName())
@@ -58,7 +54,14 @@ public class MemberService {
                 .password(encodedPassword)
                 .build();
 
-        return memberRepository.save(member).toMemberResponseDTO();
+        Member savedMember = memberRepository.save(member);
+
+        return SignUpResponseDTO.builder()
+                .memberId(savedMember.getId())
+                .email(savedMember.getEmail())
+                .name(savedMember.getName())
+                .nickname(savedMember.getNickname())
+                .build();
     }
 
     public JwtResponseDTO signIn (SignInRequestDTO signInRequestDTO) {
@@ -73,6 +76,10 @@ public class MemberService {
 
         // 인증 후 토큰 생성
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+
+        System.out.println(authentication);
+        System.out.println(userDetails);
+
         String jwtToken = jwtTokenProvider.createJwtToken(authentication);
         JwtResponseDTO jwtResponseDTO = JwtResponseDTO.builder()
                 .jwtToken(jwtToken)

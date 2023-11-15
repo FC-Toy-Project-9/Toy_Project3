@@ -170,122 +170,122 @@ public class TripRepositoryTest {
         }
     }
 
-//    @Nested
-//    @DisplayName("findAllBySearchCondition()은")
-//    class Context_findAllBySearchCondition {
-//
-//        @Test
-//        @DisplayName("여행 이름으로 여행 목록을 조회할 수 있다.")
-//        void tripName_willSuccess() {
-//            // given
-//            saveTripList();
-//            GetTripsRequestDTO getTripsRequestDTO = GetTripsRequestDTO.builder()
-//                .tripName("제주도")
-//                .build();
-//            Pageable pageable = TripPageRequestDTO.builder()
-//                .page(0)
-//                .size(10)
-//                .criteria("createdAt")
-//                .sort("ASC")
-//                .build().of();
-//
-//            // when
-//            Page<Trip> result = tripRepository.findAllBySearchCondition(getTripsRequestDTO,
-//                pageable);
-//
-//            // then
-//            assertThat(result.getTotalPages()).isEqualTo(1);
-//            assertThat(result.isLast()).isTrue();
-//            assertThat(result.getTotalElements()).isEqualTo(2);
-//            assertThat(result.get().toList()).isNotEmpty();
-//            assertThat(result.get().toList().get(0).getName()).isEqualTo("제주도 여행");
-//            assertThat(result.get().toList().get(1).getName()).isEqualTo("제주도 가족 여행");
-//        }
-//
-//        @Test
-//        @DisplayName("여행 이름으로 여행 목록을 조회할 수 있다.")
-//        void nickname_willSuccess() {
-//            // given
-//            saveTripList();
-//            GetTripsRequestDTO getTripsRequestDTO = GetTripsRequestDTO.builder()
-//                .nickname("닉네임2")
-//                .build();
-//            Pageable pageable = TripPageRequestDTO.builder()
-//                .page(0)
-//                .size(10)
-//                .criteria("createdAt")
-//                .sort("ASC")
-//                .build().of();
-//
-//            // when
-//            Page<Trip> result = tripRepository.findAllBySearchCondition(getTripsRequestDTO,
-//                pageable);
-//
-//            // then
-//            assertThat(result.getTotalPages()).isEqualTo(1);
-//            assertThat(result.isLast()).isTrue();
-//            assertThat(result.getTotalElements()).isEqualTo(2);
-//            assertThat(result.get().toList()).isNotEmpty();
-//            assertThat(result.get().toList().get(0).getMember().getNickname()).isEqualTo("닉네임2");
-//            assertThat(result.get().toList().get(1).getMember().getNickname()).isEqualTo("닉네임2");
-//        }
-//
-//        @Test
-//        @DisplayName("최신순으로 여행 목록을 정렬하여 조회할 수 있다.")
-//        void orderByCreatedAt_willSuccess() {
-//            // given
-//            saveTripList();
-//            GetTripsRequestDTO getTripsRequestDTO = GetTripsRequestDTO.builder()
-//                .build();
-//            Pageable pageable = TripPageRequestDTO.builder()
-//                .page(0)
-//                .size(10)
-//                .criteria("createdAt")
-//                .sort("DESC")
-//                .build().of();
-//
-//            // when
-//            Page<Trip> result = tripRepository.findAllBySearchCondition(getTripsRequestDTO,
-//                pageable);
-//
-//            // then
-//            assertThat(result.getTotalPages()).isEqualTo(1);
-//            assertThat(result.isLast()).isTrue();
-//            assertThat(result.getTotalElements()).isEqualTo(4L);
-//            assertThat(result.get().toList()).isNotEmpty();
-//            assertThat(result.get().toList().get(0).getName()).isEqualTo("제주도 가족 여행");
-//            assertThat(result.get().toList().get(1).getName()).isEqualTo("크리스마스 미국 여행");
-//            assertThat(result.get().toList().get(2).getName()).isEqualTo("속초 겨울바다 여행");
-//            assertThat(result.get().toList().get(3).getName()).isEqualTo("제주도 여행");
-//        }
-//
-//        @Test
-//        @DisplayName("좋아요순으로 여행 목록을 정렬하여 조회할 수 있다.")
-//        void orderByLikeCount_willSuccess() {
-//            // given
-//            saveTripList();
-//            GetTripsRequestDTO getTripsRequestDTO = GetTripsRequestDTO.builder()
-//                .build();
-//            Pageable pageable = TripPageRequestDTO.builder()
-//                .page(0)
-//                .size(10)
-//                .criteria("likeCount")
-//                .sort("DESC")
-//                .build().of();
-//
-//            // when
-//            Page<Trip> result = tripRepository.findAllBySearchCondition(getTripsRequestDTO,
-//                pageable);
-//
-//            // then
-//            assertThat(result.getTotalPages()).isEqualTo(1);
-//            assertThat(result.isLast()).isTrue();
-//            assertThat(result.getTotalElements()).isEqualTo(4);
-//            assertThat(result.get().toList()).isNotEmpty();
-//            assertThat(result.get().toList().get(0).getLikeCount()).isEqualTo(10L);
-//            assertThat(result.get().toList().get(1).getLikeCount()).isEqualTo(7L);
-//            assertThat(result.get().toList().get(2).getLikeCount()).isEqualTo(3L);
-//            assertThat(result.get().toList().get(3).getLikeCount()).isEqualTo(0L);
-//        }
-//    }
+    @Nested
+    @DisplayName("findAllBySearchCondition()은")
+    class Context_findAllBySearchCondition {
+
+        @Test
+        @DisplayName("여행 이름으로 여행 목록을 조회할 수 있다.")
+        void tripName_willSuccess() {
+            // given
+            saveTripList();
+            GetTripsRequestDTO getTripsRequestDTO = GetTripsRequestDTO.builder()
+                .tripName("제주도")
+                .build();
+            Pageable pageable = TripPageRequestDTO.builder()
+                .page(0)
+                .size(10)
+                .criteria("createdAt")
+                .sort("ASC")
+                .build().of();
+
+            // when
+            Page<Trip> result = tripRepository.findAllBySearchCondition(getTripsRequestDTO,
+                pageable);
+
+            // then
+            assertThat(result.getTotalPages()).isEqualTo(1);
+            assertThat(result.isLast()).isTrue();
+            assertThat(result.getTotalElements()).isEqualTo(2);
+            assertThat(result.get().toList()).isNotEmpty();
+            assertThat(result.get().toList().get(0).getName()).isEqualTo("제주도 여행");
+            assertThat(result.get().toList().get(1).getName()).isEqualTo("제주도 가족 여행");
+        }
+
+        @Test
+        @DisplayName("여행 이름으로 여행 목록을 조회할 수 있다.")
+        void nickname_willSuccess() {
+            // given
+            saveTripList();
+            GetTripsRequestDTO getTripsRequestDTO = GetTripsRequestDTO.builder()
+                .nickname("닉네임2")
+                .build();
+            Pageable pageable = TripPageRequestDTO.builder()
+                .page(0)
+                .size(10)
+                .criteria("createdAt")
+                .sort("ASC")
+                .build().of();
+
+            // when
+            Page<Trip> result = tripRepository.findAllBySearchCondition(getTripsRequestDTO,
+                pageable);
+
+            // then
+            assertThat(result.getTotalPages()).isEqualTo(1);
+            assertThat(result.isLast()).isTrue();
+            assertThat(result.getTotalElements()).isEqualTo(2);
+            assertThat(result.get().toList()).isNotEmpty();
+            assertThat(result.get().toList().get(0).getMember().getNickname()).isEqualTo("닉네임2");
+            assertThat(result.get().toList().get(1).getMember().getNickname()).isEqualTo("닉네임2");
+        }
+
+        @Test
+        @DisplayName("최신순으로 여행 목록을 정렬하여 조회할 수 있다.")
+        void orderByCreatedAt_willSuccess() {
+            // given
+            saveTripList();
+            GetTripsRequestDTO getTripsRequestDTO = GetTripsRequestDTO.builder()
+                .build();
+            Pageable pageable = TripPageRequestDTO.builder()
+                .page(0)
+                .size(10)
+                .criteria("createdAt")
+                .sort("DESC")
+                .build().of();
+
+            // when
+            Page<Trip> result = tripRepository.findAllBySearchCondition(getTripsRequestDTO,
+                pageable);
+
+            // then
+            assertThat(result.getTotalPages()).isEqualTo(1);
+            assertThat(result.isLast()).isTrue();
+            assertThat(result.getTotalElements()).isEqualTo(4L);
+            assertThat(result.get().toList()).isNotEmpty();
+            assertThat(result.get().toList().get(0).getName()).isEqualTo("제주도 가족 여행");
+            assertThat(result.get().toList().get(1).getName()).isEqualTo("크리스마스 미국 여행");
+            assertThat(result.get().toList().get(2).getName()).isEqualTo("속초 겨울바다 여행");
+            assertThat(result.get().toList().get(3).getName()).isEqualTo("제주도 여행");
+        }
+
+        @Test
+        @DisplayName("좋아요순으로 여행 목록을 정렬하여 조회할 수 있다.")
+        void orderByLikeCount_willSuccess() {
+            // given
+            saveTripList();
+            GetTripsRequestDTO getTripsRequestDTO = GetTripsRequestDTO.builder()
+                .build();
+            Pageable pageable = TripPageRequestDTO.builder()
+                .page(0)
+                .size(10)
+                .criteria("likeCount")
+                .sort("DESC")
+                .build().of();
+
+            // when
+            Page<Trip> result = tripRepository.findAllBySearchCondition(getTripsRequestDTO,
+                pageable);
+
+            // then
+            assertThat(result.getTotalPages()).isEqualTo(1);
+            assertThat(result.isLast()).isTrue();
+            assertThat(result.getTotalElements()).isEqualTo(4);
+            assertThat(result.get().toList()).isNotEmpty();
+            assertThat(result.get().toList().get(0).getLikeCount()).isEqualTo(10L);
+            assertThat(result.get().toList().get(1).getLikeCount()).isEqualTo(7L);
+            assertThat(result.get().toList().get(2).getLikeCount()).isEqualTo(3L);
+            assertThat(result.get().toList().get(3).getLikeCount()).isEqualTo(0L);
+        }
+    }
 }

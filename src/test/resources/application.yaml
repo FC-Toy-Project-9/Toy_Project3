@@ -5,6 +5,3 @@ spring:
     driver-class-name: org.h2.Driver
   config:
     import: application-secret.yaml
-jwt:
-  secretKey: toyproject9
-  tokenValidTime: 6000000

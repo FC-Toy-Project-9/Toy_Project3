@@ -34,60 +34,59 @@ public class TripCustomRepositoryImpl implements TripCustomRepository {
     @Override
     public Page<Trip> findAllBySearchCondition(GetTripsRequestDTO getTripsRequestDTO,
                                                Pageable pageable) {
-//        List<OrderSpecifier> orderSpecifiers = getAllOrderSpecifiers(pageable);
-//        List<Trip> content = jpaQueryFactory
-//                .selectFrom(trip)
-//                .leftJoin(trip.member)
-//                .fetchJoin()
-//                .where(createSearchConditionsBuilder(getTripsRequestDTO))
-//                .offset(pageable.getOffset())
-//                .limit(pageable.getPageSize())
-//                .orderBy(orderSpecifiers.toArray(OrderSpecifier[]::new))
-//                .fetch();
-//        JPAQuery<Long> countQuery = jpaQueryFactory
-//                .select(trip.count())
-//                .from(trip)
-//                .leftJoin(trip.member)
-//                .where(createSearchConditionsBuilder(getTripsRequestDTO));
-//        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
-        return null;
+        List<OrderSpecifier> orderSpecifiers = getAllOrderSpecifiers(pageable);
+        List<Trip> content = jpaQueryFactory
+                .selectFrom(trip)
+                .leftJoin(trip.member)
+                .fetchJoin()
+                .where(createSearchConditionsBuilder(getTripsRequestDTO))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .orderBy(orderSpecifiers.toArray(OrderSpecifier[]::new))
+                .fetch();
+        JPAQuery<Long> countQuery = jpaQueryFactory
+                .select(trip.count())
+                .from(trip)
+                .leftJoin(trip.member)
+                .where(createSearchConditionsBuilder(getTripsRequestDTO));
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
 
-//    private BooleanBuilder createSearchConditionsBuilder(
-//            GetTripsRequestDTO getTripsRequestDTO) {
-//        BooleanBuilder booleanBuilder = new BooleanBuilder();
-//        boolean isFindAllByTripName = getTripsRequestDTO.getTripName() != null;
-//        boolean isFindAllByNickname = getTripsRequestDTO.getNickname() != null;
-//        if (isFindAllByTripName) {
-//            booleanBuilder.and(trip.name.contains(getTripsRequestDTO.getTripName()));
-//        }
-//        if (isFindAllByNickname) {
-//            booleanBuilder.and(
-//                    trip.member.nickname.contains(getTripsRequestDTO.getNickname()));
-//        }
-//        booleanBuilder.and(trip.deletedAt.isNull());
-//        return booleanBuilder;
-//    }
-//
-//    private List<OrderSpecifier> getAllOrderSpecifiers(Pageable pageable) {
-//        List<OrderSpecifier> orderSpecifiers = new ArrayList<>();
-//        if (!isEmpty(pageable.getSort())) {
-//            for (Sort.Order order : pageable.getSort()) {
-//                Order direction =
-//                        order.getDirection().isAscending() ? Order.ASC : Order.DESC;
-//                switch (order.getProperty()) {
-//                    case "likeCount":
-//                        OrderSpecifier<?> orderLikeCount = QueryDslUtil.getSortedColumn(direction,
-//                                trip, "likeCount");
-//                        orderSpecifiers.add(orderLikeCount);
-//                        break;
-//                    default:
-//                        OrderSpecifier<?> orderCreatedAt = QueryDslUtil.getSortedColumn(direction,
-//                                trip, "createdAt");
-//                        orderSpecifiers.add(orderCreatedAt);
-//                }
-//            }
-//        }
-//        return orderSpecifiers;
-//    }
+    private BooleanBuilder createSearchConditionsBuilder(
+            GetTripsRequestDTO getTripsRequestDTO) {
+        BooleanBuilder booleanBuilder = new BooleanBuilder();
+        boolean isFindAllByTripName = getTripsRequestDTO.getTripName() != null;
+        boolean isFindAllByNickname = getTripsRequestDTO.getNickname() != null;
+        if (isFindAllByTripName) {
+            booleanBuilder.and(trip.name.contains(getTripsRequestDTO.getTripName()));
+        }
+        if (isFindAllByNickname) {
+            booleanBuilder.and(
+                    trip.member.nickname.contains(getTripsRequestDTO.getNickname()));
+        }
+        booleanBuilder.and(trip.deletedAt.isNull());
+        return booleanBuilder;
+    }
+
+    private List<OrderSpecifier> getAllOrderSpecifiers(Pageable pageable) {
+        List<OrderSpecifier> orderSpecifiers = new ArrayList<>();
+        if (!isEmpty(pageable.getSort())) {
+            for (Sort.Order order : pageable.getSort()) {
+                Order direction =
+                        order.getDirection().isAscending() ? Order.ASC : Order.DESC;
+                switch (order.getProperty()) {
+                    case "likeCount":
+                        OrderSpecifier<?> orderLikeCount = QueryDslUtil.getSortedColumn(direction,
+                                trip, "likeCount");
+                        orderSpecifiers.add(orderLikeCount);
+                        break;
+                    default:
+                        OrderSpecifier<?> orderCreatedAt = QueryDslUtil.getSortedColumn(direction,
+                                trip, "createdAt");
+                        orderSpecifiers.add(orderCreatedAt);
+                }
+            }
+        }
+        return orderSpecifiers;
+    }
 }

@@ -36,13 +36,5 @@ public class Member extends BaseTimeEntity {
         this.nickname = nickname;
         this.password = password; 
     }
-    public SignUpResponseDTO toMemberResponseDTO() {
-        return SignUpResponseDTO.builder()
-                .memberId(this.id)
-                .email(this.email)
-                .name(this.name)
-                .nickname(this.nickname)
-                .build();
-    }
 
 }
