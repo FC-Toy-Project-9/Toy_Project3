@@ -10,3 +10,4 @@ spring:
       ddl-auto: update
   config:
     import: application-secret.yaml
+

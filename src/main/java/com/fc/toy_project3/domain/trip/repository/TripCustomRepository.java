@@ -8,5 +8,5 @@ import org.springframework.data.domain.Pageable;
 public interface TripCustomRepository {
 
     Page<Trip> findAllBySearchCondition(GetTripsRequestDTO getTripsRequestDTO,
-        Pageable pageable);
+                                        Pageable pageable);
 }

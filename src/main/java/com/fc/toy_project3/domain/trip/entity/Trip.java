@@ -57,7 +57,7 @@ public class Trip extends BaseTimeEntity {
 
     @Builder
     public Trip(Long id, Member member, String name, LocalDate startDate, LocalDate endDate, Boolean isDomestic,
-        Long likeCount, List<Itinerary> itineraries) {
+                Long likeCount, List<Itinerary> itineraries) {
         this.id = id;
         this.member = member;
         this.name = name;
@@ -74,11 +74,11 @@ public class Trip extends BaseTimeEntity {
         }
         if (updateTripRequestDTO.getStartDate() != null) {
             this.startDate = DateTypeFormatterUtil.dateFormatter(
-                updateTripRequestDTO.getStartDate());
+                    updateTripRequestDTO.getStartDate());
         }
         if (updateTripRequestDTO.getEndDate() != null) {
             this.endDate = DateTypeFormatterUtil.dateFormatter(
-                updateTripRequestDTO.getEndDate());
+                    updateTripRequestDTO.getEndDate());
         }
         if (updateTripRequestDTO.getIsDomestic() != null) {
             this.isDomestic = updateTripRequestDTO.getIsDomestic();
