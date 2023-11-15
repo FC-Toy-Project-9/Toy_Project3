@@ -1,0 +1,51 @@
+= LIKE REST API Docs
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+[[Like-Create]]
+== 좋아요 등록
+
+좋아요 정보를 등록하는 API 입니다.
+
+=== HttpRequest
+
+include::{snippets}/like-rest-controller-docs-test/create-like/http-request.adoc[]
+include::{snippets}/like-rest-controller-docs-test/create-like/request-fields.adoc[]
+
+=== HttpResponse
+
+include::{snippets}/like-rest-controller-docs-test/create-like/http-response.adoc[]
+include::{snippets}/like-rest-controller-docs-test/create-like/response-fields.adoc[]
+
+[[Like-Search]]
+== 특정 좋아요 정보 조회
+
+특정 좋아요 정보를 조회하는 API 입니다.
+
+=== HttpRequest
+
+include::{snippets}/like-rest-controller-docs-test/get-like-by-member-id-and-trip-id/http-request.adoc[]
+include::{snippets}/like-rest-controller-docs-test/get-like-by-member-id-and-trip-id/path-parameters.adoc[]
+
+=== HttpResponse
+
+include::{snippets}/like-rest-controller-docs-test/get-like-by-member-id-and-trip-id/http-response.adoc[]
+include::{snippets}/like-rest-controller-docs-test/get-like-by-member-id-and-trip-id/response-fields.adoc[]
+
+[[Like-Delete]]
+== 특정 좋아요 정보 삭제
+
+특정 좋아요 정보를 삭제하는 API 입니다.
+
+=== HttpRequest
+
+include::{snippets}/like-rest-controller-docs-test/delete-like-by-id/http-request.adoc[]
+include::{snippets}/like-rest-controller-docs-test/delete-like-by-id/path-parameters.adoc[]
+
+=== HttpResponse
+
+include::{snippets}/like-rest-controller-docs-test/delete-like-by-id/http-response.adoc[]
+include::{snippets}/like-rest-controller-docs-test/delete-like-by-id/response-fields.adoc[]
