@@ -7,7 +7,6 @@ import com.fc.toy_project3.domain.itinerary.dto.request.update.AccommodationUpda
 import com.fc.toy_project3.domain.itinerary.dto.request.update.TransportationUpdateRequestDTO;
 import com.fc.toy_project3.domain.itinerary.dto.request.update.VisitUpdateRequestDTO;
 import com.fc.toy_project3.domain.itinerary.dto.response.AccommodationResponseDTO;
-import com.fc.toy_project3.domain.itinerary.dto.response.ItineraryDeleteResponseDTO;
 import com.fc.toy_project3.domain.itinerary.dto.response.ItinerarySearchResponseDTO;
 import com.fc.toy_project3.domain.itinerary.dto.response.TransportationResponseDTO;
 import com.fc.toy_project3.domain.itinerary.dto.response.VisitResponseDTO;
@@ -247,11 +246,16 @@ public class ItineraryService {
      * @param itineraryId 여정 Id
      * @return 삭제된 여정 정보
      */
-    public ItineraryDeleteResponseDTO deleteItinerary(Long itineraryId) {
+    public Object deleteItinerary(Long itineraryId) {
         Itinerary itinerary = getItinerary(itineraryId);
         itinerary.delete(LocalDateTime.now());
-        return ItineraryDeleteResponseDTO.builder()
-            .itineraryId(itinerary.getId()).build();
+        if (itinerary instanceof Accommodation) {
+            return new AccommodationResponseDTO((Accommodation) itinerary);
+        } else if (itinerary instanceof Transportation) {
+            return new TransportationResponseDTO((Transportation) itinerary);
+        } else {
+            return new VisitResponseDTO((Visit) itinerary);
+        }
     }
 
     private Itinerary getItinerary(Long itineraryId) {
