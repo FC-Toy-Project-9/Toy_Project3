@@ -6,7 +6,7 @@ import com.fc.toy_project3.domain.like.entity.Like;
 import com.fc.toy_project3.domain.like.exception.LikeNotFoundException;
 import com.fc.toy_project3.domain.like.exception.LikeUnauthorizedException;
 import com.fc.toy_project3.domain.like.repository.LikeRepository;
-import com.fc.toy_project3.domain.member.repository.MemberRepository;
+import com.fc.toy_project3.domain.member.service.MemberService;
 import com.fc.toy_project3.domain.trip.service.TripService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,7 +22,7 @@ public class LikeService {
 
     private final TripService tripService;
     private final LikeRepository likeRepository;
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
 
     /**
      * 좋아요 정보 등록
@@ -32,11 +32,8 @@ public class LikeService {
      * @return 등록한 좋아요 정보 응답 DTO
      */
     public LikeResponseDTO createLike(Long memberId, LikeRequestDTO likeRequestDTO) {
-        //getMember(), MemberNotFoundException 으로 변경 예정
         Long tripId = likeRequestDTO.getTripId();
-        Like like = Like.builder().member(memberRepository.findById(memberId).orElseThrow(LikeNotFoundException::new))
-            .trip(tripService.getTrip(tripId))
-            .build();
+        Like like = Like.builder().member(memberService.getMember(memberId)).trip(tripService.getTrip(tripId)).build();
         tripService.like(tripId, true);
         return new LikeResponseDTO(likeRepository.save(like));
     }
