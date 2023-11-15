@@ -10,7 +10,6 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fc.toy_project3.docs.RestDocsSupport;
@@ -30,20 +29,15 @@ import com.fc.toy_project3.domain.member.service.MemberService;
 import com.fc.toy_project3.global.config.jwt.CustomUserDetails;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.constraints.ConstraintDescriptions;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 public class ItineraryRestControllerDocsTest extends RestDocsSupport {
 
@@ -55,7 +49,7 @@ public class ItineraryRestControllerDocsTest extends RestDocsSupport {
 
     @Override
     public Object initController() {
-        return new ItineraryRestController(itineraryService, memberService);
+        return new ItineraryRestController(itineraryService);
     }
 
     private final ConstraintDescriptions createAccommodationConstraints = new ConstraintDescriptions(
@@ -121,7 +115,6 @@ public class ItineraryRestControllerDocsTest extends RestDocsSupport {
 
     @Test
     @DisplayName("숙박 여정 정보를 저장할 수 있다.")
-    @WithMockUser
     void createAccommodation() throws Exception {
         // given
         AccommodationCreateRequestDTO request = AccommodationCreateRequestDTO.builder()
@@ -143,12 +136,10 @@ public class ItineraryRestControllerDocsTest extends RestDocsSupport {
         given(itineraryService.createAccommodation(
             any(AccommodationCreateRequestDTO.class), any(Long.TYPE))).willReturn(
             accommodationResponseDTO);
-        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
-            "test");
 
         // when, then
         mockMvc.perform(MockMvcRequestBuilders.post("/api/itineraries/accommodations")
-                .with(user(customUserDetails))
+                .with(user(getCustomUserDetails()))
                 .with(csrf())
                 .content(objectMapper.writeValueAsString(request))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -224,12 +215,10 @@ public class ItineraryRestControllerDocsTest extends RestDocsSupport {
         given(itineraryService.createTransportation(any(TransportationCreateRequestDTO.class),
             any(Long.TYPE)))
             .willReturn(transportationResponseDTO);
-        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
-            "test");
 
         // when, then
         mockMvc.perform(MockMvcRequestBuilders.post("/api/itineraries/transportations")
-                .with(user(customUserDetails))
+                .with(user(getCustomUserDetails()))
                 .with(csrf())
                 .content(objectMapper.writeValueAsString(request))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -317,12 +306,10 @@ public class ItineraryRestControllerDocsTest extends RestDocsSupport {
             .build();
         given(itineraryService.createVisit(any(VisitCreateRequestDTO.class), any(Long.TYPE)))
             .willReturn(visitResponseDTO);
-        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
-            "test");
 
         // when, then
         mockMvc.perform(MockMvcRequestBuilders.post("/api/itineraries/visits")
-                .with(user(customUserDetails))
+                .with(user(getCustomUserDetails()))
                 .with(csrf())
                 .content(objectMapper.writeValueAsString(request))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -387,12 +374,10 @@ public class ItineraryRestControllerDocsTest extends RestDocsSupport {
             .build();
         given(itineraryService.updateAccommodation(any(AccommodationUpdateRequestDTO.class),
             any(Long.TYPE))).willReturn(accommodationResponseDTO);
-        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
-            "test");
 
         // when, then
         mockMvc.perform(MockMvcRequestBuilders.patch("/api/itineraries/accommodations")
-                .with(user(customUserDetails))
+                .with(user(getCustomUserDetails()))
                 .with(csrf())
                 .content(objectMapper.writeValueAsString(request))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -452,12 +437,10 @@ public class ItineraryRestControllerDocsTest extends RestDocsSupport {
             .build();
         given(itineraryService.updateTransportation(any(TransportationUpdateRequestDTO.class),
             any(Long.TYPE))).willReturn(transportationResponseDTO);
-        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
-            "test");
 
         // when, then
         mockMvc.perform(MockMvcRequestBuilders.patch("/api/itineraries/transportations")
-                .with(user(customUserDetails))
+                .with(user(getCustomUserDetails()))
                 .with(csrf())
                 .content(objectMapper.writeValueAsString(request))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -525,12 +508,10 @@ public class ItineraryRestControllerDocsTest extends RestDocsSupport {
             .build();
         given(itineraryService.updateVisit(any(VisitUpdateRequestDTO.class), any(Long.TYPE)))
             .willReturn(visitResponseDTO);
-        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
-            "test");
 
         // when, then
         mockMvc.perform(MockMvcRequestBuilders.patch("/api/itineraries/visits")
-                .with(user(customUserDetails))
+                .with(user(getCustomUserDetails()))
                 .with(csrf())
                 .content(objectMapper.writeValueAsString(request))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -581,13 +562,11 @@ public class ItineraryRestControllerDocsTest extends RestDocsSupport {
             .build();
         given(itineraryService.deleteItinerary(any(Long.TYPE), any(Long.TYPE))).willReturn(
             accommodationResponseDTO);
-        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
-            "test");
 
         // when, then
         mockMvc.perform(
                 RestDocumentationRequestBuilders.delete("/api/itineraries/{itineraryId}", 1L)
-                    .with(user(customUserDetails))
+                    .with(user(getCustomUserDetails()))
                     .with(csrf()))
             .andExpect(status().isOk())
             .andDo(restDoc.document(
@@ -626,5 +605,9 @@ public class ItineraryRestControllerDocsTest extends RestDocsSupport {
                         .description("출발 일시")
                 )
             ));
+    }
+
+    private CustomUserDetails getCustomUserDetails() {
+        return new CustomUserDetails(1L, "test", "test@mail.com", "test");
     }
 }
