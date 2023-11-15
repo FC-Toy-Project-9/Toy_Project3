@@ -6,6 +6,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -17,6 +18,7 @@ import com.fc.toy_project3.domain.like.controller.LikeRestController;
 import com.fc.toy_project3.domain.like.dto.request.LikeRequestDTO;
 import com.fc.toy_project3.domain.like.dto.response.LikeResponseDTO;
 import com.fc.toy_project3.domain.like.service.LikeService;
+import com.fc.toy_project3.global.config.jwt.CustomUserDetails;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -24,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(LikeRestController.class)
@@ -41,6 +44,7 @@ public class LikeRestControllerTest {
 
         @Test
         @DisplayName("좋아요 정보를 등록할 수 있다.")
+        @WithMockUser
         void _willSuccess() throws Exception {
             //given
             Long memberId = 1L;
@@ -51,8 +55,10 @@ public class LikeRestControllerTest {
 
             given(likeService.createLike(memberId, likeRequestDTO)).willReturn(likeResponseDTO);
 
+            CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com","test");
+
             //when, then
-            mockMvc.perform(post("/api/likes").with(csrf())
+            mockMvc.perform(post("/api/likes").with(user(customUserDetails)).with(csrf())
                 .content(new ObjectMapper().writeValueAsString(likeRequestDTO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
@@ -75,8 +81,10 @@ public class LikeRestControllerTest {
                 // given
                 LikeRequestDTO likeRequestDTO = LikeRequestDTO.builder().tripId(null).build();
 
+                CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com","test");
+
                 // when, then
-                mockMvc.perform(post("/api/trip").with(csrf())
+                mockMvc.perform(post("/api/trip").with(user(customUserDetails)).with(csrf())
                         .content(new ObjectMapper().writeValueAsString(likeRequestDTO))
                         .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest())
                     .andDo(print());
@@ -100,8 +108,10 @@ public class LikeRestControllerTest {
 
             given(likeService.getLikeByMemberIdAndTripId(memberId, tripId)).willReturn(likeResponseDTO);
 
+            CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com","test");
+
             //when, then
-            mockMvc.perform(get("/api/likes/{tripId}", 1L).with(csrf()))
+            mockMvc.perform(get("/api/likes/{tripId}", 1L).with(user(customUserDetails)).with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").exists()).andExpect(jsonPath("$.message").exists())
                 .andExpect(jsonPath("$.data").isMap())
@@ -128,8 +138,10 @@ public class LikeRestControllerTest {
 
             given(likeService.deleteLikeById(memberId, tripId)).willReturn(likeResponseDTO);
 
+            CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com","test");
+
             //when, then
-            mockMvc.perform(delete("/api/likes/{likeId}", 1L).with(csrf()))
+            mockMvc.perform(delete("/api/likes/{likeId}", 1L).with(user(customUserDetails)).with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").exists()).andExpect(jsonPath("$.message").exists())
                 .andExpect(jsonPath("$.data").isMap())
