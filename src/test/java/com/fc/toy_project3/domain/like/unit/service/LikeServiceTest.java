@@ -15,7 +15,7 @@ import com.fc.toy_project3.domain.like.exception.LikeNotFoundException;
 import com.fc.toy_project3.domain.like.repository.LikeRepository;
 import com.fc.toy_project3.domain.like.service.LikeService;
 import com.fc.toy_project3.domain.member.entity.Member;
-import com.fc.toy_project3.domain.member.repository.MemberRepository;
+import com.fc.toy_project3.domain.member.service.MemberService;
 import com.fc.toy_project3.domain.trip.entity.Trip;
 import com.fc.toy_project3.domain.trip.service.TripService;
 import java.time.LocalDate;
@@ -40,7 +40,7 @@ class LikeServiceTest {
     @Mock
     private LikeRepository likeRepository;
     @Mock
-    private MemberRepository memberRepository;
+    private MemberService memberService;
     @Mock
     private TripService tripService;
 
@@ -51,7 +51,7 @@ class LikeServiceTest {
         @Test
         @DisplayName("좋아요 정보를 저장할 수 있다.")
         void _willSuccess() {
-            //given
+            // given
             LikeRequestDTO likeRequestDTO = LikeRequestDTO.builder().tripId(1L).build();
             Long memberId = 1L;
 
@@ -62,7 +62,7 @@ class LikeServiceTest {
             Like like = Like.builder().id(1L).trip(trip).member(member).build();
 
             given(likeRepository.save(any(Like.class))).willReturn(like);
-            given(memberRepository.findById(any(Long.TYPE))).willReturn(Optional.ofNullable(member));
+            given(memberService.getMember(any(Long.TYPE))).willReturn(member);
             given(tripService.getTrip(any(Long.TYPE))).willReturn(trip);
 
             // when

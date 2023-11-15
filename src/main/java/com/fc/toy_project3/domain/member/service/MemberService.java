@@ -68,29 +68,28 @@ public class MemberService {
         String email = signInRequestDTO.getEmail();
         String password = signInRequestDTO.getPassword();
 
-        // 사용자 검증
-        UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-        if (userDetails == null || !passwordMatches(userDetails.getPassword(), password)) {
+        // 비밀번호 검증
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("해당 이메일이 존재하지않습니다." + email));
+        String dbPassword = member.getPassword();
+        if (!passwordMatches(password, dbPassword)) {
             throw new ExistingMemberException("아이디 또는 비밀번호가 틀렸습니다.");
         }
 
+        UserDetails userDetails = userDetailsService.loadUserByUsername(email);
         // 인증 후 토큰 생성
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-
-        System.out.println(authentication);
-        System.out.println(userDetails);
 
         String jwtToken = jwtTokenProvider.createJwtToken(authentication);
         JwtResponseDTO jwtResponseDTO = JwtResponseDTO.builder()
                 .jwtToken(jwtToken)
                 .build();
 
-        System.out.println("Generated Token: " + jwtToken);
         return jwtResponseDTO;
 
     }
-    private boolean passwordMatches(String hashedPassword, String inputPassword) {
-        return passwordEncoder.matches(inputPassword, hashedPassword);
+    private boolean passwordMatches(String inputPassword, String dbPassword) {
+        return passwordEncoder.matches(inputPassword, dbPassword);
     }
 
 
@@ -115,17 +114,6 @@ public class MemberService {
                     .memberId(member.getId())
                     .build();
             return testResponseDTO;
-        }
-        return null;
-    }
-
-    public Long findByUserId() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated()) {
-            String email = authentication.getName();
-            Member member = memberRepository.findByEmail(email).get();
-            Long memberId = member.getId();
-            return memberId;
         }
         return null;
     }

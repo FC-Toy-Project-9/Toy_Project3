@@ -75,7 +75,7 @@ public class LikeRepositoryTest {
         @Test
         @DisplayName("좋아요 정보를 저장할 수 있다.")
         void _willSuccess() {
-            //given
+            // given
             Long memberId = 1L, tripId = 1L;
             Member member = Member.builder().id(memberId).email("fc123@naver.com").nickname("닉1").password("1234").build();
             Trip trip = Trip.builder().id(tripId).name("제주도 여행").startDate(LocalDate.of(2023, 10, 25))
@@ -91,10 +91,10 @@ public class LikeRepositoryTest {
 
             Like like = Like.builder().id(1L).trip(trip).member(member).build();
 
-            //when
+            // when
             Like result = likeRepository.save(like);
 
-            //then
+            // then
             assertEquals(like.getId(), result.getId());
             assertEquals(member.getId(), result.getMember().getId());
             assertEquals(trip.getId(), result.getTrip().getId());
@@ -108,7 +108,7 @@ public class LikeRepositoryTest {
         @Test
         @DisplayName("특정 회원 id와 여행 id를 가진 좋아요 정보 Entity를 조회할 수 있다.")
         void _willSuccess() {
-            //given
+            // given
             Long memberId = 1L, tripId = 1L;
             Member member = Member.builder().id(memberId).email("fc123@naver.com").nickname("닉1").password("1234").build();
             Trip trip = Trip.builder().id(tripId).name("제주도 여행").startDate(LocalDate.of(2023, 10, 25))
@@ -128,7 +128,7 @@ public class LikeRepositoryTest {
             // when
             Optional<Like> result = likeRepository.findByMemberIdAndTripId(memberId, tripId);
 
-            //then
+            // then
             assertNotNull(result.get().getId());
             assertEquals(memberId, result.get().getMember().getId());
             assertEquals(tripId, result.get().getTrip().getId());
@@ -220,7 +220,7 @@ public class LikeRepositoryTest {
         @Test
         @DisplayName("특정 id를 가진 좋아요 정보 Entity를 조회할 수 있다.")
         void _willSuccess() {
-            //given
+            // given
             Long likeId = 1L;
             Member member = Member.builder().id(1L).email("fc123@naver.com").nickname("닉1").password("1234").build();
             Trip trip = Trip.builder().id(1L).name("제주도 여행").startDate(LocalDate.of(2023, 10, 25))
@@ -232,10 +232,10 @@ public class LikeRepositoryTest {
             tripRepository.save(trip);
             Like savedLike = likeRepository.save(like);
 
-            //when
+            // when
             Optional<Like> result = likeRepository.findById(likeId);
 
-            //then
+            // then
             assertNotNull(result);
             assertEquals(savedLike.getId(), result.get().getId());
             assertEquals(savedLike.getMember().getId(), result.get().getId());
@@ -250,7 +250,7 @@ public class LikeRepositoryTest {
         @Test
         @DisplayName("특정 id를 가진 좋아요 정보를 삭제할 수 있다.")
         void _willSuccess() {
-            //given
+            // given
             Member member = Member.builder().id(1L).email("fc123@naver.com").nickname("닉1").password("1234").build();
             Trip trip = Trip.builder().id(1L).name("제주도 여행").startDate(LocalDate.of(2023, 10, 25))
                 .endDate(LocalDate.of(2023, 10, 26)).isDomestic(true).itineraries(new ArrayList<>())
@@ -261,10 +261,10 @@ public class LikeRepositoryTest {
             tripRepository.save(trip);
             Like savedLike = likeRepository.save(like);
 
-            //when
+            // when
             likeRepository.deleteById(1L);
 
-            //then
+            // then
             assertFalse(likeRepository.existsById(savedLike.getId()));
         }
     }

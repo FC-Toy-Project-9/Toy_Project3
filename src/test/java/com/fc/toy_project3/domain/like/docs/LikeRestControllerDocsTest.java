@@ -98,7 +98,7 @@ public class LikeRestControllerDocsTest extends RestDocsSupport {
     @Test
     @DisplayName("deleteLikeById()은 특정 id를 가진 좋아요 정보를 삭제할 수 있다.")
     void deleteLikeById() throws Exception {
-        //given
+        // given
         Long likeId = 1L; Long memberId = 1L;
         LikeResponseDTO likeResponseDTO = LikeResponseDTO.builder().likeId(likeId).memberId(1L).tripId(1L).build();
 
@@ -107,7 +107,7 @@ public class LikeRestControllerDocsTest extends RestDocsSupport {
         CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
             "test");
 
-        //when, then
+        // when, then
         mockMvc.perform(RestDocumentationRequestBuilders.delete("/api/likes/{likeId}", 1L)
                 .with(user(customUserDetails))
                 .with(csrf()))
