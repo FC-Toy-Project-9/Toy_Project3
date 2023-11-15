@@ -21,8 +21,7 @@ public class LikeRestControllerAdvice {
     }
 
     @ExceptionHandler
-    public ResponseEntity<ResponseDTO<LikeResponseDTO>> likeUnauthorizedException(
-        LikeUnauthorizedException e){
+    public ResponseEntity<ResponseDTO<LikeResponseDTO>> likeUnauthorizedException(LikeUnauthorizedException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResponseDTO.res(HttpStatus.UNAUTHORIZED, e.getMessage()));
     }
 }

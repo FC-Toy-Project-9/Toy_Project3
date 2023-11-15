@@ -49,7 +49,7 @@ public class LikeRestController {
     @DeleteMapping("/{likeId}")
     public ResponseEntity<ResponseDTO<LikeResponseDTO>> deleteLikeById(
         @AuthenticationPrincipal CustomUserDetails customUserDetails,
-        @PathVariable Long likeId){
+        @PathVariable Long likeId) {
         return ResponseEntity.status(HttpStatus.OK).body(
             ResponseDTO.res(HttpStatus.OK, likeService.deleteLikeById(customUserDetails.getMemberId(), likeId),
                 "성공적으로 좋아요 정보를 삭제했습니다."));
