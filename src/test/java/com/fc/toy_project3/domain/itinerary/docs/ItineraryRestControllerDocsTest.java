@@ -19,7 +19,6 @@ import com.fc.toy_project3.domain.itinerary.dto.request.update.AccommodationUpda
 import com.fc.toy_project3.domain.itinerary.dto.request.update.TransportationUpdateRequestDTO;
 import com.fc.toy_project3.domain.itinerary.dto.request.update.VisitUpdateRequestDTO;
 import com.fc.toy_project3.domain.itinerary.dto.response.AccommodationResponseDTO;
-import com.fc.toy_project3.domain.itinerary.dto.response.ItineraryDeleteResponseDTO;
 import com.fc.toy_project3.domain.itinerary.dto.response.ItinerarySearchResponseDTO;
 import com.fc.toy_project3.domain.itinerary.dto.response.TransportationResponseDTO;
 import com.fc.toy_project3.domain.itinerary.dto.response.VisitResponseDTO;
@@ -136,7 +135,8 @@ public class ItineraryRestControllerDocsTest extends RestDocsSupport {
                 requestFields(
                     fieldWithPath("tripId").type(JsonFieldType.NUMBER).description("여행 식별자")
                         .attributes(key("constraints")
-                            .value(createAccommodationConstraints.descriptionsForProperty("tripId"))),
+                            .value(
+                                createAccommodationConstraints.descriptionsForProperty("tripId"))),
                     fieldWithPath("itineraryName").type(JsonFieldType.STRING).description("여정 이름")
                         .attributes(key("constraints")
                             .value(createAccommodationConstraints
@@ -211,7 +211,8 @@ public class ItineraryRestControllerDocsTest extends RestDocsSupport {
                 requestFields(
                     fieldWithPath("tripId").type(JsonFieldType.NUMBER).description("여행 식별자")
                         .attributes(key("constraints")
-                            .value(createTransportationConstraints.descriptionsForProperty("tripId"))),
+                            .value(
+                                createTransportationConstraints.descriptionsForProperty("tripId"))),
                     fieldWithPath("itineraryName").type(JsonFieldType.STRING).description("여정 이름")
                         .attributes(key("constraints")
                             .value(createTransportationConstraints
@@ -365,7 +366,8 @@ public class ItineraryRestControllerDocsTest extends RestDocsSupport {
                 requestFields(
                     fieldWithPath("itineraryId").type(JsonFieldType.NUMBER).description("여정 식별자")
                         .attributes(key("constraints")
-                            .value(updateAccommodationConstraints.descriptionsForProperty("itineraryId"))),
+                            .value(updateAccommodationConstraints.descriptionsForProperty(
+                                "itineraryId"))),
                     fieldWithPath("itineraryName").type(JsonFieldType.STRING).optional()
                         .description("여정 이름"),
                     fieldWithPath("accommodationName").type(JsonFieldType.STRING).optional()
@@ -425,7 +427,8 @@ public class ItineraryRestControllerDocsTest extends RestDocsSupport {
                 requestFields(
                     fieldWithPath("itineraryId").type(JsonFieldType.NUMBER).description("여정 식별자")
                         .attributes(key("constraints")
-                            .value(updateTransportationConstraints.descriptionsForProperty("itineraryId"))),
+                            .value(updateTransportationConstraints.descriptionsForProperty(
+                                "itineraryId"))),
                     fieldWithPath("itineraryName").type(JsonFieldType.STRING).optional()
                         .description("여정 이름"),
                     fieldWithPath("transportation").type(JsonFieldType.STRING).optional()
@@ -468,6 +471,7 @@ public class ItineraryRestControllerDocsTest extends RestDocsSupport {
     @Test
     @DisplayName("체류 여정 정보를 수정할 수 있다.")
     void updateVisit() throws Exception {
+        // given
         VisitUpdateRequestDTO request = VisitUpdateRequestDTO.builder()
             .itineraryId(1L)
             .itineraryName("즐거운 제주여정3")
@@ -483,6 +487,7 @@ public class ItineraryRestControllerDocsTest extends RestDocsSupport {
         given(itineraryService.updateVisit(any(VisitUpdateRequestDTO.class)))
             .willReturn(visitResponseDTO);
 
+        // when, then
         mockMvc.perform(MockMvcRequestBuilders.patch("/api/itineraries/visits")
                 .content(objectMapper.writeValueAsString(request))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -523,10 +528,16 @@ public class ItineraryRestControllerDocsTest extends RestDocsSupport {
     @DisplayName("deleteItinerary()는 여정 정보를 삭제할 수 있다.")
     void deleteItinerary() throws Exception {
         // given
-        ItineraryDeleteResponseDTO itinerary = ItineraryDeleteResponseDTO.builder()
+        AccommodationResponseDTO accommodationResponseDTO = AccommodationResponseDTO.builder()
             .itineraryId(1L)
+            .itineraryName("제주여정1")
+            .accommodationName("제주신라호텔")
+            .accommodationRoadAddressName("제주 서귀포시 중문관광로72번길 75")
+            .checkIn("2023-10-25 15:00")
+            .checkOut("2023-10-26 11:00")
             .build();
-        given(itineraryService.deleteItinerary(any(Long.TYPE))).willReturn(itinerary);
+        given(itineraryService.deleteItinerary(any(Long.TYPE))).willReturn(
+            accommodationResponseDTO);
 
         // when, then
         mockMvc.perform(
@@ -537,7 +548,35 @@ public class ItineraryRestControllerDocsTest extends RestDocsSupport {
                 responseFields(responseCommon()).and(
                     fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터"),
                     fieldWithPath("data.itineraryId").type(JsonFieldType.NUMBER)
-                        .description("여정 식별자")
+                        .description("여정 식별자"),
+                    fieldWithPath("data.itineraryName").type(JsonFieldType.STRING)
+                        .description("여정 이름"),
+                    fieldWithPath("data.accommodationName").type(JsonFieldType.STRING).optional()
+                        .description("숙소명"),
+                    fieldWithPath("data.accommodationRoadAddressName").type(JsonFieldType.STRING)
+                        .optional().description("숙소 도로명"),
+                    fieldWithPath("data.checkIn").type(JsonFieldType.STRING).optional()
+                        .description("체크인 일시"),
+                    fieldWithPath("data.checkOut").type(JsonFieldType.STRING).optional()
+                        .description("체크아웃 일시"),
+                    fieldWithPath("data.transportation").type(JsonFieldType.STRING).optional()
+                        .description("이동 수단"),
+                    fieldWithPath("data.departurePlace").type(JsonFieldType.STRING).optional()
+                        .description("출발지"),
+                    fieldWithPath("data.departurePlaceRoadAddressName").type(JsonFieldType.STRING)
+                        .optional().description("출발지 도로명"),
+                    fieldWithPath("data.destination").type(JsonFieldType.STRING).optional()
+                        .description("도착지"),
+                    fieldWithPath("data.destinationRoadAddressName").type(JsonFieldType.STRING)
+                        .optional().description("도착지 도로명"),
+                    fieldWithPath("data.placeName").type(JsonFieldType.STRING).optional()
+                        .description("장소명"),
+                    fieldWithPath("data.placeRoadAddressName").type(JsonFieldType.STRING).optional()
+                        .description("장소 도로명"),
+                    fieldWithPath("data.departureTime").type(JsonFieldType.STRING).optional()
+                        .description("도착 일시"),
+                    fieldWithPath("data.arrivalTime").type(JsonFieldType.STRING).optional()
+                        .description("출발 일시")
                 )
             ));
     }

@@ -36,5 +36,4 @@ public class Member extends BaseTimeEntity {
         this.nickname = nickname;
         this.password = password; 
     }
-
 }
