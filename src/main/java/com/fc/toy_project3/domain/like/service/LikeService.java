@@ -50,12 +50,7 @@ public class LikeService {
      * @return 좋아요 정보 응답 DTO
      */
     public LikeResponseDTO getLikeByMemberIdAndTripId(Long memberId, Long tripId){
-        Like like = likeRepository.findByMemberIdAndTripId(memberId, tripId);
-        if(like==null){
-            throw new LikeNotFoundException();
-        }else{
-            return new LikeResponseDTO(like);
-        }
+        return new LikeResponseDTO(likeRepository.findByMemberIdAndTripId(memberId, tripId).orElseThrow(LikeNotFoundException::new));
     }
 
     /**
