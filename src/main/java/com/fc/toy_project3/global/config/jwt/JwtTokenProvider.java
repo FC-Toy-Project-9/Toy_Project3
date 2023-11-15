@@ -20,8 +20,8 @@ public class JwtTokenProvider {
     private long tokenValidTime;
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
-//    @Autowired
-//    private UserDetailsService userDetailsService;
+    @Autowired
+    private UserDetailsService userDetailsService;
     public Authentication getAuthentication(String token) {
         String email = extractMemberIdFromToken(token);
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
@@ -31,7 +31,7 @@ public class JwtTokenProvider {
 
     // JWT 생성
     public String createJwtToken(Authentication authentication) {
-//        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+//        UserDetails userDetails = (UserDetails) authentication.getPrincipal();  // 수정예정
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         Claims claims = Jwts.claims().setSubject(userDetails.getUsername()); //email
 

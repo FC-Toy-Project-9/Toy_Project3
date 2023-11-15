@@ -31,7 +31,7 @@ public class MemberRestController {
     private final MemberService memberService;
     private final TripService tripService;
 
-    @PostMapping("/signUp")
+    @PostMapping("/signup")
     public ResponseEntity<ResponseDTO<SignUpResponseDTO>> signUp (
             @Valid @RequestBody SignUpRequestDTO signUpRequestDTO ) {
         return ResponseEntity.status(HttpStatus.CREATED).body(ResponseDTO.res(HttpStatus.CREATED,
@@ -39,7 +39,7 @@ public class MemberRestController {
                 "회원가입이 완료되었습니다."));
     }
 
-    @PostMapping("/signIn")
+    @PostMapping("/signin")
     public ResponseEntity<ResponseDTO<JwtResponseDTO>> signUp (
             @Valid @RequestBody SignInRequestDTO signInRequestDTO ) {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDTO.res(HttpStatus.OK,
@@ -54,7 +54,7 @@ public class MemberRestController {
                 "성공"));
     }
 
-    @PostMapping("/trip")
+    @PostMapping("/testTrip")
     public ResponseEntity<ResponseDTO<TripResponseDTO>> postTrip
             (@AuthenticationPrincipal CustomUserDetails customUserDetails,
              @Valid @RequestBody PostTripRequestDTO postTripRequestDTO) {

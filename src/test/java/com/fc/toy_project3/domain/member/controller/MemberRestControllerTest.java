@@ -1,5 +1,6 @@
 package com.fc.toy_project3.domain.member.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fc.toy_project3.domain.member.dto.JwtResponseDTO;
 import com.fc.toy_project3.domain.member.dto.SignInRequestDTO;
 import com.fc.toy_project3.domain.member.dto.SignUpRequestDTO;
@@ -7,46 +8,26 @@ import com.fc.toy_project3.domain.member.dto.SignUpResponseDTO;
 import com.fc.toy_project3.domain.member.entity.Member;
 import com.fc.toy_project3.domain.member.repository.MemberRepository;
 import com.fc.toy_project3.domain.member.service.MemberService;
-import com.fc.toy_project3.global.config.jwt.JwtTokenProvider;
 import org.junit.jupiter.api.BeforeEach;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 ///**
 // * Member REST Controller Test
 // */
@@ -122,8 +103,6 @@ class MemberRestControllerTest {
     @MockBean
     private MemberService memberService;
 
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
 
     @BeforeEach
     public void setUp(@Autowired WebApplicationContext applicationContext) {
@@ -154,7 +133,7 @@ class MemberRestControllerTest {
         when(memberService.signUp(any(SignUpRequestDTO.class))).thenReturn(signUpResponseDTO);
 
         mockMvc.perform(
-                        post("/api/members/signUp")
+                        post("/api/members/signup")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(new ObjectMapper().writeValueAsString(signUpRequestDTO))
                 )
@@ -182,7 +161,7 @@ class MemberRestControllerTest {
 
         when(memberService.signIn(any(SignInRequestDTO.class))).thenReturn(jwtResponseDTO);
         mockMvc.perform(
-                        post("/api/members/signIn")
+                        post("/api/members/signin")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(new ObjectMapper().writeValueAsString(signInRequestDTO))
                 )

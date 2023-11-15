@@ -23,6 +23,6 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
         Long memberId =  member.getId();
 
-        return new CustomUserDetails(memberId, member.getNickname(), member.getEmail(), member.getName(), member.getPassword());
+        return new CustomUserDetails(memberId, member.getNickname(), member.getEmail(), member.getName());
     }
 }

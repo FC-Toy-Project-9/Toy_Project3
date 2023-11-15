@@ -12,12 +12,8 @@ import com.fc.toy_project3.global.config.jwt.CustomUserDetailsService;
 import com.fc.toy_project3.global.config.jwt.JwtTokenProvider;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -101,7 +97,7 @@ class MemberServiceTest {
         when(memberRepository.findByEmail(email)).thenReturn(Optional.of(member)); // 존재하는 이메일에 대한 Member 객체 반환 설정
 
 
-        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "fastcam", "ypd06021@naver.com","패캠", "{bcrypt}$2a$10$zQcxtnPtIP05tA2q05AVeeVmD5akTm3HyH0KyZVtldjKmkIRB.tu2");
+        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "fastcam", "ypd06021@naver.com","패캠");
         when(userDetailsService.loadUserByUsername(email)).thenReturn(customUserDetails);
         when(passwordEncoder.matches("{bcrypt}$2a$10$zQcxtnPtIP05tA2q05AVeeVmD5akTm3HyH0KyZVtldjKmkIRB.tu2", "{bcrypt}$2a$10$zQcxtnPtIP05tA2q05AVeeVmD5akTm3HyH0KyZVtldjKmkIRB.tu2")).thenReturn(true);
         when(jwtTokenProvider.createJwtToken(any())).thenReturn("eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ5cGQwNjAyMUBuYXZlci5jb20iLCJpYXQiOjE2OTk5NDg0NTMsImV4cCI6MTY5OTk1MDI1M30.RZ4c-kUSeeuaxOSH9mbCn7DG-jOCq5Mw052Wvn8zlxuslNjEGaaVXVT9r4H66GELMm__S1lQsX3UpoujhIbV5w");
