@@ -87,7 +87,7 @@ class LikeServiceTest {
             Trip trip = Trip.builder().id(1L).name("제주도 여행").startDate(LocalDate.of(2023, 10, 25))
                 .endDate(LocalDate.of(2023, 10, 26)).isDomestic(true).itineraries(new ArrayList<>())
                 .build();
-            Like like = Like.builder().id(1L).trip(trip).member(member).build();
+            Optional<Like> like = Optional.of(Like.builder().id(1L).trip(trip).member(member).build());
             given(likeRepository.findByMemberIdAndTripId(any(Long.TYPE),any(Long.TYPE))).willReturn(like);
 
             // when
@@ -102,7 +102,7 @@ class LikeServiceTest {
         @DisplayName("특정 회원 id와 여행 id를 가진 좋아요 정보를 찾을 수 없으면 조회할 수 없다.")
         void likeNotFound_willFail() {
             // given
-            Like like = null;
+            Optional<Like> like = Optional.empty();
             given(likeRepository.findByMemberIdAndTripId(any(Long.TYPE), any(Long.TYPE))).willReturn(like);
 
             // when, then

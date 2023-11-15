@@ -121,12 +121,12 @@ public class LikeRepositoryTest {
 
 
             // when
-            Like result = likeRepository.findByMemberIdAndTripId(memberId, tripId);
+            Optional<Like> result = likeRepository.findByMemberIdAndTripId(memberId, tripId);
 
             //then
-            assertNotNull(result.getId());
-            assertEquals(memberId, result.getMember().getId());
-            assertEquals(tripId, result.getTrip().getId());
+            assertNotNull(result.get().getId());
+            assertEquals(memberId, result.get().getMember().getId());
+            assertEquals(tripId, result.get().getTrip().getId());
         }
     }
 
