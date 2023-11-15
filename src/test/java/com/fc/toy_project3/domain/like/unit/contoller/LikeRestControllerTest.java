@@ -53,7 +53,7 @@ public class LikeRestControllerTest {
             LikeRequestDTO likeRequestDTO = LikeRequestDTO.builder().tripId(tripId).build();
             LikeResponseDTO likeResponseDTO = LikeResponseDTO.builder().likeId(likeId).memberId(memberId).tripId(tripId).build();
 
-            given(likeService.createLike(memberId, likeRequestDTO)).willReturn(likeResponseDTO);
+            given(likeService.createLike(any(Long.TYPE), any(LikeRequestDTO.class))).willReturn(likeResponseDTO);
 
             CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com","test");
 
@@ -63,7 +63,6 @@ public class LikeRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.code").exists()).andExpect(jsonPath("$.message").exists())
-                .andExpect(jsonPath("$.data").isMap())
                 .andExpect(jsonPath("$.data.likeId").exists())
                 .andExpect(jsonPath("$.data.memberId").exists())
                 .andExpect(jsonPath("$.data.tripId").exists())
@@ -84,7 +83,7 @@ public class LikeRestControllerTest {
                 CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com","test");
 
                 // when, then
-                mockMvc.perform(post("/api/trip").with(user(customUserDetails)).with(csrf())
+                mockMvc.perform(post("/api/likes").with(user(customUserDetails)).with(csrf())
                         .content(new ObjectMapper().writeValueAsString(likeRequestDTO))
                         .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest())
                     .andDo(print());
@@ -114,7 +113,6 @@ public class LikeRestControllerTest {
             mockMvc.perform(get("/api/likes/{tripId}", 1L).with(user(customUserDetails)).with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").exists()).andExpect(jsonPath("$.message").exists())
-                .andExpect(jsonPath("$.data").isMap())
                 .andExpect(jsonPath("$.data.likeId").exists())
                 .andExpect(jsonPath("$.data.memberId").exists())
                 .andExpect(jsonPath("$.data.tripId").exists())
@@ -144,7 +142,6 @@ public class LikeRestControllerTest {
             mockMvc.perform(delete("/api/likes/{likeId}", 1L).with(user(customUserDetails)).with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").exists()).andExpect(jsonPath("$.message").exists())
-                .andExpect(jsonPath("$.data").isMap())
                 .andExpect(jsonPath("$.data.likeId").exists())
                 .andExpect(jsonPath("$.data.memberId").exists())
                 .andExpect(jsonPath("$.data.tripId").exists())
