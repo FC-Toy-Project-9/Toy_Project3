@@ -19,8 +19,8 @@ public class WebSecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf((csrf) -> csrf.disable());
-        http.authorizeHttpRequests((requests) -> requests
+        http.csrf((csrf) -> csrf.disable())
+                .authorizeHttpRequests((requests) -> requests
                                 .requestMatchers("/", "/error", "/api/members/signup", "/api/members/signin").permitAll()
                 .anyRequest().authenticated())
                 .httpBasic((httpBasic) -> httpBasic.disable())
