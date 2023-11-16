@@ -182,7 +182,7 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
         mockMvc.perform(get("/api/trips")
                 .queryParam("page", "0")
                 .queryParam("pageSize", "10")
-                .queryParam("createdAt", "createdAt")
+                .queryParam("orderBy", "createdAt")
                 .queryParam("sort", "DESC")
                 .with(user(getCustomUserDetails()))
                 .with(csrf()))
@@ -193,7 +193,7 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
                     parameterWithName("nickname").description("회원 식별자").optional(),
                     parameterWithName("page").description("조회 페이지").optional(),
                     parameterWithName("pageSize").description("조회당 불러올 건 수").optional(),
-                    parameterWithName("createdAt").description("정렬 기준(criteria)").optional()
+                    parameterWithName("orderBy").description("정렬 기준(criteria)").optional()
                         .attributes(new Attribute("constraints", "createdAt과 likeCount를 지원합니다.")),
                     parameterWithName("sort").description("정렬 종류").optional()
                         .attributes(new Attribute("constraints", "ASC와 DESC를 지원합니다."))
@@ -285,7 +285,7 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
         mockMvc.perform(get("/api/trips/likes", 1L)
                 .queryParam("page", "0")
                 .queryParam("pageSize", "10")
-                .queryParam("createdAt", "createdAt")
+                .queryParam("orderBy", "createdAt")
                 .queryParam("sort", "DESC")
                 .with(user(getCustomUserDetails()))
                 .with(csrf()))
@@ -294,7 +294,7 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
                 queryParameters(
                     parameterWithName("page").description("조회 페이지").optional(),
                     parameterWithName("pageSize").description("조회당 불러올 건 수").optional(),
-                    parameterWithName("createdAt").description("정렬 기준(criteria)").optional(),
+                    parameterWithName("orderBy").description("정렬 기준(criteria)").optional(),
                     parameterWithName("sort").description("정렬 종류(ASC/DESC)").optional()
                 ),
                 responseFields(responseCommon()).and(
