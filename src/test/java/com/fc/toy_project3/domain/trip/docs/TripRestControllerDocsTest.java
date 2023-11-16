@@ -13,6 +13,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -25,12 +26,11 @@ import com.fc.toy_project3.domain.itinerary.dto.response.get.GetVisitResponseDTO
 import com.fc.toy_project3.domain.trip.controller.TripRestController;
 import com.fc.toy_project3.domain.trip.dto.request.GetTripsRequestDTO;
 import com.fc.toy_project3.domain.trip.dto.request.PostTripRequestDTO;
-import com.fc.toy_project3.domain.trip.dto.request.TripPageRequestDTO;
 import com.fc.toy_project3.domain.trip.dto.request.UpdateTripRequestDTO;
 import com.fc.toy_project3.domain.trip.dto.response.GetTripResponseDTO;
 import com.fc.toy_project3.domain.trip.dto.response.GetTripsResponseDTO;
-import com.fc.toy_project3.domain.trip.dto.response.TripsResponseDTO;
 import com.fc.toy_project3.domain.trip.dto.response.TripResponseDTO;
+import com.fc.toy_project3.domain.trip.dto.response.TripsResponseDTO;
 import com.fc.toy_project3.domain.trip.service.TripService;
 import com.fc.toy_project3.global.config.jwt.CustomUserDetails;
 import java.util.ArrayList;
@@ -43,6 +43,7 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.constraints.ConstraintDescriptions;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.restdocs.snippet.Attributes.Attribute;
 
 /**
  * Trip REST API 문서화 Test
@@ -62,6 +63,9 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
 
     private final ConstraintDescriptions updateDescriptions = new ConstraintDescriptions(
         UpdateTripRequestDTO.class);
+
+    private final ConstraintDescriptions getDescriptions = new ConstraintDescriptions(
+        GetTripsRequestDTO.class);
 
     @Test
     @DisplayName("postTrip()은 여행 정보를 저장할 수 있다.")
@@ -84,12 +88,10 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
             .isDomestic(true)
             .build();
         given(tripService.postTrip(any(PostTripRequestDTO.class), any(Long.TYPE))).willReturn(trip);
-        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
-            "test");
 
         // when, then
         mockMvc.perform(post("/api/trips", 1L)
-                .with(user(customUserDetails))
+                .with(user(getCustomUserDetails()))
                 .with(csrf())
                 .content(objectMapper.writeValueAsString(postTripRequestDTO))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -175,17 +177,27 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
             .build();
         given(tripService.getTrips(any(GetTripsRequestDTO.class), any(Pageable.class))).willReturn(
             getTripsResponseDTO);
-        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
-            "test");
 
         // when, then
         mockMvc.perform(get("/api/trips")
                 .queryParam("page", "0")
                 .queryParam("pageSize", "10")
-                .with(user(customUserDetails))
+                .queryParam("createdAt", "createdAt")
+                .queryParam("sort", "DESC")
+                .with(user(getCustomUserDetails()))
                 .with(csrf()))
             .andExpect(status().isOk())
             .andDo(restDoc.document(
+                queryParameters(
+                    parameterWithName("tripName").description("게시글 식별자").optional(),
+                    parameterWithName("nickname").description("회원 식별자").optional(),
+                    parameterWithName("page").description("조회 페이지").optional(),
+                    parameterWithName("pageSize").description("조회당 불러올 건 수").optional(),
+                    parameterWithName("createdAt").description("정렬 기준(criteria)").optional()
+                        .attributes(new Attribute("constraints", "createdAt과 likeCount를 지원합니다.")),
+                    parameterWithName("sort").description("정렬 종류").optional()
+                        .attributes(new Attribute("constraints", "ASC와 DESC를 지원합니다."))
+                ),
                 responseFields(responseCommon()).and(
                     fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터"),
                     fieldWithPath("data.totalPages").type(JsonFieldType.NUMBER)
@@ -195,7 +207,8 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
                     fieldWithPath("data.totalTrips").type(JsonFieldType.NUMBER)
                         .description("총 여행 수"),
                     fieldWithPath("data.trips").type(JsonFieldType.ARRAY).description("여행 목록"),
-                    fieldWithPath("data.trips[].tripId").type(JsonFieldType.NUMBER).description("여행 식별자"),
+                    fieldWithPath("data.trips[].tripId").type(JsonFieldType.NUMBER)
+                        .description("여행 식별자"),
                     fieldWithPath("data.trips[].memberId").type(JsonFieldType.NUMBER)
                         .description("회원 식별자"),
                     fieldWithPath("data.trips[].nickname").type(JsonFieldType.STRING)
@@ -267,17 +280,23 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
             .build();
         given(tripService.getLikedTrips(any(Long.TYPE), any(Pageable.class))).willReturn(
             getTripsResponseDTO);
-        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
-            "test");
 
         // when, then
         mockMvc.perform(get("/api/trips/likes", 1L)
                 .queryParam("page", "0")
                 .queryParam("pageSize", "10")
-                .with(user(customUserDetails))
+                .queryParam("createdAt", "createdAt")
+                .queryParam("sort", "DESC")
+                .with(user(getCustomUserDetails()))
                 .with(csrf()))
             .andExpect(status().isOk())
             .andDo(restDoc.document(
+                queryParameters(
+                    parameterWithName("page").description("조회 페이지").optional(),
+                    parameterWithName("pageSize").description("조회당 불러올 건 수").optional(),
+                    parameterWithName("createdAt").description("정렬 기준(criteria)").optional(),
+                    parameterWithName("sort").description("정렬 종류(ASC/DESC)").optional()
+                ),
                 responseFields(responseCommon()).and(
                     fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터"),
                     fieldWithPath("data.totalPages").type(JsonFieldType.NUMBER)
@@ -287,7 +306,8 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
                     fieldWithPath("data.totalTrips").type(JsonFieldType.NUMBER)
                         .description("총 여행 수"),
                     fieldWithPath("data.trips").type(JsonFieldType.ARRAY).description("여행 목록"),
-                    fieldWithPath("data.trips[].tripId").type(JsonFieldType.NUMBER).description("여행 식별자"),
+                    fieldWithPath("data.trips[].tripId").type(JsonFieldType.NUMBER)
+                        .description("여행 식별자"),
                     fieldWithPath("data.trips[].memberId").type(JsonFieldType.NUMBER)
                         .description("회원 식별자"),
                     fieldWithPath("data.trips[].nickname").type(JsonFieldType.STRING)
@@ -358,12 +378,10 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
             .createdAt("2023-10-02 10:00")
             .build();
         given(tripService.getTripById(any(Long.TYPE))).willReturn(trip);
-        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
-            "test");
 
         // when, then
         mockMvc.perform(RestDocumentationRequestBuilders.get("/api/trips/{tripId}", 1L)
-                .with(user(customUserDetails))
+                .with(user(getCustomUserDetails()))
                 .with(csrf()))
             .andExpect(status().isOk())
             .andDo(restDoc.document(
@@ -448,20 +466,22 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
             .isDomestic(true)
             .likeCount(7L)
             .build();
-        given(tripService.updateTrip(any(UpdateTripRequestDTO.class), any(Long.TYPE))).willReturn(trip);
-        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
-            "test");
+        given(tripService.updateTrip(any(UpdateTripRequestDTO.class), any(Long.TYPE))).willReturn(
+            trip);
 
         // when, then
         mockMvc.perform(patch("/api/trips")
-                .with(user(customUserDetails))
+                .with(user(getCustomUserDetails()))
                 .with(csrf())
                 .content(objectMapper.writeValueAsString(request))
                 .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andDo(restDoc.document(requestFields(
-                    fieldWithPath("tripId").type(JsonFieldType.NUMBER).description("여행 식별자").attributes(
-                        key("constraints").value(updateDescriptions.descriptionsForProperty("id"))),
+            .andDo(restDoc.document(
+                requestFields(
+                    fieldWithPath("tripId").type(JsonFieldType.NUMBER).description("여행 식별자")
+                        .attributes(
+                            key("constraints").value(
+                                updateDescriptions.descriptionsForProperty("id"))),
                     fieldWithPath("tripName").type(JsonFieldType.STRING).optional()
                         .description("여행 이름").attributes(key("constraints").value(
                             updateDescriptions.descriptionsForProperty("name"))),
@@ -506,13 +526,12 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
             .isDomestic(true)
             .likeCount(7L)
             .build();
-        given(tripService.deleteTripById(any(Long.TYPE), any(Long.TYPE))).willReturn(tripResponseDTO);
-        CustomUserDetails customUserDetails = new CustomUserDetails(1L, "test", "test@mail.com",
-            "test");
+        given(tripService.deleteTripById(any(Long.TYPE), any(Long.TYPE))).willReturn(
+            tripResponseDTO);
 
         //when, then
         mockMvc.perform(delete("/api/trips/{tripId}", 1L)
-                .with(user(customUserDetails))
+                .with(user(getCustomUserDetails()))
                 .with(csrf()))
             .andExpect(status().isOk())
             .andDo(restDoc.document(
@@ -533,5 +552,9 @@ public class TripRestControllerDocsTest extends RestDocsSupport {
                 )
             ));
         verify(tripService, times(1)).deleteTripById(any(Long.TYPE), any(Long.TYPE));
+    }
+
+    private CustomUserDetails getCustomUserDetails() {
+        return new CustomUserDetails(1L, "test", "test@mail.com", "test");
     }
 }
