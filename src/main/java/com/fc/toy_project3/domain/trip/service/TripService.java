@@ -68,6 +68,7 @@ public class TripService {
             .startDate(startDate)
             .endDate(endDate)
             .isDomestic(postTripRequestDTO.getIsDomestic())
+            .likeCount(0L)
             .build()));
     }
 
@@ -75,7 +76,7 @@ public class TripService {
      * 여행 정보 목록 페이징 조회
      *
      * @param getTripsRequestDTO 여행 정보 목록 조회 조건이 담긴 요청 DTO
-     * @param pageable 페이징 요청 정보
+     * @param pageable           페이징 요청 정보
      * @return 여행 정보 응답 DTO 리스트
      */
     public GetTripsResponseDTO getTrips(GetTripsRequestDTO getTripsRequestDTO,
@@ -98,7 +99,7 @@ public class TripService {
      * @param pageable 페이징 요청 정보
      * @return 여행 정보 응답 DTO 리스트
      */
-    public GetTripsResponseDTO getLikedTrips(long memberId,  Pageable pageable){
+    public GetTripsResponseDTO getLikedTrips(long memberId, Pageable pageable) {
         List<TripsResponseDTO> trips = new ArrayList<>();
         Page<Like> likeList = likeRepository.findAllByMemberIdAndPageable(memberId, pageable);
         likeList.forEach(like -> trips.add(new TripsResponseDTO(like.getTrip())));
@@ -242,11 +243,11 @@ public class TripService {
     /**
      * 요청 회원과 여행 작성자가 일치하는지 확인
      *
-     * @param trip 여행 Entity
+     * @param trip     여행 Entity
      * @param memberId 요청 회원 ID
      */
-    public void isAuthor(Trip trip, long memberId){
-        if(trip.getMember().getId() != memberId){
+    public void isAuthor(Trip trip, long memberId) {
+        if (trip.getMember().getId() != memberId) {
             throw new NotTripAuthorException();
         }
     }
