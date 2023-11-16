@@ -24,14 +24,15 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -49,15 +50,8 @@ public class MemberServiceTest {
     @Mock
     private JwtTokenProvider jwtTokenProvider;
     @Mock
-    private UserDetailsService userDetailsService;
-    @Mock
-    private CustomUserDetailsService customUserDetailsService;
-    @Mock
-    private AuthenticationManager authenticationManager; // 인증 매니저
-    private CustomUserDetails makeUserInfo() {
-        return new CustomUserDetails(1L, "test", "test@mail.com", "test");
-    }
-    @BeforeEach
+    private CustomUserDetailsService userDetailsService;
+
     void setUp() {
         MockitoAnnotations.openMocks(this); // 테스트 셋업
     }
@@ -75,7 +69,7 @@ public class MemberServiceTest {
                     .name("test")
                     .build();
 
-            Member fakeMember = Member.builder()
+            Member savedMember = Member.builder()
                     .id(1L)
                     .email(signUpRequestDTO.getEmail())
                     .nickname(signUpRequestDTO.getNickname())
@@ -85,7 +79,7 @@ public class MemberServiceTest {
 
             when(memberRepository.findByEmail(any())).thenReturn(Optional.empty());
             when(memberRepository.findByNickname(any())).thenReturn(Optional.empty());
-            when(memberRepository.save(any())).thenReturn(fakeMember);
+            when(memberRepository.save(any())).thenReturn(savedMember);
 
             SignUpResponseDTO signUpResponseDTO = memberService.signUp(signUpRequestDTO);
 
@@ -135,4 +129,40 @@ public class MemberServiceTest {
         }
     }
 
+    @Test
+    void testJwtTokenCreation() {
+        // given
+        SignInRequestDTO signInRequestDTO = SignInRequestDTO.builder()
+                .email("test@email.com")
+                .password("testTEST12!@")
+                .build();
+        Member expectedMember = Member.builder()
+                .id(1L)
+                .email(signInRequestDTO.getEmail())
+                .password("{bcrypt}$2a$10$CcHBLQHF0/wIZAy3.2ZHpe9XdUKUwqB8iAeG2M9Ip/Z12RMKUC.Oi")
+                .build();
+
+
+        String jwtToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ5cGQwNjAyMUBuYXZlci5jb20iLCJpYXQiOjE2OTk5NDg0NTMsImV4cCI6MTY5OTk1MDI1M30.RZ4c-kUSeeuaxOSH9mbCn7DG-jOCq5Mw052Wvn8zlxuslNjEGaaVXVT9r4H66GELMm__S1lQsX3UpoujhIbV5w"; // 예상되는 JWT 토큰 값
+
+        // JwtTokenProvider 모의 객체 생성
+        JwtTokenProvider jwtTokenProviderMock = mock(JwtTokenProvider.class);
+        when(jwtTokenProviderMock.createJwtToken(any())).thenReturn(jwtToken); // createJwtToken이 호출될 때 예상되는 토큰 반환
+
+        // 이전 코드에서 memberRepositoryMock가 누락된 부분을 추가합니다.
+        MemberRepository memberRepositoryMock = mock(MemberRepository.class);
+
+        // MemberService의 생성자에 MemberRepository 모의 객체를 포함시킵니다.
+        MemberService memberService = new MemberService(memberRepositoryMock, passwordEncoder, jwtTokenProviderMock, userDetailsService);
+
+        // when
+        JwtResponseDTO jwtResponseDTO = memberService.signIn(signInRequestDTO);
+
+        // then
+        assertNotNull(jwtResponseDTO);
+        assertEquals(jwtToken, jwtResponseDTO.getJwtToken());
+
+        // JwtTokenProvider의 createJwtToken 메서드가 signIn 메서드에서 호출되었는지 확인
+        verify(jwtTokenProviderMock, times(1)).createJwtToken(any());
+    }
 }

@@ -1,18 +1,17 @@
 package com.fc.toy_project3.domain.member.service;
 
 import com.fc.toy_project3.domain.member.dto.JwtResponseDTO;
-import com.fc.toy_project3.domain.member.dto.SignUpResponseDTO;
 import com.fc.toy_project3.domain.member.dto.SignInRequestDTO;
 import com.fc.toy_project3.domain.member.dto.SignUpRequestDTO;
+import com.fc.toy_project3.domain.member.dto.SignUpResponseDTO;
 import com.fc.toy_project3.domain.member.entity.Member;
 import com.fc.toy_project3.domain.member.exception.ExistingMemberException;
+import com.fc.toy_project3.domain.member.exception.InvalidJwtException;
+import com.fc.toy_project3.domain.member.exception.MemberNotFoundException;
 import com.fc.toy_project3.domain.member.repository.MemberRepository;
 import com.fc.toy_project3.global.config.jwt.CustomUserDetailsService;
-import io.jsonwebtoken.Jwt;
 import com.fc.toy_project3.global.config.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -55,7 +54,10 @@ public class MemberService {
                 .build();
 
         Member savedMember = memberRepository.save(member);
+        if (savedMember == null) {
 
+            throw new MemberNotFoundException("유저 정보를 찾을 수 없습니다.");
+        }
         return SignUpResponseDTO.builder()
                 .memberId(savedMember.getId())
                 .email(savedMember.getEmail())
@@ -127,7 +129,7 @@ public class MemberService {
      */
     public Member getMember(Long memberId) {
         return memberRepository.findById(memberId)
-                .orElseThrow(() -> new UsernameNotFoundException(memberId+"해당 Id를 찾을 수 없습니다.")
+                .orElseThrow(() -> new MemberNotFoundException("해당 Id를 찾을 수 없습니다.")
                 );
     }
 }
